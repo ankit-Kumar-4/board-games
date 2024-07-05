@@ -15,7 +15,7 @@ function Square({ value, onSquareClick }: { value: String; onSquareClick: any })
 
 export default function Board() {
 
-  function handleClick(i) {
+  function handleClick(i: number) {
 
     if (squares[i] || calculateWinner(squares)) {
       return;
