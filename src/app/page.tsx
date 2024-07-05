@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
 
-function Square({ value, onSquareClick }: { value: String; onSquareClick: any }) {
+type SquareValue = 'X' | 'O' | null;
+
+function Square({ value, onSquareClick }: { value: SquareValue; onSquareClick: any }) {
   return (
     <button className="square" onClick={onSquareClick}    >
       {value}
@@ -10,7 +12,7 @@ function Square({ value, onSquareClick }: { value: String; onSquareClick: any })
 }
 
 
-function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean; squares: Array<string>; onPlay: (items: string[]) => void; }) {
+function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean; squares: Array<SquareValue>; onPlay: (items: SquareValue[]) => void; }) {
 
   function handleClick(i: number) {
 
@@ -35,6 +37,10 @@ function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean; squares: Array<
     status = `Winner: ${winner}`;
   } else {
     status = `Next Player: ${xIsNext ? 'X' : 'O'}`;
+  }
+
+  if (!squares.includes(null)) {
+    status = 'Game is draw!';
   }
 
   const renderSquare = (i: number) => (
@@ -67,7 +73,7 @@ export default function Game() {
   const currentSquares = history[currentMove];
   let xIsNext = currentMove % 2 == 0;
 
-  function handlePlay(nextSquares: Array<string>) {
+  function handlePlay(nextSquares: Array<SquareValue>) {
     const nextHistory = [...history.splice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1)
@@ -103,7 +109,7 @@ export default function Game() {
   );
 }
 
-function calculateWinner(squares: Array<string>) {
+function calculateWinner(squares: Array<SquareValue>) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
