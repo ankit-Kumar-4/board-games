@@ -50,63 +50,6 @@ ul {
   box-sizing: border-box;
 }
 
-body {
-  font-family: sans-serif;
-  margin: 20px;
-  padding: 0;
-}
-
-.square {
-  background: #fff;
-  border: 1px solid #999;
-  float: left;
-  font-size: 24px;
-  font-weight: bold;
-  line-height: 34px;
-  height: 50px;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-  width: 50px;
-}
-
-.square-green {
-  background: lightgreen;
-}
-
-.board-row:after {
-  clear: both;
-  content: '';
-  display: table;
-}
-
-.status {
-  margin-bottom: 10px;
-}
-
-.game {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.game-board {
-  margin-right: 20px;
-}
-
-.game-row {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-  align-items: center;
-}
-
-.game-info {
-  justify-content: center;
-  margin-left: 20px;
-}
-
 table {
   border: 2px solid forestgreen;
   width: 100px;

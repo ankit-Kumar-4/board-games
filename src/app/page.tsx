@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import "@/app/page.module.css"
+import styles from "@/app/page.module.css"
 
 type SquareValue = 'X' | 'O' | null;
 type TableRow = {
@@ -13,7 +13,7 @@ const Table = ({ data }: { data: TableRow[]; }) => {
   const sumColumn1 = data.reduce((acc, row) => acc + row.playerX, 0);
   const sumColumn2 = data.reduce((acc, row) => acc + row.playerO, 0);
   return (
-    <table className="table game-info">
+    <table className={`${styles.table} ${styles['game-info']}`}>
       <thead>
         <tr>
           <th>Player X</th>
@@ -27,19 +27,19 @@ const Table = ({ data }: { data: TableRow[]; }) => {
             <td>{row.playerO}</td>
           </tr>
         ))}
-        <tr className="sum-row square-green">
-          <td>{sumColumn1}</td>
-          <td>{sumColumn2}</td>
+        <tr className={`${styles['sum-row']}`}>
+          <td >{sumColumn1}</td>
+          <td >{sumColumn2}</td>
         </tr>
       </tbody>
-    </table>
+    </table >
   );
 };
 
 
 function Square({ value, onSquareClick, isGreen }: { value: SquareValue; onSquareClick: any, isGreen: boolean }) {
   return (
-    <button className={`square ${isGreen ? 'square-green' : ''}`} onClick={onSquareClick} >
+    <button className={`${styles.square} ${isGreen ? styles['square-green'] : ''}`} onClick={onSquareClick} >
       {value}
     </button>
   )
@@ -106,7 +106,7 @@ function Board({ xIsNext, squares, onPlay, handleScore }:
       boardColumns.push(renderSquare(row * 3 + col, isGreen));
     }
     boardRows.push(
-      <div key={row} className="board-row">
+      <div key={row} className={styles['board-row']}>
         {boardColumns}
       </div>
     );
@@ -114,7 +114,7 @@ function Board({ xIsNext, squares, onPlay, handleScore }:
 
   return (
     <>
-      <div className="status">{status}</div>
+      <div className={styles.status}>{status}</div>
       {boardRows}
     </>)
 }
@@ -143,16 +143,16 @@ export default function Game() {
 
 
   return (
-    <div className="game">
-      <div className="game-row">
-        <div className="game-board">
+    <div className={styles.game}>
+      <div className={styles["game-row"]}>
+        <div className={styles["game-board"]}>
           <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
         </div>
-        <div className="game-info">
+        <div className={styles["game-info"]}>
           {moves}
         </div>
       </div>
-      <div className="game-row">
+      <div className={styles["game-row"]}>
         <Table data={score} />
       </div>
     </div>
