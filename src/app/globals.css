@@ -93,3 +93,17 @@ body {
 .game-info {
   margin-left: 20px;
 }
+
+table {
+  border: 2px solid forestgreen;
+  width: 100px;
+  height: 50px;
+}
+
+th {
+  border-bottom: 1px solid black;
+}
+
+td {
+  text-align: center;
+}

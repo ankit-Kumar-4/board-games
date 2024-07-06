@@ -1,7 +1,41 @@
 "use client";
 import { useState } from "react";
+import "@/app/page.module.css"
 
 type SquareValue = 'X' | 'O' | null;
+type TableRow = {
+  playerX: number;
+  playerO: number;
+};
+
+
+const Table = ({ data }: { data: TableRow[]; }) => {
+  const sumColumn1 = data.reduce((acc, row) => acc + row.playerX, 0);
+  const sumColumn2 = data.reduce((acc, row) => acc + row.playerO, 0);
+  return (
+    <table className="table game-info">
+      <thead>
+        <tr>
+          <th>Player X</th>
+          <th>Player O</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((row, index) => (
+          <tr key={index}>
+            <td>{row.playerX}</td>
+            <td>{row.playerO}</td>
+          </tr>
+        ))}
+        <tr className="sum-row square-green">
+          <td>{sumColumn1}</td>
+          <td>{sumColumn2}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
 
 function Square({ value, onSquareClick, isGreen }: { value: SquareValue; onSquareClick: any, isGreen: boolean }) {
   return (
@@ -12,12 +46,17 @@ function Square({ value, onSquareClick, isGreen }: { value: SquareValue; onSquar
 }
 
 
-function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean; squares: Array<SquareValue>; onPlay: (items: SquareValue[]) => void; }) {
+function Board({ xIsNext, squares, onPlay, handleScore }:
+  {
+    xIsNext: boolean;
+    squares: Array<SquareValue>;
+    onPlay: (items: SquareValue[]) => void;
+    handleScore: (items: TableRow) => void;
+  }) {
 
+  const winner = calculateWinner(squares);
   function handleClick(i: number) {
-
-    debugger;
-    if (squares[i] || calculateWinner(squares)) {
+    if (squares[i] || winner) {
       return;
     }
 
@@ -27,11 +66,17 @@ function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean; squares: Array<
     } else {
       nextSquares[i] = "O";
     }
+
+    const potentialWinner = calculateWinner(nextSquares);
+    if (potentialWinner) {
+      handleScore({ playerX: squares[potentialWinner[0]] === 'X' ? 1 : 0, playerO: squares[potentialWinner[0]] === 'X' ? 0 : 1 });
+    } else if (!nextSquares.includes(null)) {
+      handleScore({ playerX: 0, playerO: 0 });
+    }
     onPlay(nextSquares);
   }
 
 
-  const winner = calculateWinner(squares);
   let status = '';
   if (winner) {
     status = `Winner: ${squares[winner[0]]}`;
@@ -80,7 +125,7 @@ export default function Game() {
   function handlePlay(nextSquares: Array<SquareValue>) {
     const nextHistory = [...history.splice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
-    setCurrentMove(nextHistory.length - 1)
+    setCurrentMove(nextHistory.length - 1);
   }
 
   function jumpTo(nextMove: number) {
@@ -101,10 +146,19 @@ export default function Game() {
     );
   })
 
+  const [score, setScore] = useState<TableRow[]>([]);
+  function handleScore(currentScore: TableRow) {
+    setScore([...score, currentScore]);
+  }
+
+
   return (
     <div className="game">
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
+      </div>
+      <div>
+        <Table data={score} />
       </div>
       <div className="game-info">
         <ol>{moves}</ol>
