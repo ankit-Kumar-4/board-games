@@ -144,14 +144,16 @@ export default function Game() {
 
   return (
     <div className="game">
-      <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
+      <div className="game-row">
+        <div className="game-board">
+          <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
+        </div>
+        <div className="game-info">
+          {moves}
+        </div>
       </div>
-      <div>
+      <div className="game-row">
         <Table data={score} />
-      </div>
-      <div className="game-info">
-        {moves}
       </div>
     </div>
   );
