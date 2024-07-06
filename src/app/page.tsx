@@ -69,7 +69,10 @@ function Board({ xIsNext, squares, onPlay, handleScore }:
 
     const potentialWinner = calculateWinner(nextSquares);
     if (potentialWinner) {
-      handleScore({ playerX: squares[potentialWinner[0]] === 'X' ? 1 : 0, playerO: squares[potentialWinner[0]] === 'X' ? 0 : 1 });
+      handleScore({
+        playerX: nextSquares[potentialWinner[0]] === 'X' ? 1 : 0,
+        playerO: nextSquares[potentialWinner[0]] === 'O' ? 1 : 0
+      });
     } else if (!nextSquares.includes(null)) {
       handleScore({ playerX: 0, playerO: 0 });
     }
@@ -117,34 +120,21 @@ function Board({ xIsNext, squares, onPlay, handleScore }:
 }
 
 export default function Game() {
-  const [history, setHistory] = useState([Array(9).fill(null)]);
-  const [currentMove, setCurrentMove] = useState(0);
-  const currentSquares = history[currentMove];
-  let xIsNext = currentMove % 2 == 0;
+  const [currentSquares, setCurrentSquares] = useState(Array(9).fill(null));
+  const [xIsNext, setXIsNext] = useState(true);
 
   function handlePlay(nextSquares: Array<SquareValue>) {
-    const nextHistory = [...history.splice(0, currentMove + 1), nextSquares];
-    setHistory(nextHistory);
-    setCurrentMove(nextHistory.length - 1);
+    setCurrentSquares(nextSquares);
+    setXIsNext(!xIsNext);
   }
 
-  function jumpTo(nextMove: number) {
-    setCurrentMove(nextMove);
+  function jumpTo() {
+    setCurrentSquares(Array(9).fill(null));
   }
 
-  const moves = history.map((squares, move: number) => {
-    let description = '';
-    if (move > 0) {
-      description = 'Go to move #' + move;
-    } else {
-      description = 'Go to game start'
-    }
-    return (
-      <li key={move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
-      </li>
-    );
-  })
+  const moves = (
+    <button onClick={() => jumpTo()}>New Game!</button>
+  );
 
   const [score, setScore] = useState<TableRow[]>([]);
   function handleScore(currentScore: TableRow) {
@@ -161,7 +151,7 @@ export default function Game() {
         <Table data={score} />
       </div>
       <div className="game-info">
-        <ol>{moves}</ol>
+        {moves}
       </div>
     </div>
   );
