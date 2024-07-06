@@ -58,13 +58,6 @@
     border-top: 2px solid #000 !important;
 }
 
-.game-row {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-    align-items: center;
-}
-
 .square {
     background: white;
     border: 1px solid #999;
