@@ -37,11 +37,11 @@ function Board({ xIsNext, squares, onPlay }: { xIsNext: boolean; squares: Array<
     status = `Winner: ${squares[winner[0]]}`;
   } else {
     status = `Next Player: ${xIsNext ? 'X' : 'O'}`;
+    if (!squares.includes(null)) {
+      status = 'Game is draw!';
+    }
   }
 
-  if (!squares.includes(null)) {
-    status = 'Game is draw!';
-  }
 
   const renderSquare = (i: number, isGreen: boolean) => (
     <Square key={i} value={squares[i]} onSquareClick={() => handleClick(i)} isGreen={isGreen} />
