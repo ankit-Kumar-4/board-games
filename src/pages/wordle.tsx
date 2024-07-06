@@ -55,7 +55,7 @@ export default function Contact() {
         if (userInput === originalWord) {
             setResult('What a wild guess!')
         } else {
-            setResult(`Dumb mf, the correct answer is: ${originalWord}`)
+            setResult(`The correct answer is: ${originalWord}`)
         }
     }
 
