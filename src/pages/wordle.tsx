@@ -5,11 +5,11 @@ import { words } from "@/data/words";
 import styles from "@/styles/wordle.module.css";
 import FiveCharForm from "@/components/FiveCharForm";
 
-function Square({ value }: { value: string }) {
+function Square({ value, onSquareClick, isClicked }: { value: string; onSquareClick: any, isClicked: boolean }) {
     return (
-        <button className={styles['square-margin']}>
+        <button className={`${styles['square-margin']} ${isClicked ? styles.clicked : ''}`} onClick={onSquareClick} >
             {value}
-        </button>
+        </button >
     );
 }
 
@@ -64,6 +64,7 @@ export default function Contact() {
     const [result, setResult] = useState('');
     const [hint, setHint] = useState(0);
     const [inputValue, setInputValue] = useState('');
+    const [charStates, setCharStates] = useState<boolean[]>(Array(5).fill(false));
 
     function refreshWord() {
         const index = getRandomInt(words.length);
@@ -73,6 +74,12 @@ export default function Contact() {
         setResult('');
         setHint(0);
         setInputValue('');
+        setCharStates(Array(originalWord.length).fill(false));
+    }
+
+    function resetWord() {
+        setInputValue('');
+        setCharStates(Array(originalWord.length).fill(false));
     }
 
     useEffect(() => {
@@ -83,14 +90,18 @@ export default function Contact() {
         return <div>Loading...</div>;
     }
 
-    const chacterList = randomWord.split('').map((char, index) => (
-        <Square key={index} value={char} />
-    ));
+    function handleClick(char: string, index: number) {
+        if (charStates[index]) {
+            return;
+        }
+        const nextCharStates = charStates.slice();
+        nextCharStates[index] = true;
+        setCharStates(nextCharStates);
 
-    function handleSubmit(userInput: string) {
-        setInputValue(userInput);
-        if (userInput.length === originalWord.length) {
-            if (checkAnagram(userInput, originalWord) && words.includes(userInput)) {
+        setInputValue(inputValue + char);
+        // debugger;
+        if (inputValue.length + 1 === originalWord.length) {
+            if (checkAnagram(inputValue, originalWord) && words.includes(inputValue)) {
                 setResult('What a wild guess!')
             } else {
                 if (hint >= originalWord.length - 1) {
@@ -103,22 +114,44 @@ export default function Contact() {
         }
     }
 
-    const newGame = (
-        <button className={styles['new-game-button']} onClick={() => refreshWord()}>New Word!</button>
-    )
+    const chacterList = randomWord.split('').map((char, index) => (
+        <Square key={index} value={char} isClicked={charStates[index]} onSquareClick={() => handleClick(char, index)} />
+    ));
+
+
+    function newGame(text: string, refreshFunction: () => void) {
+        return (
+            <button className={styles['new-game-button']} onClick={() => refreshFunction()}>{text}</button>
+        )
+    }
+    const renderUnderscores = () => {
+        const underscores = [];
+        for (let i = 0; i < originalWord.length; i++) {
+            let char = inputValue.length > i ? inputValue[i] : '_';
+            underscores.push(
+                <div key={i} className={`${styles.underscore} ${styles.underscore}`}>
+                    {char}
+                </div>
+            );
+        }
+        return underscores;
+    };
 
     return (
         <>
-            <FiveCharForm
-                passValue={handleSubmit}
-                inputLength={originalWord.length}
-                initialValue={inputValue}
-            />
+            <div className={styles['game-row']}>
+                {renderUnderscores()}
+            </div>
             <h3 className={styles['game-row']}>{result}</h3>
             <div className={styles["game-row"]}>
                 {chacterList}
             </div>
-            <div className={styles["game-row"]}>{newGame}</div>
+            <div className={styles["game-row"]}>
+                <div className={styles['square-margin']}>
+                    {newGame('Reset!', resetWord)}
+                </div>
+                {newGame('New Game!', refreshWord)}
+            </div>
         </>
     );
 }

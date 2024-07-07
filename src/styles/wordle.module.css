@@ -13,6 +13,10 @@
     background-color: paleturquoise;
 }
 
+.clicked {
+    background-color: yellow;
+}
+
 /* Form CSS */
 .form {
     position: relative;
@@ -37,6 +41,7 @@
     /* Style of the underscore */
     text-align: center;
     font-size: 24px;
+    color: lightskyblue;
     /* Adjust font size of characters */
     line-height: 30px;
     /* Center the character vertically */
@@ -51,5 +56,6 @@
     opacity: 0;
     z-index: 1;
     color: black;
-    caret-color: black; /* Make the caret (cursor) visible */
+    caret-color: black;
+    /* Make the caret (cursor) visible */
 }
