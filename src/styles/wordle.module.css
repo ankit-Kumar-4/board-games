@@ -4,3 +4,11 @@
     margin: 20px 0;
     align-items: center;
 }
+
+.square-margin {
+    margin: 3px;
+}
+
+.new-game-button {
+    background-color: paleturquoise;
+}

@@ -7,7 +7,7 @@ import FiveCharForm from "@/components/FiveCharForm";
 
 function Square({ value }: { value: string }) {
     return (
-        <button className="square">
+        <button className={styles['square-margin']}>
             {value}
         </button>
     );
@@ -63,12 +63,20 @@ export default function Contact() {
     const [originalWord, setOriginalWord] = useState<string>('');
     const [result, setResult] = useState('');
     const [hint, setHint] = useState(0);
+    const [inputValue, setInputValue] = useState('');
 
-    useEffect(() => {
+    function refreshWord() {
         const index = getRandomInt(words.length);
         const shuffledWord = shuffleString(words[index]);
         setRandomWord(shuffledWord);
         setOriginalWord(words[index]);
+        setResult('');
+        setHint(0);
+        setInputValue('');
+    }
+
+    useEffect(() => {
+        refreshWord();
     }, []);
 
     if (!randomWord) {
@@ -80,25 +88,38 @@ export default function Contact() {
     ));
 
     function handleSubmit(userInput: string) {
-        if (checkAnagram(userInput, originalWord) && words.includes(userInput)) {
-            setResult('What a wild guess!')
-        } else {
-            if (hint >= originalWord.length - 1) {
-                setResult(`Wrong! The correct answer is: ${originalWord}`);
+        setInputValue(userInput);
+        if (userInput.length === originalWord.length) {
+            if (checkAnagram(userInput, originalWord) && words.includes(userInput)) {
+                setResult('What a wild guess!')
             } else {
-                setResult(`Invalid answer. Hint: ${getHintText(originalWord, hint + 1)}`);
-                setHint(hint + 1);
+                if (hint >= originalWord.length - 1) {
+                    setResult(`Wrong! The correct answer is: ${originalWord}`);
+                } else {
+                    setResult(`Invalid answer. Hint: ${getHintText(originalWord, hint + 1)}`);
+                    setHint(hint + 1);
+                }
             }
         }
     }
 
+    const newGame = (
+        <button className={styles['new-game-button']} onClick={() => refreshWord()}>New Word!</button>
+    )
+
+    debugger;
     return (
         <>
-            <FiveCharForm passValue={handleSubmit} inputLength={originalWord.length} />
-            <p>{result}</p>
+            <FiveCharForm
+                passValue={handleSubmit}
+                inputLength={originalWord.length}
+                initialValue={inputValue}
+            />
+            <h3 className={styles['game-row']}>{result}</h3>
             <div className={styles["game-row"]}>
                 {chacterList}
             </div>
+            <div className={styles["game-row"]}>{newGame}</div>
         </>
     );
 }

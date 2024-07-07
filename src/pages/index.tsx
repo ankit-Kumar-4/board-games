@@ -132,7 +132,7 @@ export default function Game() {
         setCurrentSquares(Array(9).fill(null));
     }
 
-    const moves = (
+    const NewGame = (
         <button onClick={() => jumpTo()}>New Game!</button>
     );
 
@@ -149,7 +149,7 @@ export default function Game() {
                     <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
                 </div>
                 <div className={styles["game-info"]}>
-                    {moves}
+                    {NewGame}
                 </div>
             </div>
             <div className={styles["game-row"]}>

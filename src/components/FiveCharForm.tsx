@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import styles from "@/styles/wordle.module.css";
 
-const FiveCharForm = ({ passValue, inputLength }: { passValue: (items: string) => void; inputLength: number }) => {
-    const [inputValue, setInputValue] = useState('');
+const FiveCharForm = ({ passValue, inputLength, initialValue }:
+    {
+        passValue: (items: string) => void;
+        inputLength: number;
+        initialValue: string;
+    }) => {
+    // const [inputValue, setInputValue] = useState(initialValue);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.toUpperCase(); // Convert to uppercase
-        const regexPattern = `^[A-Z]{0,${inputLength}}$`;
-        const regex = new RegExp(regexPattern);
-        if (regex.test(value)) { // Validate that the input is uppercase and at most 5 characters long
-            setInputValue(value);
-        }
-        if (value.length === inputLength) {
-            passValue(value);
-        }
+        passValue(value);
     };
 
 
@@ -22,7 +20,7 @@ const FiveCharForm = ({ passValue, inputLength }: { passValue: (items: string) =
             <form>
                 <input
                     type="text"
-                    value={inputValue}
+                    value={initialValue}
                     onChange={handleChange}
                     maxLength={inputLength}
                     required
