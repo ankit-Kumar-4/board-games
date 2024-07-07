@@ -98,10 +98,11 @@ export default function Contact() {
         nextCharStates[index] = true;
         setCharStates(nextCharStates);
 
-        setInputValue(inputValue + char);
+        const currentValue = inputValue + char;
+        setInputValue(currentValue);
         // debugger;
-        if (inputValue.length + 1 === originalWord.length) {
-            if (checkAnagram(inputValue, originalWord) && words.includes(inputValue)) {
+        if (currentValue.length === originalWord.length) {
+            if (checkAnagram(currentValue, originalWord) && words.includes(currentValue)) {
                 setResult('What a wild guess!')
             } else {
                 if (hint >= originalWord.length - 1) {
