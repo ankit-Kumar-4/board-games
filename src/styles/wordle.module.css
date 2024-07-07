@@ -12,3 +12,44 @@
 .new-game-button {
     background-color: paleturquoise;
 }
+
+/* Form CSS */
+.form {
+    position: relative;
+    width: fit-content;
+    color: lightskyblue;
+    /* Adjust as necessary */
+}
+
+.underscoreContainer {
+    display: flex;
+    gap: 8px;
+    position: relative;
+    /* Adjust spacing between underscores */
+}
+
+.underscore {
+    width: 20px;
+    /* Adjust width of each underscore */
+    height: 30px;
+    /* Adjust height of each underscore */
+    /* border-bottom: 2px solid lightskyblue; */
+    /* Style of the underscore */
+    text-align: center;
+    font-size: 24px;
+    /* Adjust font size of characters */
+    line-height: 30px;
+    /* Center the character vertically */
+}
+
+.input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 1;
+    color: black;
+    caret-color: black; /* Make the caret (cursor) visible */
+}

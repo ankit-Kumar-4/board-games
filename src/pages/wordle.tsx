@@ -107,7 +107,6 @@ export default function Contact() {
         <button className={styles['new-game-button']} onClick={() => refreshWord()}>New Word!</button>
     )
 
-    debugger;
     return (
         <>
             <FiveCharForm
