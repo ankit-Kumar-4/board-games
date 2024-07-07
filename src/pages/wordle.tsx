@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { words } from "@/data/words";
 import styles from "@/styles/wordle.module.css";
-import FiveCharForm from "@/components/FiveCharForm";
 
 function Square({ value, onSquareClick, isClicked }: { value: string; onSquareClick: any, isClicked: boolean }) {
     return (
-        <button className={`${styles['square-margin']} ${isClicked ? styles.clicked : ''}`} onClick={onSquareClick} >
+        <button className={`${styles['square-margin']}  ${isClicked ? styles.clicked : ''}`} onClick={onSquareClick} >
             {value}
         </button >
     );
@@ -164,7 +163,7 @@ export default function Contact() {
                 {renderUnderscores()}
             </div>
             <h3 className={styles['game-row']}>{result}</h3>
-            <div className={styles["game-row"]}>
+            <div className={styles["game-row1"]}>
                 {chacterList}
             </div>
             <div className={styles["game-row"]}>
