@@ -31,9 +31,24 @@ function shuffleString(input: string): string {
     return characters.join('');
 }
 
+function checkAnagram(a: string, b: string) {
+
+    // Not of same length, can't be Anagram
+    if (a.length !== b.length) {
+        return false;
+    }
+
+    // Inbuilt functions to rearrange the string
+    let str1 = a.split('').sort().join('');
+    let str2 = b.split('').sort().join('');
+
+    let result = (str1 === str2);
+    return result;
+}
+
 export default function Contact() {
     const [randomWord, setRandomWord] = useState<string | null>(null);
-    const [originalWord, setOriginalWord] = useState<string | null>(null);
+    const [originalWord, setOriginalWord] = useState<string>('');
     const [result, setResult] = useState('');
 
     useEffect(() => {
@@ -52,7 +67,7 @@ export default function Contact() {
     ));
 
     function handleSubmit(userInput: string) {
-        if (userInput === originalWord) {
+        if (checkAnagram(userInput, originalWord) && words.includes(userInput)) {
             setResult('What a wild guess!')
         } else {
             setResult(`The correct answer is: ${originalWord}`)
@@ -61,7 +76,7 @@ export default function Contact() {
 
     return (
         <>
-            <FiveCharForm passValue={handleSubmit} />
+            <FiveCharForm passValue={handleSubmit} inputLength={originalWord.length} />
             <p>{result}</p>
             <div className={styles["game-row"]}>
                 {chacterList}

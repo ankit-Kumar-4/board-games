@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "@/styles/wordle.module.css";
 
-const FiveCharForm = ({ passValue }: { passValue: (items: string) => void }) => {
+const FiveCharForm = ({ passValue, inputLength }: { passValue: (items: string) => void; inputLength: number }) => {
     const [inputValue, setInputValue] = useState('');
     const [submittedValue, setSubmittedValue] = useState('');
 
@@ -25,7 +25,7 @@ const FiveCharForm = ({ passValue }: { passValue: (items: string) => void }) => 
                     type="text"
                     value={inputValue}
                     onChange={handleChange}
-                    maxLength={5} // Ensure maximum length of 5 characters
+                    maxLength={inputLength}
                     required
                 />
                 <button type="submit">Submit</button>
