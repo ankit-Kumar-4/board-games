@@ -100,10 +100,13 @@ export default function Contact() {
 
         const currentValue = inputValue + char;
         setInputValue(currentValue);
-        // debugger;
         if (currentValue.length === originalWord.length) {
             if (checkAnagram(currentValue, originalWord) && words.includes(currentValue)) {
-                setResult('What a wild guess!')
+                if (hint === 0) {
+                    setResult('What a wild guess!');
+                } else {
+                    setResult('Finally got it right!');
+                }
             } else {
                 if (hint >= originalWord.length - 1) {
                     setResult(`Wrong! The correct answer is: ${originalWord}`);
