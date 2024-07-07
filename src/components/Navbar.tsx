@@ -15,7 +15,13 @@ const Navbar = () => {
                     <Link href="/wordle">Wordle</Link>
                 </li>
                 <li>
-                    <Link href="/contact">Snake & Ladders</Link>
+                    <Link href="/snake-n-ladder">Snake & Ladders</Link>
+                </li>
+                <li>
+                    <Link href="/2048">2048</Link>
+                </li>
+                <li>
+                    <Link href="/sudoku">Sudoku</Link>
                 </li>
             </ul>
         </nav>
