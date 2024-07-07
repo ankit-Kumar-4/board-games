@@ -101,7 +101,11 @@ export default function Contact() {
     }
 
     function undoWord() {
-        if (inputValue.length === 0 || inputValue.length === hint) {
+        if (inputValue.length === 0) {
+            return;
+        }
+        if (inputValue.length === hint) {
+            resetWord();
             return;
         }
         const nextCharStates = charStates;
