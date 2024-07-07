@@ -59,7 +59,7 @@ function getHintText(value: string, hint: number) {
 }
 
 export default function Contact() {
-    const [randomWord, setRandomWord] = useState<string | null>(null);
+    const [randomWord, setRandomWord] = useState<string>('');
     const [originalWord, setOriginalWord] = useState<string>('');
     const [result, setResult] = useState('');
     const [hint, setHint] = useState(0);
@@ -77,10 +77,26 @@ export default function Contact() {
         setCharStates(Array(originalWord.length).fill(false));
     }
 
+    function resetStates() {
+        const nextStates = Array(originalWord.length).fill(false);
+        let count = hint;
+        for (let i = 0; i < originalWord.length; i++) {
+            if (count > 0) {
+                const firstIndex = randomWord?.indexOf(originalWord[i]);
+                nextStates[firstIndex] = true;
+                count--;
+            } else {
+                break;
+            }
+        }
+        setCharStates(nextStates);
+    }
+
     function resetWord() {
         console.log(hint);
         setInputValue(originalWord.slice(0, hint));
         setCharStates(Array(originalWord.length).fill(false));
+        resetStates();
     }
 
     useEffect(() => {
