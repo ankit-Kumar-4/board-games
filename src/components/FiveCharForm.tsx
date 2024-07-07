@@ -3,7 +3,6 @@ import styles from "@/styles/wordle.module.css";
 
 const FiveCharForm = ({ passValue, inputLength }: { passValue: (items: string) => void; inputLength: number }) => {
     const [inputValue, setInputValue] = useState('');
-    const [submittedValue, setSubmittedValue] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.toUpperCase(); // Convert to uppercase
@@ -12,17 +11,15 @@ const FiveCharForm = ({ passValue, inputLength }: { passValue: (items: string) =
         if (regex.test(value)) { // Validate that the input is uppercase and at most 5 characters long
             setInputValue(value);
         }
+        if (value.length === inputLength) {
+            passValue(value);
+        }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        passValue(inputValue);
-    };
-    // handleSubmit(inputValue);
 
     return (
         <div className={styles["game-row"]}>
-            <form onSubmit={handleSubmit}>
+            <form>
                 <input
                     type="text"
                     value={inputValue}
@@ -30,7 +27,6 @@ const FiveCharForm = ({ passValue, inputLength }: { passValue: (items: string) =
                     maxLength={inputLength}
                     required
                 />
-                <button type="submit">Submit</button>
             </form>
         </div>
     );
