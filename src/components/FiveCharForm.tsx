@@ -7,7 +7,9 @@ const FiveCharForm = ({ passValue, inputLength }: { passValue: (items: string) =
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.toUpperCase(); // Convert to uppercase
-        if (/^[A-Z]{0,5}$/.test(value)) { // Validate that the input is uppercase and at most 5 characters long
+        const regexPattern = `^[A-Z]{0,${inputLength}}$`;
+        const regex = new RegExp(regexPattern);
+        if (regex.test(value)) { // Validate that the input is uppercase and at most 5 characters long
             setInputValue(value);
         }
     };

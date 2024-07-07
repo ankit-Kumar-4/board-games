@@ -46,10 +46,23 @@ function checkAnagram(a: string, b: string) {
     return result;
 }
 
+function getHintText(value: string, hint: number) {
+    let output = '';
+    for (let i = 0; i < value.length; i++) {
+        if (i < hint) {
+            output += value[i];
+        } else {
+            output += '#';
+        }
+    }
+    return output;
+}
+
 export default function Contact() {
     const [randomWord, setRandomWord] = useState<string | null>(null);
     const [originalWord, setOriginalWord] = useState<string>('');
     const [result, setResult] = useState('');
+    const [hint, setHint] = useState(0);
 
     useEffect(() => {
         const index = getRandomInt(words.length);
@@ -70,7 +83,12 @@ export default function Contact() {
         if (checkAnagram(userInput, originalWord) && words.includes(userInput)) {
             setResult('What a wild guess!')
         } else {
-            setResult(`The correct answer is: ${originalWord}`)
+            if (hint >= originalWord.length - 1) {
+                setResult(`Wrong! The correct answer is: ${originalWord}`);
+            } else {
+                setResult(`Invalid answer. Hint: ${getHintText(originalWord, hint + 1)}`);
+                setHint(hint + 1);
+            }
         }
     }
 
