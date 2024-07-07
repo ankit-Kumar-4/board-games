@@ -78,7 +78,8 @@ export default function Contact() {
     }
 
     function resetWord() {
-        setInputValue('');
+        console.log(hint);
+        setInputValue(originalWord.slice(0, hint));
         setCharStates(Array(originalWord.length).fill(false));
     }
 
