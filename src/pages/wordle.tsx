@@ -64,6 +64,7 @@ export default function Contact() {
     const [hint, setHint] = useState(0);
     const [inputValue, setInputValue] = useState('');
     const [charStates, setCharStates] = useState<boolean[]>(Array(5).fill(false));
+    const [clickedChars, setClickedChars] = useState<number[]>([]);
 
     function refreshWord() {
         const index = getRandomInt(words.length);
@@ -74,13 +75,13 @@ export default function Contact() {
         setHint(0);
         setInputValue('');
         setCharStates(Array(originalWord.length).fill(false));
+        setClickedChars([]);
     }
 
     function resetStates() {
         const nextStates = Array(originalWord.length).fill(false);
         for (let idx = 0; idx < hint; idx++) {
             const instances = randomWord.split('').map((c, i) => c === originalWord[idx] ? i : -1).filter(i => i !== -1);
-            debugger;
             for (const index of instances) {
                 if (!nextStates[index]) {
                     nextStates[index] = true;
@@ -93,10 +94,21 @@ export default function Contact() {
     }
 
     function resetWord() {
-        console.log(hint);
         setInputValue(originalWord.slice(0, hint));
         setCharStates(Array(originalWord.length).fill(false));
         resetStates();
+        setClickedChars([]);
+    }
+
+    function undoWord() {
+        if (inputValue.length === 0 || inputValue.length === hint) {
+            return;
+        }
+        const nextCharStates = charStates;
+        nextCharStates[clickedChars[clickedChars.length - 1]] = false;
+        setCharStates(nextCharStates);
+        setInputValue(inputValue.slice(0, -1));
+        setClickedChars(clickedChars.slice(0, -1));
     }
 
     useEffect(() => {
@@ -111,6 +123,7 @@ export default function Contact() {
         if (charStates[index]) {
             return;
         }
+        setClickedChars([...clickedChars, index]);
         const nextCharStates = charStates.slice();
         nextCharStates[index] = true;
         setCharStates(nextCharStates);
@@ -162,6 +175,7 @@ export default function Contact() {
         <>
             <div className={styles['game-row']}>
                 {renderUnderscores()}
+                {newGame('↺', undoWord)}
             </div>
             <h3 className={styles['game-row']}>{result}</h3>
             <div className={styles["game-row1"]}>
