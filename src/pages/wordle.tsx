@@ -78,15 +78,16 @@ export default function Contact() {
 
     function resetStates() {
         const nextStates = Array(originalWord.length).fill(false);
-        let count = hint;
-        for (let i = 0; i < originalWord.length; i++) {
-            if (count > 0) {
-                const firstIndex = randomWord?.indexOf(originalWord[i]);
-                nextStates[firstIndex] = true;
-                count--;
-            } else {
-                break;
+        for (let idx = 0; idx < hint; idx++) {
+            const instances = randomWord.split('').map((c, i) => c === originalWord[idx] ? i : -1).filter(i => i !== -1);
+            debugger;
+            for (const index of instances) {
+                if (!nextStates[index]) {
+                    nextStates[index] = true;
+                    break;
+                }
             }
+
         }
         setCharStates(nextStates);
     }
