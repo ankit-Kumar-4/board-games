@@ -57,10 +57,18 @@
   }
 }
 
-.green-arrow {
+.arrow {
   display: "flex";
   width: "100%";
-  border: 2px solid black;
   position: relative;
   opacity: 0.6;
+  background-color: lightcoral;
+}
+
+.snake-cell {
+  background-color: rgb(255, 143, 143);
+}
+
+.ladder-cell {
+  background-color: rgb(151, 243, 143);
 }

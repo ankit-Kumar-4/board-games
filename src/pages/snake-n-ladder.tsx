@@ -66,7 +66,7 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
   }, [type]);
 
   return (
-    <div className={styles["green-arrow"]}>
+    <div className={styles.arrow}>
       <Xarrow
         color={type === "snake" ? "red" : "green"}
         curveness={type === "snake" ? 0.5 : 0}
@@ -100,8 +100,15 @@ function fillArrow() {
 }
 
 const Cell = ({ step }: { step: number }) => {
+  let color = {};
+  if (snakes.some((pair) => pair.includes(step))) {
+    color = styles["snake-cell"];
+  }
+  if (ladders.some((pair) => pair.includes(step))) {
+    color = styles["ladder-cell"];
+  }
   return (
-    <div key={step} id={`${step}`} className={styles.cell}>
+    <div key={step} id={`${step}`} className={styles.cell + " " + color}>
       <div className={styles["cell-content"]}>{step}</div>
     </div>
   );
