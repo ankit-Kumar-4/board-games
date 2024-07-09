@@ -31,9 +31,16 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
     <div className={styles["green-arrow"]}>
       <Xarrow
         color={type === "snake" ? "red" : "green"}
-        curveness={type === "snake" ? 1 : 0}
-        start={startId} //can be react ref
-        end={endId} //or an id
+        curveness={type === "snake" ? 0.3 : 0}
+        tailSize={4}
+        showTail={type === "snake"}
+        tailShape={"circle"}
+        showHead={type === "snake"}
+        headSize={4}
+        start={startId}
+        end={endId}
+        dashness={{ strokeLen: 5, nonStrokeLen: 15, animation: 0.1 }}
+        strokeWidth={type === "snake" ? 4 : 20}
       />
     </div>
   );
