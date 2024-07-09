@@ -128,10 +128,20 @@ const Board = () => {
     }
   }
 
+  //   return (
+  //     <div className={styles.container}>
+  //       <div className={styles["image-board"]} />
+  //     </div>
+  //   );
+
   return (
     <div className={styles.container}>
-      <div className={styles.board}>{board}</div>
-      {fillArrow()}
+      <div className={styles.board}>
+        {board}
+        {fillArrow()}
+      </div>
+
+      {/* <div className={styles["image-board"]} /> */}
     </div>
   );
 };
