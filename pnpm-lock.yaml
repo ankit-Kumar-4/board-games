@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      leader-line:
+        specifier: ^1.0.7
+        version: 1.0.7
       next:
         specifier: 14.2.4
         version: 14.2.4(@babel/core@7.24.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -23,6 +26,9 @@ importers:
       react-scripts:
         specifier: ^5.0.0
         version: 5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@types/babel__core@7.20.5)(eslint@8.57.0)(react@18.3.1)(type-fest@0.21.3)(typescript@4.9.5)
+      react-xarrows:
+        specifier: ^2.0.2
+        version: 2.0.2(react@18.3.1)
     devDependencies:
       '@types/node':
         specifier: ^20
@@ -3603,6 +3609,9 @@ packages:
   launch-editor@2.8.0:
     resolution: {integrity: sha512-vJranOAJrI/llyWGRQqiDM+adrw+k83fvmmx3+nV47g3+36xM15jE+zyZ6Ffel02+xSvuM0b2GDRosXZkbb6wA==}
 
+  leader-line@1.0.7:
+    resolution: {integrity: sha512-PhJpQLV7XychSIuGPD0TEqR9PgRYBbrhReaOcmHFOVtTw4dWKfUMAtOb7UP7xTsoib6sFzq2giQeOUHy7LCuJQ==}
+
   leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
     engines: {node: '>=6'}
@@ -4642,6 +4651,11 @@ packages:
     peerDependencies:
       react: '>=16.6.0'
       react-dom: '>=16.6.0'
+
+  react-xarrows@2.0.2:
+    resolution: {integrity: sha512-tDlAqaxHNmy0vegW/6NdhoWyXJq1LANX/WUAlHyzoHe9BwFVnJPPDghmDjYeVr7XWFmBrVTUrHsrW7GKYI6HtQ==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   react@18.3.1:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
@@ -10194,6 +10208,8 @@ snapshots:
       picocolors: 1.0.1
       shell-quote: 1.8.1
 
+  leader-line@1.0.7: {}
+
   leven@3.1.0: {}
 
   levn@0.3.0:
@@ -11309,6 +11325,13 @@ snapshots:
       prop-types: 15.8.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+
+  react-xarrows@2.0.2(react@18.3.1):
+    dependencies:
+      '@types/prop-types': 15.7.12
+      lodash: 4.17.21
+      prop-types: 15.8.1
+      react: 18.3.1
 
   react@18.3.1:
     dependencies:
