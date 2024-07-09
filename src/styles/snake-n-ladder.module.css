@@ -1,28 +1,60 @@
+/* Container styles */
 .container {
   display: flex;
   justify-content: center; /* Horizontally centers the content */
   align-items: flex-start; /* Aligns the content at the top */
   height: 100vh; /* Full viewport height */
+  padding: 10px; /* Add padding for better spacing on small screens */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
+/* Board styles */
 .board {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
   gap: 1px;
-  width: 500px;
+  width: 100%; /* Make the board width flexible */
+  max-width: 500px; /* Maximum width for larger screens */
   margin: 0 auto;
   position: relative;
 }
 
+/* Cell styles */
 .cell {
-  width: 50px;
-  height: 50px;
+  width: 100%; /* Make the cell width flexible */
+  padding-top: 100%; /* Maintain the aspect ratio */
   background-color: lightgoldenrodyellow;
   border: 1px solid darkgreen;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+
+/* Inner cell content for maintaining aspect ratio */
+.cell-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 600px) {
+  .board {
+    grid-template-columns: repeat(10, minmax(20px, 1fr));
+    grid-template-rows: repeat(10, minmax(20px, 1fr));
+    gap: 0.5px;
+  }
+
+  .cell {
+    border: 0.5px solid darkgreen;
+  }
 }
 
 .green-arrow {
@@ -30,5 +62,5 @@
   width: "100%";
   border: 2px solid black;
   position: relative;
-  opacity: 0.5;
+  opacity: 0.6;
 }

@@ -27,6 +27,44 @@ const ladders = [
 ];
 
 function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
+  const [arrowParams, setArrowParams] = useState({
+    tailSize: 4,
+    strokeWidth: type === "snake" ? 4 : 30,
+    headSize: 4,
+    dashness:
+      type === "snake"
+        ? { strokeLen: 5, nonStrokeLen: 5, animation: 1 }
+        : { strokeLen: 5, nonStrokeLen: 15, animation: 0.3 },
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 600) {
+        setArrowParams({
+          tailSize: 2,
+          strokeWidth: 2,
+          headSize: 2,
+          dashness: { strokeLen: 5, nonStrokeLen: 0, animation: 0 },
+        });
+      } else {
+        setArrowParams({
+          tailSize: 4,
+          strokeWidth: type === "snake" ? 4 : 30,
+          headSize: 4,
+          dashness:
+            type === "snake"
+              ? { strokeLen: 5, nonStrokeLen: 5, animation: 1 }
+              : { strokeLen: 5, nonStrokeLen: 15, animation: 0.3 },
+        });
+      }
+    };
+
+    handleResize(); // Set initial values based on the current window size
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [type]);
+
   return (
     <div className={styles["green-arrow"]}>
       <Xarrow
@@ -34,19 +72,15 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
         curveness={type === "snake" ? 0.5 : 0}
         // startAnchor={{ position: "middle", offset: { x: 100, y: 100 } }}
         // endAnchor={{ position: "middle", offset: { x: 100, y: 100 } }}
-        tailSize={4}
+        tailSize={arrowParams.tailSize}
+        strokeWidth={arrowParams.strokeWidth}
+        headSize={arrowParams.headSize}
         showTail={type === "snake"}
         tailShape={"circle"}
         showHead={type === "snake"}
-        headSize={4}
         start={startId}
         end={endId}
-        dashness={
-          type === "snake"
-            ? { strokeLen: 5, nonStrokeLen: 5, animation: 1 }
-            : { strokeLen: 5, nonStrokeLen: 15, animation: 0.1 }
-        }
-        strokeWidth={type === "snake" ? 4 : 30}
+        dashness={arrowParams.dashness}
         startAnchor={"middle"}
         endAnchor={"middle"}
       />
@@ -68,7 +102,7 @@ function fillArrow() {
 const Cell = ({ step }: { step: number }) => {
   return (
     <div key={step} id={`${step}`} className={styles.cell}>
-      {step}
+      <div className={styles["cell-content"]}>{step}</div>
     </div>
   );
 };
