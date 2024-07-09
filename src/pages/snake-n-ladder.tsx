@@ -100,11 +100,10 @@ function fillArrow() {
 }
 
 const Cell = ({ step }: { step: number }) => {
-  let color = {};
+  let color = "";
   if (snakes.some((pair) => pair.includes(step))) {
     color = styles["snake-cell"];
-  }
-  if (ladders.some((pair) => pair.includes(step))) {
+  } else if (ladders.some((pair) => pair.includes(step))) {
     color = styles["ladder-cell"];
   }
   return (
