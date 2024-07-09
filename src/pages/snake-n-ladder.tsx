@@ -31,7 +31,9 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
     <div className={styles["green-arrow"]}>
       <Xarrow
         color={type === "snake" ? "red" : "green"}
-        curveness={type === "snake" ? 0.3 : 0}
+        curveness={type === "snake" ? 0.5 : 0}
+        // startAnchor={{ position: "middle", offset: { x: 100, y: 100 } }}
+        // endAnchor={{ position: "middle", offset: { x: 100, y: 100 } }}
         tailSize={4}
         showTail={type === "snake"}
         tailShape={"circle"}
@@ -39,8 +41,14 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
         headSize={4}
         start={startId}
         end={endId}
-        dashness={{ strokeLen: 5, nonStrokeLen: 15, animation: 0.1 }}
-        strokeWidth={type === "snake" ? 4 : 20}
+        dashness={
+          type === "snake"
+            ? { strokeLen: 5, nonStrokeLen: 5, animation: 1 }
+            : { strokeLen: 5, nonStrokeLen: 15, animation: 0.1 }
+        }
+        strokeWidth={type === "snake" ? 4 : 30}
+        startAnchor={"middle"}
+        endAnchor={"middle"}
       />
     </div>
   );
