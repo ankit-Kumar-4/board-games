@@ -140,7 +140,6 @@ const Board = () => {
         {board}
         {fillArrow()}
       </div>
-
       {/* <div className={styles["image-board"]} /> */}
     </div>
   );
