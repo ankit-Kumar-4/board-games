@@ -68,10 +68,8 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
   return (
     <div className={styles.arrow}>
       <Xarrow
-        color={type === "snake" ? "red" : "green"}
+        color={type === "snake" ? "darkred" : "darkgreen"}
         curveness={type === "snake" ? 0.5 : 0}
-        // startAnchor={{ position: "middle", offset: { x: 100, y: 100 } }}
-        // endAnchor={{ position: "middle", offset: { x: 100, y: 100 } }}
         tailSize={arrowParams.tailSize}
         strokeWidth={arrowParams.strokeWidth}
         headSize={arrowParams.headSize}
@@ -99,16 +97,60 @@ function fillArrow() {
   return arrows;
 }
 
-const Cell = ({ step }: { step: number }) => {
+const homeStart = (playerId: number) => {
+  return (
+    <>
+      <div
+        className={`${styles.circle} ${styles["player1"]} ${styles["circle-show"]}`}
+      ></div>
+      <div
+        className={`${styles.circle} ${styles["player2"]}  ${styles["circle-show"]}`}
+      ></div>
+      <div
+        className={`${styles.circle} ${styles["player3"]} ${styles["circle-show"]}`}
+      ></div>
+      <div
+        className={`${styles.circle} ${styles["player4"]} ${styles["circle-show"]}`}
+      ></div>
+    </>
+  );
+};
+
+const Cell = ({ step, playerId }: { step: number; playerId: number[] }) => {
   let color = "";
   if (snakes.some((pair) => pair.includes(step))) {
     color = styles["snake-cell"];
   } else if (ladders.some((pair) => pair.includes(step))) {
     color = styles["ladder-cell"];
   }
+
+  let show = <></>;
+  if (playerId[0] === step) {
+    show = <div className={styles["circle.player1"]}></div>;
+  }
+  if (playerId[1] === step) {
+    show = <div className={styles["circle.player2"]}></div>;
+  }
+  if (playerId[2] === step) {
+    show = <div className={styles["circle.player3"]}></div>;
+  }
+  if (playerId[3] === step) {
+    show = <div className={styles["circle.player4"]}></div>;
+  }
+
   return (
     <div key={step} id={`${step}`} className={styles.cell + " " + color}>
-      <div className={styles["cell-content"]}>{step}</div>
+      <div
+        className={`${styles["cell-content"]} 
+      ${playerId[0] === step ? styles.player1 : ""}
+      ${playerId[1] === step ? styles.player2 : ""}
+      ${playerId[2] === step ? styles.player3 : ""}
+      ${playerId[3] === step ? styles.player4 : ""}
+      
+      `}
+      >
+        {step}
+      </div>
     </div>
   );
 };
@@ -120,11 +162,22 @@ function getCellNumber(i: number, j: number) {
   return i * 10 + j;
 }
 
-const Board = () => {
+function Board({
+  chaal,
+  diceNumber,
+  rollDice,
+  playerTurn,
+}: Readonly<{
+  chaal: Array<number>;
+  diceNumber: number;
+  rollDice: () => void;
+  playerTurn: number;
+}>) {
   const board = [];
   for (let i = 9; i >= 0; i--) {
     for (let j = 9; j >= 0; j--) {
-      board.push(<Cell step={getCellNumber(i, j) + 1}></Cell>);
+      const cellNumber = getCellNumber(i, j) + 1;
+      board.push(<Cell step={cellNumber} playerId={chaal}></Cell>);
     }
   }
 
@@ -143,6 +196,64 @@ const Board = () => {
       {/* <div className={styles["image-board"]} /> */}
     </div>
   );
-};
+}
 
-export default Board;
+function getNextPlayerTurn(
+  playerPosition: Array<number>,
+  currentPlayer: number
+) {
+  let nextPlayer = (currentPlayer + 1) % 4;
+  while (playerPosition[nextPlayer] === 100) {
+    nextPlayer = (nextPlayer + 1) % 4;
+  }
+  return nextPlayer;
+}
+
+export default function Game() {
+  const [playerPosition, setPlayerPosition] = useState(Array(4).fill(0));
+  const [diceNumber, setDiceNumber] = useState<number>(0);
+  const [playerTurn, setPlayerTurn] = useState(0);
+  const [status, setStatus] = useState("");
+
+  function rollDice() {
+    debugger;
+    const diceNumber = Math.ceil(Math.random() * 6);
+    const nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
+    setDiceNumber(diceNumber);
+    setPlayerTurn(nextPlayer);
+    if (playerPosition[playerTurn] + diceNumber > 100) {
+      setStatus(
+        `Cannot move. Please roll ${100 - playerPosition[playerTurn]} or lower`
+      );
+      return;
+    } else if (playerPosition[playerTurn] + diceNumber === 100) {
+      setStatus(`Player-${playerTurn + 1} takes ${diceNumber} steps`);
+    } else {
+      setStatus(
+        `Player-${playerTurn + 1} takes ${diceNumber} steps and reached Home!`
+      );
+    }
+    const nextPlayerPositions = playerPosition.slice();
+    nextPlayerPositions[playerTurn] += diceNumber;
+    setPlayerPosition(nextPlayerPositions);
+  }
+
+  return (
+    <>
+      <Board
+        chaal={playerPosition}
+        diceNumber={diceNumber}
+        rollDice={rollDice}
+        playerTurn={playerTurn}
+      ></Board>
+      <div className={styles["game-row1"]}>
+        <button onClick={rollDice}>Roll dice!</button>
+        <button>{diceNumber}</button>
+        <div className={`${styles["player" + (playerTurn + 1)]}`}>
+          {`Turn of Player-${playerTurn + 1}`}
+        </div>
+        <p>{status}</p>
+      </div>
+    </>
+  );
+}
