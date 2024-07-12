@@ -146,7 +146,6 @@ const Cell = ({ step, playerId }: { step: number; playerId: number[] }) => {
       ${playerId[1] === step ? styles.player2 : ""}
       ${playerId[2] === step ? styles.player3 : ""}
       ${playerId[3] === step ? styles.player4 : ""}
-      
       `}
       >
         {step}
@@ -203,20 +202,55 @@ function getNextPlayerTurn(
   currentPlayer: number
 ) {
   let nextPlayer = (currentPlayer + 1) % 4;
+  const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
+  if (count > 3) {
+    return nextPlayer;
+  }
   while (playerPosition[nextPlayer] === 100) {
     nextPlayer = (nextPlayer + 1) % 4;
   }
   return nextPlayer;
 }
 
+type TableRow = {
+  rank: number;
+  playerId: number;
+};
+
+
+const Table = ({ data }: { data: number[]; }) => {
+  return (
+    <table className={`${styles.table} ${styles['game-info']}`}>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((row, index) => (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>{'Player-' + (index + 1)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table >
+  );
+};
+
 export default function Game() {
   const [playerPosition, setPlayerPosition] = useState(Array(4).fill(0));
   const [diceNumber, setDiceNumber] = useState<number>(0);
   const [playerTurn, setPlayerTurn] = useState(0);
   const [status, setStatus] = useState("");
+  const [ranking, setRanking] = useState<number[]>([]);
 
   function rollDice() {
-    debugger;
+    const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
+    if (count >= 3) {
+      return;
+    }
     const diceNumber = Math.ceil(Math.random() * 6);
     const nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
     setDiceNumber(diceNumber);
@@ -227,11 +261,12 @@ export default function Game() {
       );
       return;
     } else if (playerPosition[playerTurn] + diceNumber === 100) {
-      setStatus(`Player-${playerTurn + 1} takes ${diceNumber} steps`);
-    } else {
       setStatus(
         `Player-${playerTurn + 1} takes ${diceNumber} steps and reached Home!`
       );
+      setRanking([...ranking, playerTurn + 1]);
+    } else {
+      setStatus(`Player-${playerTurn + 1} takes ${diceNumber} steps`);
     }
     const nextPlayerPositions = playerPosition.slice();
     nextPlayerPositions[playerTurn] += diceNumber;
@@ -252,8 +287,17 @@ export default function Game() {
         <div className={`${styles["player" + (playerTurn + 1)]}`}>
           {`Turn of Player-${playerTurn + 1}`}
         </div>
-        <p>{status}</p>
       </div>
+      <div className={styles["game-row1"]}>
+        {status}
+      </div>
+      {
+        ranking.length > 0
+          ? (<div className={styles["game-row"]}>
+            <Table data={ranking} />
+          </div>)
+          : ''
+      }
     </>
   );
 }

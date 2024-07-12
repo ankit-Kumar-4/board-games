@@ -1,11 +1,15 @@
 /* Container styles */
 .container {
   display: flex;
-  justify-content: center; /* Horizontally centers the content */
-  align-items: flex-start; /* Aligns the content at the top */
+  justify-content: center;
+  /* Horizontally centers the content */
+  align-items: flex-start;
+  /* Aligns the content at the top */
   /* height: 100vh; Full viewport height */
-  padding: 10px; /* Add padding for better spacing on small screens */
-  box-sizing: border-box; /* Include padding in the element's total width and height */
+  padding: 10px;
+  /* Add padding for better spacing on small screens */
+  box-sizing: border-box;
+  /* Include padding in the element's total width and height */
 }
 
 /* Board styles */
@@ -14,8 +18,10 @@
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
   gap: 1px;
-  width: 100%; /* Make the board width flexible */
-  max-width: 500px; /* Maximum width for larger screens */
+  width: 100%;
+  /* Make the board width flexible */
+  max-width: 500px;
+  /* Maximum width for larger screens */
   margin: 0 auto;
   position: relative;
 }
@@ -23,8 +29,10 @@
 /* Cell styles */
 .cell {
   color: black;
-  width: 100%; /* Make the cell width flexible */
-  padding-top: 100%; /* Maintain the aspect ratio */
+  width: 100%;
+  /* Make the cell width flexible */
+  padding-top: 100%;
+  /* Maintain the aspect ratio */
   background-color: lightgoldenrodyellow;
   border: 1px solid darkgreen;
   display: flex;
@@ -76,48 +84,73 @@
 
 .image-board {
   background-image: url("/snl-board.jpg");
-  background-size: contain; /* Scales the image to fit within the div without cropping */
-  background-repeat: no-repeat; /* Ensures the background image does not repeat */
-  background-position: top center; /* Aligns the image at the top and centers it horizontally */
+  background-size: contain;
+  /* Scales the image to fit within the div without cropping */
+  background-repeat: no-repeat;
+  /* Ensures the background image does not repeat */
+  background-position: top center;
+  /* Aligns the image at the top and centers it horizontally */
   width: 100%;
-  height: 100%; /* Let the height adjust automatically to maintain aspect ratio */
-  max-height: 100vh; /* Ensure the image doesn't exceed the viewport height */
+  height: 100%;
+  /* Let the height adjust automatically to maintain aspect ratio */
+  max-height: 100vh;
+  /* Ensure the image doesn't exceed the viewport height */
 }
 
 .circle {
-  width: 43%; /* Adjust size as needed */
-  height: 43%; /* Adjust size as needed */
+  width: 43%;
+  /* Adjust size as needed */
+  height: 43%;
+  /* Adjust size as needed */
   border-radius: 50%;
-  position: absolute; /* Allows positioning within the cell-content div */
+  position: absolute;
+  /* Allows positioning within the cell-content div */
   visibility: hidden;
+  border: 5px solid black;
 }
 
 .circle.player1 {
-  width: 50%; /* Adjust the size as needed */
-  height: 50%; /* Adjust the size as needed */
-  border-radius: 50%; /* This makes it a circle */
-  background-color: black; /* Circle color */
+  width: 50%;
+
+  height: 50%;
+
+  border-radius: 50%;
+
+  background-color: black;
+
 }
 
 .circle.player2 {
-  width: 50%; /* Adjust the size as needed */
-  height: 50%; /* Adjust the size as needed */
-  border-radius: 50%; /* This makes it a circle */
-  background-color: blue; /* Circle color */
+  width: 50%;
+
+  height: 50%;
+
+  border-radius: 50%;
+
+  background-color: blue;
+
 }
 
 .circle.player3 {
-  width: 50%; /* Adjust the size as needed */
-  height: 50%; /* Adjust the size as needed */
-  border-radius: 50%; /* This makes it a circle */
-  background-color: pink; /* Circle color */
+  width: 50%;
+
+  height: 50%;
+
+  border-radius: 50%;
+
+  background-color: pink;
+
 }
 
 .circle.player4 {
-  width: 50%; /* Adjust the size as needed */
-  height: 50%; /* Adjust the size as needed */
-  border-radius: 50%; /* This makes it a circle */
-  background-color: yellow; /* Circle color */
+  width: 50%;
+
+  height: 50%;
+
+  border-radius: 50%;
+
+  background-color: yellow;
+
 }
 
 .circle-show {
@@ -142,7 +175,7 @@
   justify-content: center;
 }
 
-.game-row1 > *:nth-child(n) {
+.game-row1>*:nth-child(n) {
   /* width: 100%; */
   display: flex;
   justify-content: center;
@@ -150,21 +183,56 @@
 }
 
 .player1 {
-  border-radius: 50%; /* This makes it a circle */
-  background-color: darkorange; /* Circle color */
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: darkorange;
+
 }
 
 .player2 {
-  border-radius: 50%; /* This makes it a circle */
-  background-color: violet; /* Circle color */
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: violet;
+
 }
 
 .player3 {
-  border-radius: 50%; /* This makes it a circle */
-  background-color: pink; /* Circle color */
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: pink;
+
 }
 
 .player4 {
-  border-radius: 50%; /* This makes it a circle */
-  background-color: lightblue; /* Circle color */
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: lightblue;
+
+}
+
+.game-info {
+  justify-content: center;
+  margin-left: 20px;
+}
+
+.table {
+  /* width: 100%; */
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  white-space: nowrap;
+}
+
+
+.table tr:hover {
+  background-color: #ddd;
 }
