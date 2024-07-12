@@ -2,29 +2,35 @@ import React, { useState, useEffect } from "react";
 import styles from "@/styles/snake-n-ladder.module.css";
 import Xarrow from "react-xarrows";
 
-const snakes = [
-  [99, 9],
-  [93, 51],
-  [90, 11],
-  [87, 37],
-  [77, 17],
-  [65, 22],
-  [60, 19],
-  [52, 27],
-  [46, 6],
-];
-const ladders = [
-  [7, 26],
-  [13, 55],
-  [21, 78],
-  [36, 64],
-  [44, 75],
-  [47, 68],
-  [50, 92],
-  [61, 96],
-  [66, 83],
-  [67, 86],
-];
+const snakes: {
+  [key: number]: number;
+} = {
+  99: 9,
+  93: 51,
+  90: 11,
+  87: 37,
+  77: 17,
+  65: 22,
+  60: 19,
+  52: 27,
+  46: 6
+};
+
+const ladders: {
+  [key: number]: number;
+} = {
+  7: 26,
+  13: 55,
+  21: 78,
+  36: 64,
+  44: 75,
+  47: 68,
+  50: 92,
+  61: 96,
+  66: 83,
+  67: 86
+};
+
 
 function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
   const [arrowParams, setArrowParams] = useState({
@@ -88,11 +94,11 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
 
 function fillArrow() {
   const arrows = [];
-  for (const sn of snakes) {
-    arrows.push(Arrows(`${sn[0]}`, `${sn[1]}`, "snake"));
+  for (const [key, value] of Object.entries(snakes)) {
+    arrows.push(Arrows(`${key}`, `${value}`, "snake"));
   }
-  for (const la of ladders) {
-    arrows.push(Arrows(`${la[0]}`, `${la[1]}`, "ladder"));
+  for (const [key, value] of Object.entries(ladders)) {
+    arrows.push(Arrows(`${key}`, `${value}`, "ladder"));
   }
   return arrows;
 }
@@ -118,9 +124,9 @@ const homeStart = (playerId: number) => {
 
 const Cell = ({ step, playerId }: { step: number; playerId: number[] }) => {
   let color = "";
-  if (snakes.some((pair) => pair.includes(step))) {
+  if (step in snakes || Object.values(snakes).includes(step)) {
     color = styles["snake-cell"];
-  } else if (ladders.some((pair) => pair.includes(step))) {
+  } else if (step in ladders || Object.values(ladders).includes(step)) {
     color = styles["ladder-cell"];
   }
 
@@ -229,9 +235,9 @@ const Table = ({ data }: { data: number[]; }) => {
 };
 
 export default function Game() {
-  const [playerPosition, setPlayerPosition] = useState(Array(4).fill(0));
+  const [playerPosition, setPlayerPosition] = useState<number[]>(Array(4).fill(0));
   const [diceNumber, setDiceNumber] = useState<number>(0);
-  const [playerTurn, setPlayerTurn] = useState(0);
+  const [playerTurn, setPlayerTurn] = useState<number>(0);
   const [status, setStatus] = useState("");
   const [ranking, setRanking] = useState<number[]>([]);
 
@@ -244,6 +250,8 @@ export default function Game() {
     const nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
     setDiceNumber(diceNumber);
     setPlayerTurn(nextPlayer);
+    const nextPlayerPositions = playerPosition.slice();
+    nextPlayerPositions[playerTurn] += diceNumber;
     if (playerPosition[playerTurn] + diceNumber > 100) {
       setStatus(
         `Cannot move. Please roll ${100 - playerPosition[playerTurn]} or lower`
@@ -254,11 +262,19 @@ export default function Game() {
         `Player-${playerTurn + 1} takes ${diceNumber} steps and reached Home!`
       );
       setRanking([...ranking, playerTurn + 1]);
+    } else if (playerPosition[playerTurn] + diceNumber in ladders) {
+      setStatus(
+        `Player-${playerTurn + 1} takes ${diceNumber} steps and climbs ladder!`
+      );
+      nextPlayerPositions[playerTurn] = ladders[playerPosition[playerTurn] + diceNumber];
+    } else if (playerPosition[playerTurn] + diceNumber in snakes) {
+      setStatus(
+        `Player-${playerTurn + 1} takes ${diceNumber} steps and got bit by snake!`
+      );
+      nextPlayerPositions[playerTurn] = snakes[playerPosition[playerTurn] + diceNumber];
     } else {
       setStatus(`Player-${playerTurn + 1} takes ${diceNumber} steps`);
     }
-    const nextPlayerPositions = playerPosition.slice();
-    nextPlayerPositions[playerTurn] += diceNumber;
     setPlayerPosition(nextPlayerPositions);
   }
 
