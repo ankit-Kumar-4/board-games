@@ -1,9 +1,259 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import styles from "@/styles/snake-n-ladder.module.css";
+import Xarrow from "react-xarrows";
 
-const ImageComponent = () => {
-    return (
-        <img src="https://us-tuna-sounds-images.voicemod.net/4ae21d04-e34d-458b-9ca7-6a4c86203a46-1642900727320.png" alt="Next in Queue" className='image' />
-    );
+const snakes = [
+  [99, 9],
+  [93, 51],
+  [90, 11],
+  [87, 37],
+  [77, 17],
+  [65, 22],
+  [60, 19],
+  [52, 27],
+  [46, 6],
+];
+const ladders = [
+  [7, 26],
+  [13, 55],
+  [21, 78],
+  [36, 64],
+  [44, 75],
+  [47, 68],
+  [50, 92],
+  [61, 96],
+  [66, 83],
+  [67, 86],
+];
+
+function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
+  const [arrowParams, setArrowParams] = useState({
+    tailSize: 4,
+    strokeWidth: type === "snake" ? 4 : 30,
+    headSize: 4,
+    dashness:
+      type === "snake"
+        ? { strokeLen: 5, nonStrokeLen: 5, animation: 1 }
+        : { strokeLen: 5, nonStrokeLen: 15, animation: 0.3 },
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 600) {
+        setArrowParams({
+          tailSize: 2,
+          strokeWidth: 2,
+          headSize: 2,
+          dashness: { strokeLen: 5, nonStrokeLen: 0, animation: 0 },
+        });
+      } else {
+        setArrowParams({
+          tailSize: 4,
+          strokeWidth: type === "snake" ? 4 : 30,
+          headSize: 4,
+          dashness:
+            type === "snake"
+              ? { strokeLen: 5, nonStrokeLen: 5, animation: 1 }
+              : { strokeLen: 5, nonStrokeLen: 15, animation: 0.3 },
+        });
+      }
+    };
+
+    handleResize(); // Set initial values based on the current window size
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [type]);
+
+  return (
+    <div className={styles.arrow}>
+      <Xarrow
+        color={type === "snake" ? "darkred" : "darkgreen"}
+        curveness={type === "snake" ? 0.5 : 0}
+        tailSize={arrowParams.tailSize}
+        strokeWidth={arrowParams.strokeWidth}
+        headSize={arrowParams.headSize}
+        showTail={type === "snake"}
+        tailShape={"circle"}
+        showHead={type === "snake"}
+        start={startId}
+        end={endId}
+        dashness={arrowParams.dashness}
+        startAnchor={"middle"}
+        endAnchor={"middle"}
+      />
+    </div>
+  );
 }
 
-export default ImageComponent;
+function fillArrow() {
+  const arrows = [];
+  for (const sn of snakes) {
+    arrows.push(Arrows(`${sn[0]}`, `${sn[1]}`, "snake"));
+  }
+  for (const la of ladders) {
+    arrows.push(Arrows(`${la[0]}`, `${la[1]}`, "ladder"));
+  }
+  return arrows;
+}
+
+const homeStart = (playerId: number) => {
+  return (
+    <>
+      <div
+        className={`${styles.circle} ${styles["player1"]} ${styles["circle-show"]}`}
+      ></div>
+      <div
+        className={`${styles.circle} ${styles["player2"]}  ${styles["circle-show"]}`}
+      ></div>
+      <div
+        className={`${styles.circle} ${styles["player3"]} ${styles["circle-show"]}`}
+      ></div>
+      <div
+        className={`${styles.circle} ${styles["player4"]} ${styles["circle-show"]}`}
+      ></div>
+    </>
+  );
+};
+
+const Cell = ({ step, playerId }: { step: number; playerId: number[] }) => {
+  let color = "";
+  if (snakes.some((pair) => pair.includes(step))) {
+    color = styles["snake-cell"];
+  } else if (ladders.some((pair) => pair.includes(step))) {
+    color = styles["ladder-cell"];
+  }
+
+  let show = <></>;
+  if (playerId[0] === step) {
+    show = <div className={styles["circle.player1"]}></div>;
+  }
+  if (playerId[1] === step) {
+    show = <div className={styles["circle.player2"]}></div>;
+  }
+  if (playerId[2] === step) {
+    show = <div className={styles["circle.player3"]}></div>;
+  }
+  if (playerId[3] === step) {
+    show = <div className={styles["circle.player4"]}></div>;
+  }
+
+  return (
+    <div key={step} id={`${step}`} className={styles.cell + " " + color}>
+      <div
+        className={`${styles["cell-content"]} 
+      ${playerId[0] === step ? styles.player1 : ""}
+      ${playerId[1] === step ? styles.player2 : ""}
+      ${playerId[2] === step ? styles.player3 : ""}
+      ${playerId[3] === step ? styles.player4 : ""}
+      
+      `}
+      >
+        {step}
+      </div>
+    </div>
+  );
+};
+
+function getCellNumber(i: number, j: number) {
+  if (i % 2 === 0) {
+    j = 9 - j;
+  }
+  return i * 10 + j;
+}
+
+function Board({
+  chaal,
+  diceNumber,
+  rollDice,
+  playerTurn,
+}: Readonly<{
+  chaal: Array<number>;
+  diceNumber: number;
+  rollDice: () => void;
+  playerTurn: number;
+}>) {
+  const board = [];
+  for (let i = 9; i >= 0; i--) {
+    for (let j = 9; j >= 0; j--) {
+      const cellNumber = getCellNumber(i, j) + 1;
+      board.push(<Cell step={cellNumber} playerId={chaal}></Cell>);
+    }
+  }
+
+  //   return (
+  //     <div className={styles.container}>
+  //       <div className={styles["image-board"]} />
+  //     </div>
+  //   );
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.board}>
+        {board}
+        {fillArrow()}
+      </div>
+      {/* <div className={styles["image-board"]} /> */}
+    </div>
+  );
+}
+
+function getNextPlayerTurn(
+  playerPosition: Array<number>,
+  currentPlayer: number
+) {
+  let nextPlayer = (currentPlayer + 1) % 4;
+  while (playerPosition[nextPlayer] === 100) {
+    nextPlayer = (nextPlayer + 1) % 4;
+  }
+  return nextPlayer;
+}
+
+export default function Game() {
+  const [playerPosition, setPlayerPosition] = useState(Array(4).fill(0));
+  const [diceNumber, setDiceNumber] = useState<number>(0);
+  const [playerTurn, setPlayerTurn] = useState(0);
+  const [status, setStatus] = useState("");
+
+  function rollDice() {
+    debugger;
+    const diceNumber = Math.ceil(Math.random() * 6);
+    const nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
+    setDiceNumber(diceNumber);
+    setPlayerTurn(nextPlayer);
+    if (playerPosition[playerTurn] + diceNumber > 100) {
+      setStatus(
+        `Cannot move. Please roll ${100 - playerPosition[playerTurn]} or lower`
+      );
+      return;
+    } else if (playerPosition[playerTurn] + diceNumber === 100) {
+      setStatus(`Player-${playerTurn + 1} takes ${diceNumber} steps`);
+    } else {
+      setStatus(
+        `Player-${playerTurn + 1} takes ${diceNumber} steps and reached Home!`
+      );
+    }
+    const nextPlayerPositions = playerPosition.slice();
+    nextPlayerPositions[playerTurn] += diceNumber;
+    setPlayerPosition(nextPlayerPositions);
+  }
+
+  return (
+    <>
+      <Board
+        chaal={playerPosition}
+        diceNumber={diceNumber}
+        rollDice={rollDice}
+        playerTurn={playerTurn}
+      ></Board>
+      <div className={styles["game-row1"]}>
+        <button onClick={rollDice}>Roll dice!</button>
+        <button>{diceNumber}</button>
+        <div className={`${styles["player" + (playerTurn + 1)]}`}>
+          {`Turn of Player-${playerTurn + 1}`}
+        </div>
+        <p>{status}</p>
+      </div>
+    </>
+  );
+}
