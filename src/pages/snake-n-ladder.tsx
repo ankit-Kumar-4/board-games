@@ -163,14 +163,8 @@ function getCellNumber(i: number, j: number) {
 
 function Board({
   chaal,
-  diceNumber,
-  rollDice,
-  playerTurn,
 }: Readonly<{
   chaal: Array<number>;
-  diceNumber: number;
-  rollDice: () => void;
-  playerTurn: number;
 }>) {
   const board = [];
   for (let i = 9; i >= 0; i--) {
@@ -211,11 +205,6 @@ function getNextPlayerTurn(
   }
   return nextPlayer;
 }
-
-type TableRow = {
-  rank: number;
-  playerId: number;
-};
 
 
 const Table = ({ data }: { data: number[]; }) => {
@@ -277,9 +266,6 @@ export default function Game() {
     <>
       <Board
         chaal={playerPosition}
-        diceNumber={diceNumber}
-        rollDice={rollDice}
-        playerTurn={playerTurn}
       ></Board>
       <div className={styles["game-row1"]}>
         <button onClick={rollDice}>Roll dice!</button>
