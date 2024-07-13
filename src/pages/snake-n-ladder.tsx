@@ -234,8 +234,17 @@ const Table = ({ data }: { data: number[]; }) => {
   );
 };
 
+function checkPlayerCapture(playerPosition: number[], currentPostition: number) {
+  for (let i = 0; i < playerPosition.length; i++) {
+    if (playerPosition[i] === currentPostition && ![100, 1].includes(currentPostition)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 export default function Game() {
-  const [playerPosition, setPlayerPosition] = useState<number[]>(Array(4).fill(0));
+  const [playerPosition, setPlayerPosition] = useState<number[]>(Array(4).fill(1));
   const [diceNumber, setDiceNumber] = useState<number>(0);
   const [playerTurn, setPlayerTurn] = useState<number>(0);
   const [status, setStatus] = useState("");
@@ -247,35 +256,62 @@ export default function Game() {
       return;
     }
     const diceNumber = Math.ceil(Math.random() * 6);
-    const nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
     setDiceNumber(diceNumber);
-    setPlayerTurn(nextPlayer);
+
+    let nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
+
     const nextPlayerPositions = playerPosition.slice();
     nextPlayerPositions[playerTurn] += diceNumber;
+
+    let newStatus = '';
+
+    if (playerPosition[playerTurn] === 0 && ![1, 6].includes(diceNumber)) {
+      setStatus(
+        `Please roll 1 or 6 to start.`
+      );
+      setPlayerTurn(nextPlayer);
+
+      return;
+    }
     if (playerPosition[playerTurn] + diceNumber > 100) {
       setStatus(
         `Cannot move. Please roll ${100 - playerPosition[playerTurn]} or lower`
       );
+      setPlayerTurn(nextPlayer);
+
       return;
-    } else if (playerPosition[playerTurn] + diceNumber === 100) {
-      setStatus(
-        `Player-${playerTurn + 1} takes ${diceNumber} steps and reached Home!`
-      );
+    }
+    if (playerPosition[playerTurn] + diceNumber === 100) {
+      newStatus = `Player-${playerTurn + 1} takes ${diceNumber} steps and reached Home!`;
       setRanking([...ranking, playerTurn + 1]);
     } else if (playerPosition[playerTurn] + diceNumber in ladders) {
-      setStatus(
-        `Player-${playerTurn + 1} takes ${diceNumber} steps and climbs ladder!`
-      );
+      if (diceNumber === 6) {
+        nextPlayer = playerTurn;
+      }
+      newStatus = `Player-${playerTurn + 1} takes ${diceNumber} steps and climbs ladder!`;
       nextPlayerPositions[playerTurn] = ladders[playerPosition[playerTurn] + diceNumber];
     } else if (playerPosition[playerTurn] + diceNumber in snakes) {
-      setStatus(
-        `Player-${playerTurn + 1} takes ${diceNumber} steps and got bit by snake!`
-      );
+      if (diceNumber === 6) {
+        nextPlayer = playerTurn;
+      }
+      newStatus = `Player-${playerTurn + 1} takes ${diceNumber} steps and got bit by snake!`;
       nextPlayerPositions[playerTurn] = snakes[playerPosition[playerTurn] + diceNumber];
     } else {
-      setStatus(`Player-${playerTurn + 1} takes ${diceNumber} steps`);
+      if (diceNumber === 6) {
+        nextPlayer = playerTurn;
+      }
+      newStatus = `Player-${playerTurn + 1} takes ${diceNumber} steps`;
     }
+
+
+    const capturedPlayer = checkPlayerCapture(playerPosition, nextPlayerPositions[playerTurn]);
+    if (capturedPlayer >= 0) {
+      newStatus += ` \n and captures Player-${capturedPlayer + 1}`;
+      nextPlayerPositions[capturedPlayer] = 0;
+    }
+    setStatus(newStatus);
     setPlayerPosition(nextPlayerPositions);
+    setPlayerTurn(nextPlayer);
   }
 
   return (
