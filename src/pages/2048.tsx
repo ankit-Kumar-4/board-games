@@ -9,7 +9,7 @@ interface ImageProps {
 
 const ImageComponent = () => {
     return (
-        <img src="https://static.wikia.nocookie.net/the-uncanny-incredible/images/8/8e/Nintenmouse%27s_remake_of_Phase_9.png" alt="Next in Queue" className='image' />
+        <img src="https://i.imgflip.com/8wwaqv.jpg" alt="Next in Queue" className='image' />
     );
 }
 

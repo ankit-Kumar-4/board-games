@@ -9,7 +9,7 @@ interface ImageProps {
 
 const ImageComponent = () => {
     return (
-        <img src="https://i1.sndcdn.com/artworks-dcZZznwvCIjxzVdh-Ia2kPw-t500x500.jpg" alt="Next in Queue" className='image' />
+        <img src="https://i.imgflip.com/8wwaym.jpg" alt="Next in Queue" className='image' />
     );
 }
 
