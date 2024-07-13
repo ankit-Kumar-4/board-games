@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/snake-n-ladder.module.css";
 import Xarrow from "react-xarrows";
+import Dice from 'react-dice-roll';
 
 const snakes: {
   [key: number]: number;
@@ -250,12 +251,11 @@ export default function Game() {
   const [status, setStatus] = useState("");
   const [ranking, setRanking] = useState<number[]>([]);
 
-  function rollDice() {
+  function rollDice(diceNumber: number) {
     const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
     if (count >= 3) {
       return;
     }
-    const diceNumber = Math.ceil(Math.random() * 6);
     setDiceNumber(diceNumber);
 
     let nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
@@ -320,11 +320,10 @@ export default function Game() {
         chaal={playerPosition}
       ></Board>
       <div className={styles["game-row1"]}>
-        <button onClick={rollDice}>Roll dice!</button>
-        <button>{diceNumber}</button>
         <div className={`${styles["player" + (playerTurn + 1)]}`}>
           {`Turn of Player-${playerTurn + 1}`}
         </div>
+        <Dice onRoll={(value) => rollDice(value)} size={30} />
       </div>
       <div className={styles["game-row1"]}>
         {status}

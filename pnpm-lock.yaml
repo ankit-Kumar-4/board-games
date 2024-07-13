@@ -17,6 +17,9 @@ importers:
       react-bootstrap:
         specifier: 2.10.4
         version: 2.10.4(@types/react@18.3.3)(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
+      react-dice-roll:
+        specifier: ^1.2.2
+        version: 1.2.2(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
       react-dom:
         specifier: 18.0.0
         version: 18.0.0(react@18.0.0)
@@ -4603,6 +4606,12 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  react-dice-roll@1.2.2:
+    resolution: {integrity: sha512-QNG+RVs3CymhTkNLwfDdJ93kL4vWO+luHkQAhuNxnus9jOFUZY54AJhlDa4y576S20oEuW47nO7HvEDCtST9wQ==}
+    peerDependencies:
+      react: ^16.13.1
+      react-dom: ^16.13.1
 
   react-dom@18.0.0:
     resolution: {integrity: sha512-XqX7uzmFo0pUceWFCt7Gff6IyIMzFUn7QMZrbrQfGxtaxXZIcGQzoNpRLE3fQLnS4XzLLPMZX2T9TRcSrasicw==}
@@ -11203,6 +11212,11 @@ snapshots:
       - eslint
       - supports-color
       - vue-template-compiler
+
+  react-dice-roll@1.2.2(react-dom@18.0.0(react@18.0.0))(react@18.0.0):
+    dependencies:
+      react: 18.0.0
+      react-dom: 18.0.0(react@18.0.0)
 
   react-dom@18.0.0(react@18.0.0):
     dependencies:
