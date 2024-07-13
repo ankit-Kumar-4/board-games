@@ -104,7 +104,7 @@ function fillArrow() {
   return arrows;
 }
 
-const homeStart = (playerId: number) => {
+const homeStart = (playerPosition: number[]) => {
   return (
     <>
       <div
@@ -174,6 +174,11 @@ function Board({
   chaal: Array<number>;
 }>) {
   const board = [];
+  // board.push(
+  //   <div className={styles.cell}>
+  //     <div className={styles['circle.player1']} >.</div>
+  //   </div>
+  // );
   for (let i = 9; i >= 0; i--) {
     for (let j = 9; j >= 0; j--) {
       const cellNumber = getCellNumber(i, j) + 1;
@@ -246,7 +251,6 @@ function checkPlayerCapture(playerPosition: number[], currentPostition: number) 
 
 export default function Game() {
   const [playerPosition, setPlayerPosition] = useState<number[]>(Array(4).fill(1));
-  const [diceNumber, setDiceNumber] = useState<number>(0);
   const [playerTurn, setPlayerTurn] = useState<number>(0);
   const [status, setStatus] = useState("");
   const [ranking, setRanking] = useState<number[]>([]);
@@ -256,7 +260,6 @@ export default function Game() {
     if (count >= 3) {
       return;
     }
-    setDiceNumber(diceNumber);
 
     let nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
 
@@ -323,7 +326,9 @@ export default function Game() {
         <div className={`${styles["player" + (playerTurn + 1)]}`}>
           {`Turn of Player-${playerTurn + 1}`}
         </div>
-        <Dice onRoll={(value) => rollDice(value)} size={30} />
+        <Dice onRoll={(value) => rollDice(value)} size={30}
+          faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
+        />
       </div>
       <div className={styles["game-row1"]}>
         {status}
