@@ -109,47 +109,66 @@
   border: 5px solid black;
 }
 
+.circle.playerq1 {
+  top: 5%;
+  left: 5%;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.circle.playerq2 {
+  top: 5%;
+  right: 5%;
+  background-color: white;
+  border: 1px solid black;
+
+}
+
+.circle.playerq3 {
+  bottom: 5%;
+  left: 5%;
+  background-color: white;
+  border: 1px solid black;
+
+}
+
+.circle.playerq4 {
+  bottom: 5%;
+  right: 5%;
+  background-color: white;
+  border: 1px solid black;
+
+}
+
 .circle.player1 {
-  width: 50%;
-
-  height: 50%;
-
-  border-radius: 50%;
-
-  background-color: black;
+  top: 5%;
+  left: 5%;
+  background-color: darkorange;
+  /* border: 5px solid black; */
 
 }
 
 .circle.player2 {
-  width: 50%;
-
-  height: 50%;
-
-  border-radius: 50%;
-
-  background-color: blue;
+  top: 5%;
+  right: 5%;
+  background-color: violet;
+  /* border: 5px solid black; */
 
 }
 
 .circle.player3 {
-  width: 50%;
-
-  height: 50%;
-
-  border-radius: 50%;
-
+  bottom: 5%;
+  left: 5%;
   background-color: pink;
+  /* border: 5px solid black; */
 
 }
 
 .circle.player4 {
-  width: 50%;
-
-  height: 50%;
-
-  border-radius: 50%;
-
-  background-color: yellow;
+  bottom: 5%;
+  right: 5%;
+  background-color: lightblue;
+  /* border: 5px solid black; */
 
 }
 
@@ -180,6 +199,13 @@
   display: flex;
   justify-content: center;
   gap: 10px;
+}
+
+.player0 {
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: white;
+
 }
 
 .player1 {
@@ -235,4 +261,12 @@
 
 .table tr:hover {
   background-color: #ddd;
+}
+
+.home {
+  background-color: green;
+}
+
+.start {
+  background-color: yellow;
 }

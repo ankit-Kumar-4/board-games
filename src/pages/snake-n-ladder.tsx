@@ -104,21 +104,26 @@ function fillArrow() {
   return arrows;
 }
 
-const homeStart = (playerPosition: number[]) => {
+const homeStart = (step: number, playerPosition: number[]) => {
+  const result = [];
+  for (let i = 0; i < playerPosition.length; i++) {
+    if (step === playerPosition[i]) {
+      result.push(
+        <div
+          className={`${styles.circle} ${styles["player" + (i + 1)]} ${styles["circle-show"]}`}
+        ></div>
+      )
+    } else {
+      result.push(
+        <div
+          className={`${styles.circle} ${styles["playerq" + (i + 1)]} ${styles["circle-show"]}`}
+        ></div>
+      )
+    }
+  }
   return (
     <>
-      <div
-        className={`${styles.circle} ${styles["player1"]} ${styles["circle-show"]}`}
-      ></div>
-      <div
-        className={`${styles.circle} ${styles["player2"]}  ${styles["circle-show"]}`}
-      ></div>
-      <div
-        className={`${styles.circle} ${styles["player3"]} ${styles["circle-show"]}`}
-      ></div>
-      <div
-        className={`${styles.circle} ${styles["player4"]} ${styles["circle-show"]}`}
-      ></div>
+      {result}
     </>
   );
 };
@@ -131,19 +136,6 @@ const Cell = ({ step, playerId }: { step: number; playerId: number[] }) => {
     color = styles["ladder-cell"];
   }
 
-  let show = <></>;
-  if (playerId[0] === step) {
-    show = <div className={styles["circle.player1"]}></div>;
-  }
-  if (playerId[1] === step) {
-    show = <div className={styles["circle.player2"]}></div>;
-  }
-  if (playerId[2] === step) {
-    show = <div className={styles["circle.player3"]}></div>;
-  }
-  if (playerId[3] === step) {
-    show = <div className={styles["circle.player4"]}></div>;
-  }
 
   return (
     <div key={step} id={`${step}`} className={styles.cell + " " + color}>
@@ -174,15 +166,21 @@ function Board({
   chaal: Array<number>;
 }>) {
   const board = [];
-  // board.push(
-  //   <div className={styles.cell}>
-  //     <div className={styles['circle.player1']} >.</div>
-  //   </div>
-  // );
   for (let i = 9; i >= 0; i--) {
     for (let j = 9; j >= 0; j--) {
       const cellNumber = getCellNumber(i, j) + 1;
-      board.push(<Cell step={cellNumber} playerId={chaal}></Cell>);
+      if ([1, 100].includes(cellNumber)) {
+        board.push((
+          <div
+            key={cellNumber}
+            id={`${cellNumber}`}
+            className={styles.cell + ' ' + styles[cellNumber === 1 ? 'start' : 'home']}>
+            {homeStart(cellNumber, chaal)}
+          </div>
+        ));
+      } else {
+        board.push(<Cell step={cellNumber} playerId={chaal}></Cell>);
+      }
     }
   }
 
@@ -268,7 +266,7 @@ export default function Game() {
 
     let newStatus = '';
 
-    if (playerPosition[playerTurn] === 0 && ![1, 6].includes(diceNumber)) {
+    if (playerPosition[playerTurn] === 1 && ![1, 6].includes(diceNumber)) {
       setStatus(
         `Please roll 1 or 6 to start.`
       );
@@ -310,7 +308,7 @@ export default function Game() {
     const capturedPlayer = checkPlayerCapture(playerPosition, nextPlayerPositions[playerTurn]);
     if (capturedPlayer >= 0) {
       newStatus += ` \n and captures Player-${capturedPlayer + 1}`;
-      nextPlayerPositions[capturedPlayer] = 0;
+      nextPlayerPositions[capturedPlayer] = 1;
     }
     setStatus(newStatus);
     setPlayerPosition(nextPlayerPositions);
