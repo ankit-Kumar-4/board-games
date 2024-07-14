@@ -14,7 +14,8 @@ const snakes: {
   65: 22,
   60: 19,
   52: 27,
-  46: 6
+  46: 6,
+  32: 5
 };
 
 const ladders: {
@@ -31,6 +32,12 @@ const ladders: {
   66: 83,
   67: 86
 };
+
+type playerTurn = {
+  player_id: number;
+  dicenumber: number;
+  last_position: number;
+}
 
 
 function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
@@ -49,9 +56,9 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
       if (window.innerWidth <= 600) {
         setArrowParams({
           tailSize: 2,
-          strokeWidth: 2,
-          headSize: 2,
-          dashness: { strokeLen: 5, nonStrokeLen: 0, animation: 0 },
+          strokeWidth: 4,
+          headSize: 5,
+          dashness: { strokeLen: 4, nonStrokeLen: 1, animation: 1 },
         });
       } else {
         setArrowParams({
@@ -86,6 +93,23 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
         start={startId}
         end={endId}
         dashness={arrowParams.dashness}
+        startAnchor={"middle"}
+        endAnchor={"middle"}
+      />
+    </div>
+  );
+}
+
+function lastArrow(lastTwoTurn: playerTurn[], currentPostition: number[]) {
+  return (
+    <div >
+      <Xarrow
+        color="#0000e0"
+        curveness={0}
+        strokeWidth={3}
+        headSize={4}
+        start={lastTwoTurn[1].last_position + ''}
+        end={currentPostition[lastTwoTurn[1].player_id] + ''}
         startAnchor={"middle"}
         endAnchor={"middle"}
       />
@@ -247,11 +271,18 @@ function checkPlayerCapture(playerPosition: number[], currentPostition: number) 
   return -1;
 }
 
+
+
+
 export default function Game() {
   const [playerPosition, setPlayerPosition] = useState<number[]>(Array(4).fill(1));
   const [playerTurn, setPlayerTurn] = useState<number>(0);
   const [status, setStatus] = useState("");
   const [ranking, setRanking] = useState<number[]>([]);
+  const [lastTwoTurn, setLastTwoTurn] = useState<playerTurn[]>([
+    { player_id: 0, dicenumber: 0, last_position: 1 },
+    { player_id: 0, dicenumber: 0, last_position: 1 }
+  ]);
 
   function rollDice(diceNumber: number) {
     const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
@@ -259,6 +290,7 @@ export default function Game() {
       return;
     }
 
+    setLastTwoTurn([lastTwoTurn[1], { player_id: playerTurn, dicenumber: diceNumber, last_position: playerPosition[playerTurn] }]);
     let nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
 
     const nextPlayerPositions = playerPosition.slice();
@@ -266,49 +298,57 @@ export default function Game() {
 
     let newStatus = '';
 
-    if (playerPosition[playerTurn] === 1 && ![1, 6].includes(diceNumber)) {
+    if (lastTwoTurn[0].player_id === lastTwoTurn[1].player_id && lastTwoTurn[0].dicenumber && lastTwoTurn[1].dicenumber &&
+      lastTwoTurn[0].player_id === playerTurn && diceNumber === lastTwoTurn[0].dicenumber
+    ) {
       setStatus(
-        `Please roll 1 or 6 to start.`
+        `Player-${playerTurn + 1} void move, 3 consecutive 6.`
       );
       setPlayerTurn(nextPlayer);
-
+      return;
+    }
+    if (playerPosition[playerTurn] === 1 && ![1, 6].includes(diceNumber)) {
+      setStatus(
+        `Player-${playerTurn + 1} needs to roll 1 or 6 to start.`
+      );
+      setPlayerTurn(nextPlayer);
       return;
     }
     if (playerPosition[playerTurn] + diceNumber > 100) {
       setStatus(
-        `Cannot move. Please roll ${100 - playerPosition[playerTurn]} or lower`
+        `Player-${playerTurn + 1} couldn't move, needs to roll ${100 - playerPosition[playerTurn]} or lower`
       );
       setPlayerTurn(nextPlayer);
-
       return;
     }
     if (playerPosition[playerTurn] + diceNumber === 100) {
-      newStatus = `Player-${playerTurn + 1} took ${diceNumber} steps and reached Home!`;
+      newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and reached Home!`;
       setRanking([...ranking, playerTurn + 1]);
     } else if (playerPosition[playerTurn] + diceNumber in ladders) {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Player-${playerTurn + 1} took ${diceNumber} steps and climbs ladder!`;
+      newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and climbs ladder!`;
       nextPlayerPositions[playerTurn] = ladders[playerPosition[playerTurn] + diceNumber];
     } else if (playerPosition[playerTurn] + diceNumber in snakes) {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Player-${playerTurn + 1} took ${diceNumber} steps and got bit by snake!`;
+      newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and got bit by snake!`;
       nextPlayerPositions[playerTurn] = snakes[playerPosition[playerTurn] + diceNumber];
     } else {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Player-${playerTurn + 1} took ${diceNumber} steps`;
+      newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps`;
     }
 
 
     const capturedPlayer = checkPlayerCapture(playerPosition, nextPlayerPositions[playerTurn]);
     if (capturedPlayer >= 0) {
-      newStatus += ` \n and captured Player-${capturedPlayer + 1}`;
+      newStatus += ` and captured Player-${capturedPlayer + 1}`;
       nextPlayerPositions[capturedPlayer] = 1;
+      nextPlayer = playerTurn;
     }
     setStatus(newStatus);
     setPlayerPosition(nextPlayerPositions);
@@ -321,16 +361,19 @@ export default function Game() {
         chaal={playerPosition}
       ></Board>
       <div className={styles["game-row1"]}>
-        {status}
+        {status.length > 0 ? <div className={`${styles["player" + (lastTwoTurn[1].player_id + 1)]} ${styles['player-turn']}`}>
+          {status}
+        </div> : ''}
       </div>
       <div className={styles["game-row1"]}>
-        <div className={`${styles["player" + (playerTurn + 1)]}`}>
+        <div className={`${styles["player" + (playerTurn + 1)]} ${styles['player-turn']}`}>
           {`Turn of Player-${playerTurn + 1}`}
         </div>
-        <Dice onRoll={(value) => rollDice(value)} size={30}
+        <Dice onRoll={(value) => rollDice(value)} size={33}
           faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
         />
       </div>
+      {lastArrow(lastTwoTurn, playerPosition)}
       {
         ranking.length > 0
           ? (<div className={styles["game-row"]}>
