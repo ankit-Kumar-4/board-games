@@ -283,31 +283,31 @@ export default function Game() {
       return;
     }
     if (playerPosition[playerTurn] + diceNumber === 100) {
-      newStatus = `Player-${playerTurn + 1} takes ${diceNumber} steps and reached Home!`;
+      newStatus = `Player-${playerTurn + 1} took ${diceNumber} steps and reached Home!`;
       setRanking([...ranking, playerTurn + 1]);
     } else if (playerPosition[playerTurn] + diceNumber in ladders) {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Player-${playerTurn + 1} takes ${diceNumber} steps and climbs ladder!`;
+      newStatus = `Player-${playerTurn + 1} took ${diceNumber} steps and climbs ladder!`;
       nextPlayerPositions[playerTurn] = ladders[playerPosition[playerTurn] + diceNumber];
     } else if (playerPosition[playerTurn] + diceNumber in snakes) {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Player-${playerTurn + 1} takes ${diceNumber} steps and got bit by snake!`;
+      newStatus = `Player-${playerTurn + 1} took ${diceNumber} steps and got bit by snake!`;
       nextPlayerPositions[playerTurn] = snakes[playerPosition[playerTurn] + diceNumber];
     } else {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Player-${playerTurn + 1} takes ${diceNumber} steps`;
+      newStatus = `Player-${playerTurn + 1} took ${diceNumber} steps`;
     }
 
 
     const capturedPlayer = checkPlayerCapture(playerPosition, nextPlayerPositions[playerTurn]);
     if (capturedPlayer >= 0) {
-      newStatus += ` \n and captures Player-${capturedPlayer + 1}`;
+      newStatus += ` \n and captured Player-${capturedPlayer + 1}`;
       nextPlayerPositions[capturedPlayer] = 1;
     }
     setStatus(newStatus);
@@ -321,15 +321,15 @@ export default function Game() {
         chaal={playerPosition}
       ></Board>
       <div className={styles["game-row1"]}>
+        {status}
+      </div>
+      <div className={styles["game-row1"]}>
         <div className={`${styles["player" + (playerTurn + 1)]}`}>
           {`Turn of Player-${playerTurn + 1}`}
         </div>
         <Dice onRoll={(value) => rollDice(value)} size={30}
           faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
         />
-      </div>
-      <div className={styles["game-row1"]}>
-        {status}
       </div>
       {
         ranking.length > 0
