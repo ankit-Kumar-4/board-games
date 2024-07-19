@@ -284,6 +284,20 @@ export default function Game() {
     { player_id: 0, dicenumber: 0, last_position: 1 }
   ]);
 
+  /*
+    Reset the board to start a new game
+  */
+    function restartGame() {
+      setPlayerPosition(Array(4).fill(1))
+      setPlayerTurn(0)
+      setStatus("")
+      setRanking([])
+      setLastTwoTurn([
+        { player_id: 0, dicenumber: 0, last_position: 1 },
+        { player_id: 0, dicenumber: 0, last_position: 1 }
+      ])
+    }
+
   function rollDice(diceNumber: number) {
     const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
     if (count >= 3) {
@@ -372,6 +386,11 @@ export default function Game() {
         <Dice onRoll={(value) => rollDice(value)} size={33}
           faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
         />
+      </div>
+      <div className={styles["new-game"]} onClick={restartGame}>
+        <div className={styles["title"]}>
+          New Game
+        </div>
       </div>
       {lastArrow(lastTwoTurn, playerPosition)}
       {
