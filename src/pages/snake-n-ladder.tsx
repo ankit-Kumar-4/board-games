@@ -287,16 +287,16 @@ export default function Game() {
   /*
     Reset the board to start a new game
   */
-    function restartGame() {
-      setPlayerPosition(Array(4).fill(1))
-      setPlayerTurn(0)
-      setStatus("")
-      setRanking([])
-      setLastTwoTurn([
-        { player_id: 0, dicenumber: 0, last_position: 1 },
-        { player_id: 0, dicenumber: 0, last_position: 1 }
-      ])
-    }
+  function restartGame() {
+    setPlayerPosition(Array(4).fill(1))
+    setPlayerTurn(0)
+    setStatus("")
+    setRanking([])
+    setLastTwoTurn([
+      { player_id: 0, dicenumber: 0, last_position: 1 },
+      { player_id: 0, dicenumber: 0, last_position: 1 }
+    ])
+  }
 
   function rollDice(diceNumber: number) {
     const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
