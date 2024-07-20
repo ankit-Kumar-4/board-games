@@ -276,3 +276,16 @@
 .start {
   background-color: yellow;
 }
+
+.new-game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.new-game .title {
+  color: rgb(0, 0, 0);
+  background-color: rgb(54, 151, 120);
+  padding: 5px;
+  border: 5px double white;
+}
