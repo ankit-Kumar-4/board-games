@@ -1,5 +1,4 @@
 import React from 'react';
-// import './ImageComponent.css';
 
 interface ImageProps {
     src: string;

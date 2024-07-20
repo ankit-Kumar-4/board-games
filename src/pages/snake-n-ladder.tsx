@@ -209,13 +209,13 @@ function Board({
   }
 
   //   return (
-  //     <div className={styles.container}>
+  //     <div className="flex justify-center items-start p-2 box-border h-screen">
   //       <div className={styles["image-board"]} />
   //     </div>
   //   );
 
   return (
-    <div className={styles.container}>
+    <div className="flex justify-center items-start p-2 box-border">
       <div className={styles.board}>
         {board}
         {fillArrow()}
