@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import Link from 'next/link';
+interface LayoutProps {
+    children: ReactNode;
+}
 
-export default function Layout({ children }) {
+
+export default function Layout({ children }: LayoutProps) {
     const [isOpen, setIsOpen] = useState(true);
 
     const toggleSidebar = () => {
