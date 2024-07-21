@@ -20,6 +20,16 @@ function getRandomInt(max: number) {
 }
 
 
+function compareMatrix(matrixA: number[], matrixB: number[]) {
+    for (let i = 0; i < matrixA.length; i++) {
+        if (matrixA[i] !== matrixB[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
 const Cell = ({ size, matrix }: { size: number; matrix: SquareValue[] }) => {
     const result = [];
     for (let i = 0; i < size; i++) {
@@ -49,27 +59,129 @@ const Board: React.FC = () => {
             }
         }
         if (indexes.length === 0) {
-            return false;
+            return { value: 0, index: 0 };
         }
         const newIndex = getRandomInt(indexes.length);
-        const newMatrix = matrix.slice();
-        newMatrix[indexes[newIndex]] = newCellValue;
-        setMatrix(newMatrix);
-        return true;
+        return { value: newCellValue, index: indexes[newIndex] };
+    }
+
+    function leftSwipe(matrix: SquareValue[]) {
+        const newMatrix = Array(matrix.length).fill(0);
+        console.log(matrix);
+        for (let i = 0; i + 3 < matrix.length; i = i + 4) {
+            let idx = i;
+            for (let j = 0; j * j < matrix.length; j++) {
+                if (matrix[i + j] > 0) {
+                    newMatrix[idx] = matrix[i + j];
+                    idx++;
+                }
+            }
+        }
+
+        const isEqual = compareMatrix(matrix, newMatrix);
+        if (isEqual) {
+            return;
+        }
+
+        const { value, index } = generateNumber(newMatrix);
+        if (value > 0) {
+            newMatrix[index] = value;
+            setMatrix(newMatrix);
+        }
+    }
+
+    function rightSwipe(matrix: SquareValue[]) {
+        const newMatrix = Array(matrix.length).fill(0);
+        console.log(matrix);
+        for (let i = 3; i < matrix.length; i = i + 4) {
+            let idx = i;
+            for (let j = 3; j >= 0; j--) {
+                if (matrix[i - j] > 0) {
+                    newMatrix[idx] = matrix[i - j];
+                    idx--;
+                }
+            }
+        }
+
+        const isEqual = compareMatrix(matrix, newMatrix);
+        if (isEqual) {
+            return;
+        }
+
+        const { value, index } = generateNumber(newMatrix);
+        if (value > 0) {
+            newMatrix[index] = value;
+            setMatrix(newMatrix);
+        }
+    }
+
+    function upSwipe(matrix: SquareValue[]) {
+        const newMatrix = Array(matrix.length).fill(0);
+        console.log(matrix);
+        for (let i = 0; i * i < matrix.length; i++) {
+            let idx = i;
+            for (let j = i; j < matrix.length; j += 4) {
+                if (matrix[j] > 0) {
+                    newMatrix[idx] = matrix[j];
+                    idx += 4;
+                }
+            }
+        }
+
+        const isEqual = compareMatrix(matrix, newMatrix);
+        if (isEqual) {
+            return;
+        }
+
+        const { value, index } = generateNumber(newMatrix);
+        if (value > 0) {
+            newMatrix[index] = value;
+            setMatrix(newMatrix);
+        }
+    }
+
+    function downSwipe(matrix: SquareValue[]) {
+        const newMatrix = Array(matrix.length).fill(0);
+        console.log(matrix);
+        for (let i = 12; i < matrix.length; i++) {
+            let idx = i;
+            for (let j = i; j >= 0; j -= 4) {
+                if (matrix[j] > 0) {
+                    newMatrix[idx] = matrix[j];
+                    idx -= 4;
+                }
+            }
+        }
+
+        const isEqual = compareMatrix(matrix, newMatrix);
+        if (isEqual) {
+            return;
+        }
+
+        const { value, index } = generateNumber(newMatrix);
+        if (value > 0) {
+            newMatrix[index] = value;
+            setMatrix(newMatrix);
+        }
     }
 
     const handlers = useSwipeable({
-        onSwipedLeft: () => generateNumber(matrix),
-        onSwipedRight: () => generateNumber(matrix),
-        onSwipedUp: () => generateNumber(matrix),
-        onSwipedDown: () => generateNumber(matrix),
+        onSwipedLeft: () => leftSwipe(matrix),
+        onSwipedRight: () => rightSwipe(matrix),
+        onSwipedUp: () => upSwipe(matrix),
+        onSwipedDown: () => downSwipe(matrix),
         preventScrollOnSwipe: false,
         trackMouse: true,
     });
 
 
     useEffect(() => {
-        generateNumber(matrix);
+        const newMatrix = matrix.slice();
+        const { value, index } = generateNumber(newMatrix);
+        if (value > 0) {
+            newMatrix[index] = value;
+            setMatrix(newMatrix);
+        }
     }, []);
 
     return (
