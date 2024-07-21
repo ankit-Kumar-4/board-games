@@ -65,7 +65,7 @@ function getHintText(value: string, hint: number) {
   return output;
 }
 
-export default function Contact() {
+export default function Wordle() {
   const [randomWord, setRandomWord] = useState<string>("");
   const [originalWord, setOriginalWord] = useState<string>("");
   const [result, setResult] = useState("");

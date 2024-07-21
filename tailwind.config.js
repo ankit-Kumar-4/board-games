@@ -11,8 +11,13 @@ module.exports = {
         sidePanelLink: '#3d5c5c',
         navButton: '#000000'
       },
+      userSelect: {
+        'none': 'none',
+      }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/aspect-ratio'),
+  ],
 }
 

@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tailwindcss/aspect-ratio": "0.4.2",
     "next": "14.2.4",
     "react": "18.0.0",
     "react-bootstrap": "2.10.4",
     "react-dice-roll": "1.2.2",
     "react-dom": "18.0.0",
     "react-scripts": "5.0.0",
+    "react-swipeable": "7.0.1",
     "react-xarrows": "2.0.2"
   },
   "devDependencies": {
