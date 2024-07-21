@@ -30,7 +30,7 @@ function compareMatrix(matrixA: number[], matrixB: number[]) {
 }
 
 
-const Cell = ({ size, matrix }: { size: number; matrix: SquareValue[] }) => {
+function getCells(size: number, matrix: SquareValue[]) {
     const result = [];
     for (let i = 0; i < size; i++) {
         let cell_color = 'bg-white';
@@ -76,13 +76,13 @@ const Cell = ({ size, matrix }: { size: number; matrix: SquareValue[] }) => {
                 break;
         }
         result.push(
-            <div
+            (<div
                 key={i}
                 id={i + ''}
                 className={`relative flex text-xl items-center justify-center ${cell_color} border-2 border-black ` + (matrix[i] === 0 ? 'text-white' : '')}
             >
                 {matrix[i]}
-            </div>
+            </div>)
         );
     }
     return result;
@@ -363,7 +363,7 @@ const Board: React.FC = () => {
                     {...handlers}
                 >
                     <div className="grid grid-cols-4 gap-0 h-full w-full bg-black">
-                        <Cell size={4 * 4} matrix={matrix} />
+                        {getCells(4 * 4, matrix)}
                     </div>
                 </div>
             </div>
