@@ -82,69 +82,13 @@ function getCells(size: number, matrix: SquareValue[]) {
             (<div
                 key={i}
                 id={i + ''}
-                className={`relative flex text-xl items-center justify-center ${cell_color} border-2 border-black ` + (matrix[i] === 0 ? 'text-white' : '')}
+                className={`relative flex text-xl md:text-4xl items-center justify-center ${cell_color} border-2 border-black ` + (matrix[i] === 0 ? 'text-white' : '')}
             >
                 {matrix[i]}
             </div>)
         );
     }
     return result;
-}
-
-function shiftLeft(matrix: number[]) {
-    const newMatrix = Array(matrix.length).fill(0);
-    for (let i = 0; i + 3 < matrix.length; i = i + 4) {
-        let idx = i;
-        for (let j = 0; j * j < matrix.length; j++) {
-            if (matrix[i + j] > 0) {
-                newMatrix[idx] = matrix[i + j];
-                idx++;
-            }
-        }
-    }
-    return newMatrix;
-}
-
-function shiftRight(matrix: number[]) {
-    const newMatrix = Array(matrix.length).fill(0);
-    for (let i = 3; i < matrix.length; i = i + 4) {
-        let idx = i;
-        for (let j = 0; j * j < matrix.length; j++) {
-            if (matrix[i - j] > 0) {
-                newMatrix[idx] = matrix[i - j];
-                idx--;
-            }
-        }
-    }
-    return newMatrix;
-}
-
-function shiftUp(matrix: number[]) {
-    const newMatrix = Array(matrix.length).fill(0);
-    for (let i = 0; i * i < matrix.length; i++) {
-        let idx = i;
-        for (let j = i; j < matrix.length; j += 4) {
-            if (matrix[j] > 0) {
-                newMatrix[idx] = matrix[j];
-                idx += 4;
-            }
-        }
-    }
-    return newMatrix;
-}
-
-function shiftDown(matrix: number[]) {
-    const newMatrix = Array(matrix.length).fill(0);
-    for (let i = 12; i < matrix.length; i++) {
-        let idx = i;
-        for (let j = i; j >= 0; j -= 4) {
-            if (matrix[j] > 0) {
-                newMatrix[idx] = matrix[j];
-                idx -= 4;
-            }
-        }
-    }
-    return newMatrix;
 }
 
 
@@ -170,32 +114,41 @@ const Board: React.FC = () => {
     }
 
     function leftSwipe(matrix: SquareValue[], score: number) {
-        let newMatrix = shiftLeft(matrix);
+        let newMatrix = matrix.slice();
         let newScore = score;
 
         for (let i = 0; i < matrix.length; i += 4) {
-            let idx = i;
-            for (let j = 0; j * j < matrix.length; j++) {
-                if ((j + 1) * (j + 1) > matrix.length) {
-                    newMatrix[idx] = newMatrix[i + j];
-                    break;
+            let x = i;
+            let y = i + 1;
+            while (y - i < 4) {
+                if (x === y) {
+                    y++;
                 }
-                if (newMatrix[i + j + 1] === 0) {
-                    break;
-                }
-                if (newMatrix[i + j] === newMatrix[i + j + 1]) {
-                    newMatrix[idx] = 2 * newMatrix[i + j + 1];
-                    newScore = newScore + newMatrix[idx];
-                    newMatrix[i + j + 1] = 0;
-                    idx++;
-                    j++;
-                } else {
-                    idx++;
+                if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                    y++;
                     continue;
                 }
+                if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                    newMatrix[x] = newMatrix[y];
+                    newMatrix[y] = 0;
+                    y++;
+                    continue;
+                }
+                if (newMatrix[y] === 0) {
+                    y++;
+                    continue;
+                }
+                if (newMatrix[x] !== newMatrix[y]) {
+                    x++;
+                    continue;
+                }
+                newMatrix[x] = 2 * newMatrix[y];
+                newScore += 2 * newMatrix[y];
+                newMatrix[y] = 0;
+                x++;
+                y++;
             }
         }
-        newMatrix = shiftLeft(newMatrix);
 
         const isEqual = compareMatrix(matrix, newMatrix);
         if (isEqual) {
@@ -211,33 +164,41 @@ const Board: React.FC = () => {
     }
 
     function rightSwipe(matrix: SquareValue[], score: number) {
-        let newMatrix = shiftRight(matrix);
+        let newMatrix = matrix.slice();
         let newScore = score;
 
         for (let i = 3; i < matrix.length; i = i + 4) {
-            let idx = i;
-            for (let j = 0; j * j < matrix.length; j++) {
-                if ((j + 1) * (j + 1) > matrix.length) {
-                    newMatrix[idx] = newMatrix[i - j];
-                    break;
+            let x = i;
+            let y = i - 1;
+            while (i - y < 4) {
+                if (x === y) {
+                    y--;
                 }
-                if (newMatrix[i - j - 1] === 0) {
-                    break;
-                }
-                if (newMatrix[i - j] === newMatrix[i - j - 1]) {
-                    newMatrix[idx] = 2 * newMatrix[i - j - 1];
-                    newScore = newScore + newMatrix[idx];
-                    newMatrix[i - j - 1] = 0;
-                    idx--;
-                    j++;
-                } else {
-                    idx--;
+                if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                    y--;
                     continue;
                 }
+                if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                    newMatrix[x] = newMatrix[y];
+                    newMatrix[y] = 0;
+                    y--;
+                    continue;
+                }
+                if (newMatrix[y] === 0) {
+                    y--;
+                    continue;
+                }
+                if (newMatrix[x] !== newMatrix[y]) {
+                    x--;
+                    continue;
+                }
+                newMatrix[x] = 2 * newMatrix[y];
+                newScore += 2 * newMatrix[y];
+                newMatrix[y] = 0;
+                x--;
+                y--;
             }
         }
-        newMatrix = shiftRight(newMatrix);
-
 
         const isEqual = compareMatrix(matrix, newMatrix);
         if (isEqual) {
@@ -253,32 +214,41 @@ const Board: React.FC = () => {
     }
 
     function upSwipe(matrix: SquareValue[], score: number) {
-        let newMatrix = shiftUp(matrix);
+        let newMatrix = matrix.slice();
         let newScore = score;
 
         for (let i = 0; i * i < matrix.length; i++) {
-            let idx = i;
-            for (let j = i; j < matrix.length; j += 4) {
-                if (j + 4 > matrix.length) {
-                    newMatrix[idx] = newMatrix[j];
-                    break;
+            let x = i;
+            let y = i + 4;
+            while (y < matrix.length) {
+                if (x === y) {
+                    y += 4;
                 }
-                if (newMatrix[j + 4] === 0) {
-                    break;
-                }
-                if (newMatrix[j] === newMatrix[j + 4]) {
-                    newMatrix[idx] = 2 * newMatrix[j + 4];
-                    newScore = newScore + newMatrix[idx];
-                    newMatrix[j + 4] = 0;
-                    idx += 4;
-                    j += 4;
-                } else {
-                    idx += 4;
+                if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                    y += 4;
                     continue;
                 }
+                if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                    newMatrix[x] = newMatrix[y];
+                    newMatrix[y] = 0;
+                    y += 4;
+                    continue;
+                }
+                if (newMatrix[y] === 0) {
+                    y += 4;
+                    continue;
+                }
+                if (newMatrix[x] !== newMatrix[y]) {
+                    x += 4;
+                    continue;
+                }
+                newMatrix[x] = 2 * newMatrix[y];
+                newScore += 2 * newMatrix[y];
+                newMatrix[y] = 0;
+                x += 4;
+                y += 4;
             }
         }
-        newMatrix = shiftUp(newMatrix);
 
         const isEqual = compareMatrix(matrix, newMatrix);
         if (isEqual) {
@@ -294,32 +264,41 @@ const Board: React.FC = () => {
     }
 
     function downSwipe(matrix: SquareValue[], score: number) {
-        let newMatrix = shiftDown(matrix);
+        let newMatrix = matrix.slice();
         let newScore = score;
 
-        for (let i = 12; i < matrix.length; i++) {
-            let idx = i;
-            for (let j = i; j >= 0; j -= 4) {
-                if (j - 4 < 0) {
-                    newMatrix[idx] = newMatrix[j];
-                    break;
+        for (let i = matrix.length - 1; matrix.length - i <= 4; i--) {
+            let x = i;
+            let y = i - 4;
+            while (y >= 0) {
+                if (x === y) {
+                    y -= 4;
                 }
-                if (newMatrix[j - 4] === 0) {
-                    break;
-                }
-                if (newMatrix[j] === newMatrix[j - 4]) {
-                    newMatrix[idx] = 2 * newMatrix[j - 4];
-                    newScore = newScore + newMatrix[idx];
-                    newMatrix[j - 4] = 0;
-                    idx -= 4;
-                    j -= 4;
-                } else {
-                    idx -= 4;
+                if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                    y -= 4;
                     continue;
                 }
+                if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                    newMatrix[x] = newMatrix[y];
+                    newMatrix[y] = 0;
+                    y -= 4;
+                    continue;
+                }
+                if (newMatrix[y] === 0) {
+                    y -= 4;
+                    continue;
+                }
+                if (newMatrix[x] !== newMatrix[y]) {
+                    x -= 4;
+                    continue;
+                }
+                newMatrix[x] = 2 * newMatrix[y];
+                newScore += 2 * newMatrix[y];
+                newMatrix[y] = 0;
+                x -= 4;
+                y -= 4;
             }
         }
-        newMatrix = shiftDown(newMatrix);
 
         const isEqual = compareMatrix(matrix, newMatrix);
         if (isEqual) {
