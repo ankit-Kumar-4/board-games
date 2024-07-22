@@ -388,10 +388,10 @@ const Board: React.FC = () => {
                 <div
                     className="relative select-none"
                     style={{
-                        width: '64vw',
-                        height: '64vw',
-                        maxWidth: '64vh',
-                        maxHeight: '64vh'
+                        width: '80vw',
+                        height: '80vw',
+                        maxWidth: '80vh',
+                        maxHeight: '80vh'
                     }}
                 >
                     <div className="grid grid-cols-4 gap-0 h-full w-full bg-black">
