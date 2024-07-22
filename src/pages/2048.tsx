@@ -100,6 +100,8 @@ const Board: React.FC = () => {
     const [score, setScore] = useState(0);
     const matrixRef = useRef(matrix);
     const scoreRef = useRef(score);
+    const [undoCount, setUndoCount] = useState(0);
+    const undoCountRef = useRef(undoCount);
     const [history, setHistory] = useState<{ matrix: SquareValue[], score: number }[]>([]);
 
     function generateNumber(matrix: SquareValue[]) {
@@ -117,7 +119,7 @@ const Board: React.FC = () => {
         return { value: newCellValue, index: indexes[newIndex] };
     }
 
-    function leftSwipe(matrix: SquareValue[], score: number) {
+    function leftSwipe(matrix: SquareValue[], score: number, undoCount: number) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -140,6 +142,9 @@ const Board: React.FC = () => {
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
+                    if (newMatrix[y] === 512) {
+                        setUndoCount(undoCount + 1);
+                    }
                     newMatrix[y] = 0;
                     x++;
                     y++;
@@ -161,7 +166,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function rightSwipe(matrix: SquareValue[], score: number) {
+    function rightSwipe(matrix: SquareValue[], score: number, undoCount: number) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -184,6 +189,9 @@ const Board: React.FC = () => {
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
+                    if (newMatrix[y] === 512) {
+                        setUndoCount(undoCount + 1);
+                    }
                     newMatrix[y] = 0;
                     x--;
                     y--;
@@ -209,7 +217,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function upSwipe(matrix: SquareValue[], score: number) {
+    function upSwipe(matrix: SquareValue[], score: number, undoCount: number) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -232,6 +240,9 @@ const Board: React.FC = () => {
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
+                    if (newMatrix[y] === 512) {
+                        setUndoCount(undoCount + 1);
+                    }
                     newMatrix[y] = 0;
                     x += 4;
                     y += 4;
@@ -253,7 +264,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function downSwipe(matrix: SquareValue[], score: number) {
+    function downSwipe(matrix: SquareValue[], score: number, undoCount: number) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -276,6 +287,9 @@ const Board: React.FC = () => {
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
+                    if (newMatrix[y] === 512) {
+                        setUndoCount(undoCount + 1);
+                    }
                     newMatrix[y] = 0;
                     x -= 4;
                     y -= 4;
@@ -299,10 +313,10 @@ const Board: React.FC = () => {
 
 
     const handlers = useSwipeable({
-        onSwipedLeft: () => leftSwipe(matrix, score),
-        onSwipedRight: () => rightSwipe(matrix, score),
-        onSwipedUp: () => upSwipe(matrix, score),
-        onSwipedDown: () => downSwipe(matrix, score),
+        onSwipedLeft: () => leftSwipe(matrix, score, undoCount),
+        onSwipedRight: () => rightSwipe(matrix, score, undoCount),
+        onSwipedUp: () => upSwipe(matrix, score, undoCount),
+        onSwipedDown: () => downSwipe(matrix, score, undoCount),
         preventScrollOnSwipe: true,
         trackMouse: true,
     });
@@ -311,6 +325,7 @@ const Board: React.FC = () => {
     useEffect(() => {
         matrixRef.current = matrix;
         scoreRef.current = score;
+        undoCountRef.current = undoCount;
     }, [matrix, score]);
 
 
@@ -326,16 +341,16 @@ const Board: React.FC = () => {
 
     useEffect(() => {
         hotkeys('up', () => {
-            upSwipe(matrixRef.current, scoreRef.current);
+            upSwipe(matrixRef.current, scoreRef.current, undoCountRef.current);
         });
         hotkeys('down', () => {
-            downSwipe(matrixRef.current, scoreRef.current);
+            downSwipe(matrixRef.current, scoreRef.current, undoCountRef.current);
         });
         hotkeys('left', () => {
-            leftSwipe(matrixRef.current, scoreRef.current);
+            leftSwipe(matrixRef.current, scoreRef.current, undoCountRef.current);
         });
         hotkeys('right', () => {
-            rightSwipe(matrixRef.current, scoreRef.current);
+            rightSwipe(matrixRef.current, scoreRef.current, undoCountRef.current);
         });
 
         return () => {
@@ -347,12 +362,14 @@ const Board: React.FC = () => {
     }, []);
 
     const undo = () => {
-        console.log('undo clicked', history.length)
+        console.log('undo clicked', history.length);
+        console.log('undo count: ', undoCount)
         if (history.length === 0) {
             return;
         }
         const last_step = history.slice(-1)[0];
         const newHistory = history.slice(0, -1);
+        setUndoCount(undoCount - 1);
         setMatrix(last_step.matrix);
         setScore(last_step.score);
         setHistory(newHistory);
@@ -362,7 +379,7 @@ const Board: React.FC = () => {
         <div {...handlers}
         >
             <h1>Score: {score}</h1>
-            <button onClick={undo} className='bg-orange-300 hover:bg-slate-500'>Undo</button>
+            <button onClick={undo} className={`bg-orange-300 hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
             <div className="flex flex-col items-center max-h-screen pt-8">
                 <div
                     className="relative select-none"
@@ -378,7 +395,7 @@ const Board: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
