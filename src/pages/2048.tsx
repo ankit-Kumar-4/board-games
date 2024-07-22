@@ -97,6 +97,7 @@ const Board: React.FC = () => {
     const [score, setScore] = useState(0);
     const matrixRef = useRef(matrix);
     const scoreRef = useRef(score);
+    const [history, setHistory] = useState<{ matrix: SquareValue[], score: number }[]>([]);
 
     function generateNumber(matrix: SquareValue[]) {
         const newCellValue = getNewCellValue();
@@ -160,6 +161,7 @@ const Board: React.FC = () => {
             newMatrix[index] = value;
             setScore(newScore);
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: matrix, score: score }]);
         }
     }
 
@@ -210,6 +212,7 @@ const Board: React.FC = () => {
             newMatrix[index] = value;
             setScore(newScore);
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: matrix, score: score }]);
         }
     }
 
@@ -260,6 +263,7 @@ const Board: React.FC = () => {
             newMatrix[index] = value;
             setScore(newScore);
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: matrix, score: score }]);
         }
     }
 
@@ -310,6 +314,7 @@ const Board: React.FC = () => {
             newMatrix[index] = value;
             setScore(newScore);
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: matrix, score: score }]);
         }
     }
 
@@ -336,6 +341,7 @@ const Board: React.FC = () => {
         if (value > 0) {
             newMatrix[index] = value;
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: newMatrix, score: 0 }]);
         }
     }, []);
 
@@ -361,10 +367,23 @@ const Board: React.FC = () => {
         };
     }, []);
 
+    const undo = () => {
+        console.log('undo clicked', history.length)
+        if (history.length === 0) {
+            return;
+        }
+        const last_step = history.slice(-1)[0];
+        const newHistory = history.slice(0, -1);
+        setMatrix(last_step.matrix);
+        setScore(last_step.score);
+        setHistory(newHistory);
+    }
+
     return (
         <div {...handlers}
         >
             <h1>Score: {score}</h1>
+            <button onClick={undo} className='bg-orange-300 hover:bg-slate-500'>Undo</button>
             <div className="flex flex-col items-center max-h-screen pt-8">
                 <div
                     className="relative select-none"
