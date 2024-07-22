@@ -38,6 +38,9 @@ function getCells(size: number, matrix: SquareValue[]) {
     for (let i = 0; i < size; i++) {
         let cell_color = 'bg-white';
         switch (matrix[i]) {
+            case 0:
+                cell_color = 'bg-white';
+                break;
             case 2:
                 cell_color = 'bg-cell2';
                 break;
@@ -74,8 +77,8 @@ function getCells(size: number, matrix: SquareValue[]) {
             case 4096:
                 cell_color = 'bg-cell4096';
                 break;
-
             default:
+                cell_color = 'bg-yellow-300';
                 break;
         }
         result.push(
