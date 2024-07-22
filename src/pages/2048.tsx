@@ -7,7 +7,7 @@ import hotkeys from 'hotkeys-js';
 type SquareValue = number | 0;
 
 function getNewCellValue() {
-    const random = Math.random(); // Generates a random number between 0 and 1
+    const random = Math.random();
 
     if (random < 0.01) {
         return 8;
@@ -97,6 +97,7 @@ const Board: React.FC = () => {
     const [score, setScore] = useState(0);
     const matrixRef = useRef(matrix);
     const scoreRef = useRef(score);
+    const [history, setHistory] = useState<{ matrix: SquareValue[], score: number }[]>([]);
 
     function generateNumber(matrix: SquareValue[]) {
         const newCellValue = getNewCellValue();
@@ -123,30 +124,23 @@ const Board: React.FC = () => {
             while (y - i < 4) {
                 if (x === y) {
                     y++;
-                }
-                if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
                     y++;
-                    continue;
-                }
-                if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
                     newMatrix[x] = newMatrix[y];
                     newMatrix[y] = 0;
                     y++;
-                    continue;
-                }
-                if (newMatrix[y] === 0) {
+                } else if (newMatrix[y] === 0) {
                     y++;
-                    continue;
-                }
-                if (newMatrix[x] !== newMatrix[y]) {
+                } else if (newMatrix[x] !== newMatrix[y]) {
                     x++;
-                    continue;
+                } else {
+                    newMatrix[x] = 2 * newMatrix[y];
+                    newScore += 2 * newMatrix[y];
+                    newMatrix[y] = 0;
+                    x++;
+                    y++;
                 }
-                newMatrix[x] = 2 * newMatrix[y];
-                newScore += 2 * newMatrix[y];
-                newMatrix[y] = 0;
-                x++;
-                y++;
             }
         }
 
@@ -160,6 +154,7 @@ const Board: React.FC = () => {
             newMatrix[index] = value;
             setScore(newScore);
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: matrix, score: score }]);
         }
     }
 
@@ -173,32 +168,29 @@ const Board: React.FC = () => {
             while (i - y < 4) {
                 if (x === y) {
                     y--;
-                }
-                if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
                     y--;
-                    continue;
-                }
-                if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
                     newMatrix[x] = newMatrix[y];
                     newMatrix[y] = 0;
                     y--;
-                    continue;
-                }
-                if (newMatrix[y] === 0) {
+                } else if (newMatrix[y] === 0) {
                     y--;
-                    continue;
-                }
-                if (newMatrix[x] !== newMatrix[y]) {
+                } else if (newMatrix[x] !== newMatrix[y]) {
                     x--;
-                    continue;
+                } else {
+                    newMatrix[x] = 2 * newMatrix[y];
+                    newScore += 2 * newMatrix[y];
+                    newMatrix[y] = 0;
+                    x--;
+                    y--;
                 }
-                newMatrix[x] = 2 * newMatrix[y];
-                newScore += 2 * newMatrix[y];
-                newMatrix[y] = 0;
-                x--;
-                y--;
             }
         }
+        console.log(newMatrix.slice(0, 4));
+        console.log(newMatrix.slice(4, 8));
+        console.log(newMatrix.slice(8, 12));
+        console.log(newMatrix.slice(12));
 
         const isEqual = compareMatrix(matrix, newMatrix);
         if (isEqual) {
@@ -210,6 +202,7 @@ const Board: React.FC = () => {
             newMatrix[index] = value;
             setScore(newScore);
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: matrix, score: score }]);
         }
     }
 
@@ -223,30 +216,23 @@ const Board: React.FC = () => {
             while (y < matrix.length) {
                 if (x === y) {
                     y += 4;
-                }
-                if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
                     y += 4;
-                    continue;
-                }
-                if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
                     newMatrix[x] = newMatrix[y];
                     newMatrix[y] = 0;
                     y += 4;
-                    continue;
-                }
-                if (newMatrix[y] === 0) {
+                } else if (newMatrix[y] === 0) {
                     y += 4;
-                    continue;
-                }
-                if (newMatrix[x] !== newMatrix[y]) {
+                } else if (newMatrix[x] !== newMatrix[y]) {
                     x += 4;
-                    continue;
+                } else {
+                    newMatrix[x] = 2 * newMatrix[y];
+                    newScore += 2 * newMatrix[y];
+                    newMatrix[y] = 0;
+                    x += 4;
+                    y += 4;
                 }
-                newMatrix[x] = 2 * newMatrix[y];
-                newScore += 2 * newMatrix[y];
-                newMatrix[y] = 0;
-                x += 4;
-                y += 4;
             }
         }
 
@@ -260,6 +246,7 @@ const Board: React.FC = () => {
             newMatrix[index] = value;
             setScore(newScore);
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: matrix, score: score }]);
         }
     }
 
@@ -273,30 +260,23 @@ const Board: React.FC = () => {
             while (y >= 0) {
                 if (x === y) {
                     y -= 4;
-                }
-                if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
                     y -= 4;
-                    continue;
-                }
-                if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
                     newMatrix[x] = newMatrix[y];
                     newMatrix[y] = 0;
                     y -= 4;
-                    continue;
-                }
-                if (newMatrix[y] === 0) {
+                } else if (newMatrix[y] === 0) {
                     y -= 4;
-                    continue;
-                }
-                if (newMatrix[x] !== newMatrix[y]) {
+                } else if (newMatrix[x] !== newMatrix[y]) {
                     x -= 4;
-                    continue;
+                } else {
+                    newMatrix[x] = 2 * newMatrix[y];
+                    newScore += 2 * newMatrix[y];
+                    newMatrix[y] = 0;
+                    x -= 4;
+                    y -= 4;
                 }
-                newMatrix[x] = 2 * newMatrix[y];
-                newScore += 2 * newMatrix[y];
-                newMatrix[y] = 0;
-                x -= 4;
-                y -= 4;
             }
         }
 
@@ -310,6 +290,7 @@ const Board: React.FC = () => {
             newMatrix[index] = value;
             setScore(newScore);
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: matrix, score: score }]);
         }
     }
 
@@ -336,6 +317,7 @@ const Board: React.FC = () => {
         if (value > 0) {
             newMatrix[index] = value;
             setMatrix(newMatrix);
+            setHistory([...history, { matrix: newMatrix, score: 0 }]);
         }
     }, []);
 
@@ -361,10 +343,23 @@ const Board: React.FC = () => {
         };
     }, []);
 
+    const undo = () => {
+        console.log('undo clicked', history.length)
+        if (history.length === 0) {
+            return;
+        }
+        const last_step = history.slice(-1)[0];
+        const newHistory = history.slice(0, -1);
+        setMatrix(last_step.matrix);
+        setScore(last_step.score);
+        setHistory(newHistory);
+    }
+
     return (
         <div {...handlers}
         >
             <h1>Score: {score}</h1>
+            <button onClick={undo} className='bg-orange-300 hover:bg-slate-500'>Undo</button>
             <div className="flex flex-col items-center max-h-screen pt-8">
                 <div
                     className="relative select-none"
