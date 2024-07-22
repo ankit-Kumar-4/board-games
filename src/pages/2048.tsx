@@ -152,6 +152,7 @@ const Board: React.FC = () => {
     const [matrix, setMatrix] = useState<SquareValue[]>(Array(4 * 4).fill(0));
     const [score, setScore] = useState(0);
     const matrixRef = useRef(matrix);
+    const scoreRef = useRef(score);
 
     function generateNumber(matrix: SquareValue[]) {
         const newCellValue = getNewCellValue();
@@ -168,7 +169,7 @@ const Board: React.FC = () => {
         return { value: newCellValue, index: indexes[newIndex] };
     }
 
-    function leftSwipe(matrix: SquareValue[]) {
+    function leftSwipe(matrix: SquareValue[], score: number) {
         let newMatrix = shiftLeft(matrix);
         let newScore = score;
 
@@ -209,7 +210,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function rightSwipe(matrix: SquareValue[]) {
+    function rightSwipe(matrix: SquareValue[], score: number) {
         let newMatrix = shiftRight(matrix);
         let newScore = score;
 
@@ -251,7 +252,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function upSwipe(matrix: SquareValue[]) {
+    function upSwipe(matrix: SquareValue[], score: number) {
         let newMatrix = shiftUp(matrix);
         let newScore = score;
 
@@ -292,7 +293,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function downSwipe(matrix: SquareValue[]) {
+    function downSwipe(matrix: SquareValue[], score: number) {
         let newMatrix = shiftDown(matrix);
         let newScore = score;
 
@@ -335,10 +336,10 @@ const Board: React.FC = () => {
 
 
     const handlers = useSwipeable({
-        onSwipedLeft: () => leftSwipe(matrix),
-        onSwipedRight: () => rightSwipe(matrix),
-        onSwipedUp: () => upSwipe(matrix),
-        onSwipedDown: () => downSwipe(matrix),
+        onSwipedLeft: () => leftSwipe(matrix, score),
+        onSwipedRight: () => rightSwipe(matrix, score),
+        onSwipedUp: () => upSwipe(matrix, score),
+        onSwipedDown: () => downSwipe(matrix, score),
         preventScrollOnSwipe: true,
         trackMouse: true,
     });
@@ -346,7 +347,8 @@ const Board: React.FC = () => {
 
     useEffect(() => {
         matrixRef.current = matrix;
-    }, [matrix]);
+        scoreRef.current = score;
+    }, [matrix, score]);
 
 
     useEffect(() => {
@@ -360,16 +362,16 @@ const Board: React.FC = () => {
 
     useEffect(() => {
         hotkeys('up', () => {
-            upSwipe(matrixRef.current);
+            upSwipe(matrixRef.current, scoreRef.current);
         });
         hotkeys('down', () => {
-            downSwipe(matrixRef.current);
+            downSwipe(matrixRef.current, scoreRef.current);
         });
         hotkeys('left', () => {
-            leftSwipe(matrixRef.current);
+            leftSwipe(matrixRef.current, scoreRef.current);
         });
         hotkeys('right', () => {
-            rightSwipe(matrixRef.current);
+            rightSwipe(matrixRef.current, scoreRef.current);
         });
 
         return () => {
