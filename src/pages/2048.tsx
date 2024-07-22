@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
+import hotkeys from 'hotkeys-js';
 
 type SquareValue = number | 0;
 
@@ -148,6 +151,7 @@ function shiftDown(matrix: number[]) {
 const Board: React.FC = () => {
     const [matrix, setMatrix] = useState<SquareValue[]>(Array(4 * 4).fill(0));
     const [score, setScore] = useState(0);
+    const matrixRef = useRef(matrix);
 
     function generateNumber(matrix: SquareValue[]) {
         const newCellValue = getNewCellValue();
@@ -329,14 +333,20 @@ const Board: React.FC = () => {
         }
     }
 
+
     const handlers = useSwipeable({
         onSwipedLeft: () => leftSwipe(matrix),
         onSwipedRight: () => rightSwipe(matrix),
         onSwipedUp: () => upSwipe(matrix),
         onSwipedDown: () => downSwipe(matrix),
-        preventScrollOnSwipe: false,
+        preventScrollOnSwipe: true,
         trackMouse: true,
     });
+
+
+    useEffect(() => {
+        matrixRef.current = matrix;
+    }, [matrix]);
 
 
     useEffect(() => {
@@ -348,10 +358,33 @@ const Board: React.FC = () => {
         }
     }, []);
 
+    useEffect(() => {
+        hotkeys('up', () => {
+            upSwipe(matrixRef.current);
+        });
+        hotkeys('down', () => {
+            downSwipe(matrixRef.current);
+        });
+        hotkeys('left', () => {
+            leftSwipe(matrixRef.current);
+        });
+        hotkeys('right', () => {
+            rightSwipe(matrixRef.current);
+        });
+
+        return () => {
+            hotkeys.unbind('up');
+            hotkeys.unbind('down');
+            hotkeys.unbind('left');
+            hotkeys.unbind('right');
+        };
+    }, []);
+
     return (
-        <>
+        <div {...handlers}
+        >
             <h1>Score: {score}</h1>
-            <div className="flex flex-col items-center min-h-screen pt-8">
+            <div className="flex flex-col items-center max-h-screen pt-8">
                 <div
                     className="relative select-none"
                     style={{
@@ -360,14 +393,13 @@ const Board: React.FC = () => {
                         maxWidth: '64vh',
                         maxHeight: '64vh'
                     }}
-                    {...handlers}
                 >
                     <div className="grid grid-cols-4 gap-0 h-full w-full bg-black">
                         {getCells(4 * 4, matrix)}
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 
