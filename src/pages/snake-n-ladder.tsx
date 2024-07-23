@@ -372,7 +372,7 @@ export default function Game() {
   return (
     <>
       <div className="flex flex-col md:flex-row">
-        <div className="flex-grow w-full p-4">
+        <div className="flex-grow w-full">
           <Board
             chaal={playerPosition}
           ></Board>
