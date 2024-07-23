@@ -371,35 +371,42 @@ export default function Game() {
 
   return (
     <>
-      <Board
-        chaal={playerPosition}
-      ></Board>
-      <div className={styles["game-row1"]}>
-        {status.length > 0 ? <div className={`${styles["player" + (lastTwoTurn[1].player_id + 1)]} ${styles['player-turn']}`}>
-          {status}
-        </div> : ''}
-      </div>
-      <div className={styles["game-row1"]}>
-        <div className={`${styles["player" + (playerTurn + 1)]} ${styles['player-turn']}`}>
-          {`Turn of Player-${playerTurn + 1}`}
+      <div className="flex flex-col md:flex-row">
+        <div className="flex-grow w-full p-4">
+          <Board
+            chaal={playerPosition}
+          ></Board>
         </div>
-        <Dice onRoll={(value) => rollDice(value)} size={33}
-          faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
-        />
-      </div>
-      <div className={styles["new-game"]} onClick={restartGame}>
-        <div className={styles["title"]}>
-          New Game
+        <div className="flex-auto md:w-1/2 p-4 content-center">
+          <div className={styles["game-row1"]}>
+            {status.length > 0 ? <div className={`${styles["player" + (lastTwoTurn[1].player_id + 1)]} ${styles['player-turn']}`}>
+              {status}
+            </div> : ''}
+          </div>
+          <div className={styles["game-row1"]}>
+            <div className={`${styles["player" + (playerTurn + 1)]} ${styles['player-turn']}`}>
+              {`Turn of Player-${playerTurn + 1}`}
+            </div>
+            <Dice onRoll={(value) => rollDice(value)} size={33}
+              faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
+            />
+          </div>
+          <div className={styles["new-game"]} onClick={restartGame}>
+            <button className={styles["title"]}>
+              New Game
+            </button>
+          </div>
+          {lastArrow(lastTwoTurn, playerPosition)}
+          {
+            ranking.length > 0
+              ? (<div className={styles["game-row"]}>
+                <Table data={ranking} />
+              </div>)
+              : ''
+          }
         </div>
       </div>
-      {lastArrow(lastTwoTurn, playerPosition)}
-      {
-        ranking.length > 0
-          ? (<div className={styles["game-row"]}>
-            <Table data={ranking} />
-          </div>)
-          : ''
-      }
+
     </>
   );
 }
