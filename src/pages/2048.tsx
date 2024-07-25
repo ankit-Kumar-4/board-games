@@ -5,7 +5,33 @@ import { useSwipeable } from 'react-swipeable';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 type SquareValue = number | 0;
-const undoTrigger = 2;
+const undoTrigger = 512;
+
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+    if (!isOpen) return null;
+
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" onClick={handleOverlayClick}>
+            <div className="bg-white p-6 rounded shadow-lg">
+                {children}
+                <button onClick={onClose} className="mt-4 p-2 bg-red-500 text-white rounded">Close</button>
+            </div>
+        </div>
+    );
+};
+
 
 function getNewCellValue() {
     const random = Math.random();
@@ -31,6 +57,126 @@ function compareMatrix(matrixA: number[], matrixB: number[]) {
         }
     }
     return true;
+}
+
+function checkGameOver(matrix: number[]) {
+    let left = false;
+    let right = false;
+    let up = false;
+    let down = false;
+
+    let newMatrix = matrix.slice();
+    for (let i = 0; i < matrix.length; i += 4) {
+        let x = i;
+        let y = i + 1;
+        while (y - i < 4) {
+            if (x === y) {
+                y++;
+            } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                y++;
+            } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                newMatrix[x] = newMatrix[y];
+                newMatrix[y] = 0;
+                y++;
+            } else if (newMatrix[y] === 0) {
+                y++;
+            } else if (newMatrix[x] !== newMatrix[y]) {
+                x++;
+            } else {
+                newMatrix[x] = 2 * newMatrix[y];
+                newMatrix[y] = 0;
+                x++;
+                y++;
+            }
+        }
+    }
+    left = compareMatrix(matrix, newMatrix);
+    newMatrix = matrix.slice()
+
+    for (let i = 3; i < matrix.length; i = i + 4) {
+        let x = i;
+        let y = i - 1;
+        while (i - y < 4) {
+            if (x === y) {
+                y--;
+            } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                y--;
+            } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                newMatrix[x] = newMatrix[y];
+                newMatrix[y] = 0;
+                y--;
+            } else if (newMatrix[y] === 0) {
+                y--;
+            } else if (newMatrix[x] !== newMatrix[y]) {
+                x--;
+            } else {
+                newMatrix[x] = 2 * newMatrix[y];
+                newMatrix[y] = 0;
+                x--;
+                y--;
+            }
+        }
+    }
+    right = compareMatrix(matrix, newMatrix);
+    newMatrix = matrix.slice()
+
+    for (let i = 0; i * i < matrix.length; i++) {
+        let x = i;
+        let y = i + 4;
+        while (y < matrix.length) {
+            if (x === y) {
+                y += 4;
+            } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                y += 4;
+            } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                newMatrix[x] = newMatrix[y];
+                newMatrix[y] = 0;
+                y += 4;
+            } else if (newMatrix[y] === 0) {
+                y += 4;
+            } else if (newMatrix[x] !== newMatrix[y]) {
+                x += 4;
+            } else {
+                newMatrix[x] = 2 * newMatrix[y];
+                newMatrix[y] = 0;
+                x += 4;
+                y += 4;
+            }
+        }
+    }
+    up = compareMatrix(matrix, newMatrix);
+    newMatrix = matrix.slice()
+
+    for (let i = matrix.length - 1; matrix.length - i <= 4; i--) {
+        let x = i;
+        let y = i - 4;
+        while (y >= 0) {
+            if (x === y) {
+                y -= 4;
+            } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
+                y -= 4;
+            } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
+                newMatrix[x] = newMatrix[y];
+                newMatrix[y] = 0;
+                y -= 4;
+            } else if (newMatrix[y] === 0) {
+                y -= 4;
+            } else if (newMatrix[x] !== newMatrix[y]) {
+                x -= 4;
+            } else {
+                newMatrix[x] = 2 * newMatrix[y];
+                newMatrix[y] = 0;
+                x -= 4;
+                y -= 4;
+            }
+        }
+    }
+    down = compareMatrix(matrix, newMatrix);
+
+    if (left && right && up && down) {
+        return true;
+    }
+    return false;
 }
 
 
@@ -101,6 +247,7 @@ const Board: React.FC = () => {
     const [score, setScore] = useState(0);
     const [undoCount, setUndoCount] = useState(0);
     const [history, setHistory] = useState<{ matrix: SquareValue[], score: number }[]>([]);
+    const [isGameOver, setIsGameOver] = useState(false);
 
     function generateNumber(matrix: SquareValue[]) {
         const newCellValue = getNewCellValue();
@@ -117,7 +264,7 @@ const Board: React.FC = () => {
         return { value: newCellValue, index: indexes[newIndex] };
     }
 
-    function leftSwipe(matrix: SquareValue[], score: number) {
+    function leftSwipe(matrix: SquareValue[]) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -151,7 +298,8 @@ const Board: React.FC = () => {
         }
 
         const isEqual = compareMatrix(matrix, newMatrix);
-        if (isEqual) {
+        if (isEqual && checkGameOver(matrix) && undoCount === 0) {
+            setIsGameOver(true);
             return;
         }
 
@@ -164,7 +312,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function rightSwipe(matrix: SquareValue[], score: number) {
+    function rightSwipe(matrix: SquareValue[]) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -198,7 +346,8 @@ const Board: React.FC = () => {
         }
 
         const isEqual = compareMatrix(matrix, newMatrix);
-        if (isEqual) {
+        if (isEqual && checkGameOver(matrix) && undoCount === 0) {
+            setIsGameOver(true);
             return;
         }
 
@@ -211,7 +360,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function upSwipe(matrix: SquareValue[], score: number) {
+    function upSwipe(matrix: SquareValue[]) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -245,7 +394,8 @@ const Board: React.FC = () => {
         }
 
         const isEqual = compareMatrix(matrix, newMatrix);
-        if (isEqual) {
+        if (isEqual && checkGameOver(matrix) && undoCount === 0) {
+            setIsGameOver(true);
             return;
         }
 
@@ -258,7 +408,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function downSwipe(matrix: SquareValue[], score: number) {
+    function downSwipe(matrix: SquareValue[]) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -292,7 +442,8 @@ const Board: React.FC = () => {
         }
 
         const isEqual = compareMatrix(matrix, newMatrix);
-        if (isEqual) {
+        if (isEqual && checkGameOver(matrix) && undoCount === 0) {
+            setIsGameOver(true);
             return;
         }
 
@@ -307,36 +458,36 @@ const Board: React.FC = () => {
 
 
     const handlers = useSwipeable({
-        onSwipedLeft: () => leftSwipe(matrix, score),
-        onSwipedRight: () => rightSwipe(matrix, score),
-        onSwipedUp: () => upSwipe(matrix, score),
-        onSwipedDown: () => downSwipe(matrix, score),
+        onSwipedLeft: () => leftSwipe(matrix),
+        onSwipedRight: () => rightSwipe(matrix),
+        onSwipedUp: () => upSwipe(matrix),
+        onSwipedDown: () => downSwipe(matrix),
         preventScrollOnSwipe: true,
         trackMouse: true,
     });
 
 
     useEffect(() => {
+        console.log('just one fucking time')
         const newMatrix = matrix.slice();
         const { value, index } = generateNumber(newMatrix);
         if (value > 0) {
             newMatrix[index] = value;
             setMatrix(newMatrix);
-            setHistory([...history, { matrix: newMatrix, score: 0 }]);
         }
     }, []);
 
     useHotkeys('up', () => {
-        upSwipe(matrix, score);
+        upSwipe(matrix);
     }, [matrix]);
     useHotkeys('down', () => {
-        downSwipe(matrix, score);
+        downSwipe(matrix);
     }, [matrix]);
     useHotkeys('left', () => {
-        leftSwipe(matrix, score);
+        leftSwipe(matrix);
     }, [matrix]);
     useHotkeys('right', () => {
-        rightSwipe(matrix, score);
+        rightSwipe(matrix);
     }, [matrix])
 
     const undo = () => {
@@ -355,6 +506,7 @@ const Board: React.FC = () => {
         setScore(0);
         setUndoCount(0);
         setHistory([]);
+        setIsGameOver(false);
         const newMatrix = Array(4 * 4).fill(0);
         const { value, index } = generateNumber(newMatrix);
         if (value > 0) {
@@ -386,6 +538,11 @@ const Board: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <Modal isOpen={isGameOver} onClose={() => setIsGameOver(false)}>
+                <h2>Game Over</h2>
+                <p>Your final score is: {score}</p>
+                <button onClick={newGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
+            </Modal>
         </div >
     );
 };
