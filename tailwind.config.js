@@ -10,6 +10,7 @@ module.exports = {
         sidePanel: '#669999',
         sidePanelLink: '#3d5c5c',
         navButton: '#000000',
+        score: '#483c0c',
         cell2: '#c2c2d6',
         cell4: '#9494b8',
         cell8: '#666699',

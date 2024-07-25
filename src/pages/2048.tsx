@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
-import hotkeys from 'hotkeys-js';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 type SquareValue = number | 0;
+const undoTrigger = 2;
 
 function getNewCellValue() {
     const random = Math.random();
@@ -98,10 +99,7 @@ function getCells(size: number, matrix: SquareValue[]) {
 const Board: React.FC = () => {
     const [matrix, setMatrix] = useState<SquareValue[]>(Array(4 * 4).fill(0));
     const [score, setScore] = useState(0);
-    const matrixRef = useRef(matrix);
-    const scoreRef = useRef(score);
     const [undoCount, setUndoCount] = useState(0);
-    const undoCountRef = useRef(undoCount);
     const [history, setHistory] = useState<{ matrix: SquareValue[], score: number }[]>([]);
 
     function generateNumber(matrix: SquareValue[]) {
@@ -119,7 +117,7 @@ const Board: React.FC = () => {
         return { value: newCellValue, index: indexes[newIndex] };
     }
 
-    function leftSwipe(matrix: SquareValue[], score: number, undoCount: number) {
+    function leftSwipe(matrix: SquareValue[], score: number) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -142,7 +140,7 @@ const Board: React.FC = () => {
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
-                    if (newMatrix[y] === 512) {
+                    if (newMatrix[y] === undoTrigger) {
                         setUndoCount(undoCount + 1);
                     }
                     newMatrix[y] = 0;
@@ -166,7 +164,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function rightSwipe(matrix: SquareValue[], score: number, undoCount: number) {
+    function rightSwipe(matrix: SquareValue[], score: number) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -189,7 +187,7 @@ const Board: React.FC = () => {
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
-                    if (newMatrix[y] === 512) {
+                    if (newMatrix[y] === undoTrigger) {
                         setUndoCount(undoCount + 1);
                     }
                     newMatrix[y] = 0;
@@ -198,10 +196,6 @@ const Board: React.FC = () => {
                 }
             }
         }
-        console.log(newMatrix.slice(0, 4));
-        console.log(newMatrix.slice(4, 8));
-        console.log(newMatrix.slice(8, 12));
-        console.log(newMatrix.slice(12));
 
         const isEqual = compareMatrix(matrix, newMatrix);
         if (isEqual) {
@@ -217,7 +211,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function upSwipe(matrix: SquareValue[], score: number, undoCount: number) {
+    function upSwipe(matrix: SquareValue[], score: number) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -240,7 +234,7 @@ const Board: React.FC = () => {
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
-                    if (newMatrix[y] === 512) {
+                    if (newMatrix[y] === undoTrigger) {
                         setUndoCount(undoCount + 1);
                     }
                     newMatrix[y] = 0;
@@ -264,7 +258,7 @@ const Board: React.FC = () => {
         }
     }
 
-    function downSwipe(matrix: SquareValue[], score: number, undoCount: number) {
+    function downSwipe(matrix: SquareValue[], score: number) {
         let newMatrix = matrix.slice();
         let newScore = score;
 
@@ -287,7 +281,7 @@ const Board: React.FC = () => {
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
-                    if (newMatrix[y] === 512) {
+                    if (newMatrix[y] === undoTrigger) {
                         setUndoCount(undoCount + 1);
                     }
                     newMatrix[y] = 0;
@@ -313,20 +307,13 @@ const Board: React.FC = () => {
 
 
     const handlers = useSwipeable({
-        onSwipedLeft: () => leftSwipe(matrix, score, undoCount),
-        onSwipedRight: () => rightSwipe(matrix, score, undoCount),
-        onSwipedUp: () => upSwipe(matrix, score, undoCount),
-        onSwipedDown: () => downSwipe(matrix, score, undoCount),
+        onSwipedLeft: () => leftSwipe(matrix, score),
+        onSwipedRight: () => rightSwipe(matrix, score),
+        onSwipedUp: () => upSwipe(matrix, score),
+        onSwipedDown: () => downSwipe(matrix, score),
         preventScrollOnSwipe: true,
         trackMouse: true,
     });
-
-
-    useEffect(() => {
-        matrixRef.current = matrix;
-        scoreRef.current = score;
-        undoCountRef.current = undoCount;
-    }, [matrix, score]);
 
 
     useEffect(() => {
@@ -339,31 +326,20 @@ const Board: React.FC = () => {
         }
     }, []);
 
-    useEffect(() => {
-        hotkeys('up', () => {
-            upSwipe(matrixRef.current, scoreRef.current, undoCountRef.current);
-        });
-        hotkeys('down', () => {
-            downSwipe(matrixRef.current, scoreRef.current, undoCountRef.current);
-        });
-        hotkeys('left', () => {
-            leftSwipe(matrixRef.current, scoreRef.current, undoCountRef.current);
-        });
-        hotkeys('right', () => {
-            rightSwipe(matrixRef.current, scoreRef.current, undoCountRef.current);
-        });
-
-        return () => {
-            hotkeys.unbind('up');
-            hotkeys.unbind('down');
-            hotkeys.unbind('left');
-            hotkeys.unbind('right');
-        };
-    }, []);
+    useHotkeys('up', () => {
+        upSwipe(matrix, score);
+    }, [matrix]);
+    useHotkeys('down', () => {
+        downSwipe(matrix, score);
+    }, [matrix]);
+    useHotkeys('left', () => {
+        leftSwipe(matrix, score);
+    }, [matrix]);
+    useHotkeys('right', () => {
+        rightSwipe(matrix, score);
+    }, [matrix])
 
     const undo = () => {
-        console.log('undo clicked', history.length);
-        console.log('undo count: ', undoCount)
         if (history.length === 0) {
             return;
         }
@@ -375,11 +351,26 @@ const Board: React.FC = () => {
         setHistory(newHistory);
     }
 
+    const newGame = () => {
+        setScore(0);
+        setUndoCount(0);
+        setHistory([]);
+        const newMatrix = Array(4 * 4).fill(0);
+        const { value, index } = generateNumber(newMatrix);
+        if (value > 0) {
+            newMatrix[index] = value;
+            setMatrix(newMatrix);
+        }
+    }
+
     return (
         <div {...handlers}
         >
-            <h1>Score: {score}</h1>
-            <button onClick={undo} className={`bg-orange-300 hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
+            <div className="flex justify-center">
+                <p className='text-center font-extrabold text-xl text-score'>Score: {score}</p>
+                <button onClick={undo} className={`bg-orange-300 m-auto hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
+                <button onClick={newGame} className='m-auto'>New Game</button>
+            </div>
             <div className="flex flex-col items-center max-h-screen pt-8">
                 <div
                     className="relative select-none"
