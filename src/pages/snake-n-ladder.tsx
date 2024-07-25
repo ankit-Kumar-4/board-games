@@ -371,6 +371,13 @@ export default function Game() {
 
   return (
     <>
+      <div className="flex justify-center">
+        <button onClick={restartGame}>
+          New Game
+        </button>
+
+      </div>
+
       <div className="flex flex-col md:flex-row">
         <div className="flex-grow w-full">
           <Board
@@ -390,11 +397,6 @@ export default function Game() {
             <Dice onRoll={(value) => rollDice(value)} size={33}
               faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
             />
-          </div>
-          <div className={styles["new-game"]} onClick={restartGame}>
-            <button className={styles["title"]}>
-              New Game
-            </button>
           </div>
           {lastArrow(lastTwoTurn, playerPosition)}
           {
