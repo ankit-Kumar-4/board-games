@@ -468,7 +468,6 @@ const Board: React.FC = () => {
 
 
     useEffect(() => {
-        console.log('just one fucking time')
         const newMatrix = matrix.slice();
         const { value, index } = generateNumber(newMatrix);
         if (value > 0) {
