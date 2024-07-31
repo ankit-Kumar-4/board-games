@@ -24,9 +24,9 @@ const Board = (
                         key={i * 9 + j}
                         className={`w-8 h-8 md:w-16 md:h-16 flex items-center justify-center bg-gray-300 border border-gray-400
                             ${i % 3 === 0 ? 'border-t-2' : ''}  ${j % 3 === 0 ? 'border-l-2' : ''}
-                            ${i === selectedCell.x ? 'bg-blue-200 ' : ''} 
-                            ${j === selectedCell.y ? 'bg-blue-200 ' : ''}
-                            ${i === selectedCell.x && j === selectedCell.y ? 'border-2 border-blue-400 ' : ''}
+                            ${i === selectedCell.x ? 'bg-blue-300 ' : ''} 
+                            ${j === selectedCell.y ? 'bg-blue-300 ' : ''}
+                            ${i === selectedCell.x && j === selectedCell.y ? 'border-2 border-blue-500 ' : ''}
                             `}
 
                         onClick={() => handleCellClick(i, j)}
