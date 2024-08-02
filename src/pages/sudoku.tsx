@@ -18,15 +18,15 @@ const Board = (
     const cells = [];
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
+            console.log(i, j, selectedCell.x, selectedCell.y);
             cells.push(
                 (
                     <div
                         key={i * 9 + j}
-                        className={`w-8 h-8 md:w-16 md:h-16 flex items-center justify-center bg-gray-300 border border-gray-400
+                        className={`w-8 h-8 md:w-16 md:h-16 flex items-center justify-center  border 
                             ${i % 3 === 0 ? 'border-t-2' : ''}  ${j % 3 === 0 ? 'border-l-2' : ''}
-                            ${i === selectedCell.x ? 'bg-blue-300 ' : ''} 
-                            ${j === selectedCell.y ? 'bg-blue-300 ' : ''}
-                            ${i === selectedCell.x && j === selectedCell.y ? 'border-2 border-blue-500 ' : ''}
+                            ${i === selectedCell.x && j === selectedCell.y ? 'border-2 border-blue-500 ' : 'border-gray-400'}
+                            ${i === selectedCell.x || j === selectedCell.y ? 'bg-blue-300 ' : 'bg-gray-300'} 
                             `}
 
                         onClick={() => handleCellClick(i, j)}
@@ -79,8 +79,8 @@ const Game: React.FC = () => {
                         <div
                             key={index}
                             className={`w-1/12 md:w-1/3 flex flex-col md:flex-row justify-center content-center
-                                 bg-gray-300 border border-gray-400 cursor-pointer hover:bg-sky-200
-                                 ${pointer === index ? 'bg-blue-300' : ''}
+                                  border  cursor-pointer hover:bg-sky-200
+                                 ${pointer === index ? 'bg-blue-300 border-blue-600 border-2' : 'bg-gray-300 border-gray-400'}
                                  `}
                             onClick={() => updateCell(index + 1)}
                         >
