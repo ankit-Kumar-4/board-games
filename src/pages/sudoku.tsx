@@ -28,6 +28,16 @@ function getBoxCount(value: number) {
     return -1;
 }
 
+function getRemainingPointers(matrix: number[]) {
+    const remainingPointers = Array(9).fill(9);
+    for (let i of matrix) {
+        if (i > 0) {
+            remainingPointers[i - 1]--;
+        }
+    }
+    return remainingPointers;
+}
+
 const Board = (
     { matrix, selectedCell, handleSudokuCellClick }:
         {
@@ -71,6 +81,8 @@ const Game: React.FC = () => {
     const [selectedCell, setSelectedCell] = useState({ x: -1, y: -1, box: -1 });
     const [matrix, setMatrix] = useState(Array(91).fill(0));
     const [pointer, setPointer] = useState(-1);
+    const [remainingPointers, setRemainingPointers] = useState(Array(9).fill(9));
+
     function restartGame() {
         setSelectedCell({ x: -1, y: -1, box: -1 });
         setMatrix(Array(91).fill(0));
@@ -82,6 +94,7 @@ const Game: React.FC = () => {
         newMatrix[selectedCell.x * 9 + selectedCell.y] = value;
         setMatrix(newMatrix);
         setPointer(value - 1);
+        setRemainingPointers(getRemainingPointers(newMatrix));
     }
 
     const handleSudokuCellClick = (row: number, column: number) => {
@@ -109,6 +122,7 @@ const Game: React.FC = () => {
                             className={`w-1/12 md:w-1/3 flex flex-col md:flex-row justify-center content-center
                                   border  cursor-pointer hover:bg-sky-200
                                  ${pointer === index ? 'bg-blue-300 border-blue-600 border-2' : 'bg-gray-300 border-gray-400'}
+                                 ${remainingPointers[index] ? '' : 'opacity-0'}
                                  `}
                             onClick={() => handlePointerClick(index + 1)}
                         >
@@ -117,7 +131,7 @@ const Game: React.FC = () => {
                                 <div className='text-xl'>{index + 1}</div>
                             </div>
                             <div className="flex justify-center items-center h-full w-full">
-                                <div className='text-gray-500'>9</div>
+                                <div className='text-gray-500'>{remainingPointers[index]}</div>
                             </div>
                         </div>
                     ))}
