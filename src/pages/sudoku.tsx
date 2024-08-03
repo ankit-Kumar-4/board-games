@@ -2,49 +2,25 @@
 
 
 import { useState } from 'react';
+import {
+    checkInBox,
+    getBoxCount,
+    getRemainingPointers,
+    boxes3x3,
+    checkInvalidMove
+} from '@/utils/sudoku';
 
-const boxes3x3 = [0, 3, 6, 27, 30, 33, 54, 57, 60];
-
-function checkInBox(boxNumber: number, value: number) {
-    if (boxNumber <= value && value < boxNumber + 3) {
-        return true;
-    }
-    if (boxNumber + 9 <= value && value < boxNumber + 9 + 3) {
-        return true;
-    }
-    if (boxNumber + 18 <= value && value < boxNumber + 18 + 3) {
-        return true;
-    }
-    return false;
-}
-
-function getBoxCount(value: number) {
-    for (let i = 0; i < 9; i++) {
-        const result = checkInBox(boxes3x3[i], value);
-        if (result) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-function getRemainingPointers(matrix: number[]) {
-    const remainingPointers = Array(9).fill(9);
-    for (let i of matrix) {
-        if (i > 0) {
-            remainingPointers[i - 1]--;
-        }
-    }
-    return remainingPointers;
-}
 
 const Board = (
     { matrix, selectedCell, handleSudokuCellClick }:
         {
             matrix: number[]
-            selectedCell: { x: number, y: number, box: number };
+            selectedCell: { row: number, col: number, box: number };
             handleSudokuCellClick: (row: number, column: number) => void
         }) => {
+
+    const invalidCells = checkInvalidMove(matrix);
+    console.log(invalidCells);
 
     const cells = [];
     for (let i = 0; i < 9; i++) {
@@ -55,8 +31,9 @@ const Board = (
                         key={i * 9 + j}
                         className={`w-8 h-8 md:w-16 md:h-16 flex items-center justify-center  border 
                             ${i % 3 === 0 ? 'border-t-2' : ''}  ${j % 3 === 0 ? 'border-l-2' : ''}
-                            ${i === selectedCell.x && j === selectedCell.y ? 'border-2 border-blue-500 ' : 'border-gray-400'}
-                            ${i === selectedCell.x || j === selectedCell.y || checkInBox(boxes3x3[selectedCell.box], i * 9 + j) ? 'bg-blue-300 ' : 'bg-gray-300'} 
+                            ${i === selectedCell.row && j === selectedCell.col ? 'border-2 border-blue-500 ' : 'border-gray-400'}
+                            ${i === selectedCell.row || j === selectedCell.col || checkInBox(boxes3x3[selectedCell.box], i * 9 + j) ? 'bg-blue-300 ' : 'bg-gray-300'} 
+                            ${invalidCells.includes(i * 9 + j) ? 'text-red-700 text-2xl' : ''}
                             `}
 
                         onClick={() => handleSudokuCellClick(i, j)}
@@ -78,20 +55,23 @@ const Board = (
 };
 
 const Game: React.FC = () => {
-    const [selectedCell, setSelectedCell] = useState({ x: -1, y: -1, box: -1 });
+    const [selectedCell, setSelectedCell] = useState({ row: -1, col: -1, box: -1 });
     const [matrix, setMatrix] = useState(Array(91).fill(0));
     const [pointer, setPointer] = useState(-1);
     const [remainingPointers, setRemainingPointers] = useState(Array(9).fill(9));
+    const [clickable, setClickable] = useState(false);
+    const [invalidMove, setInvalidMove] = useState({ row: -1, col: -1, box: -1 });
 
     function restartGame() {
-        setSelectedCell({ x: -1, y: -1, box: -1 });
+        setSelectedCell({ row: -1, col: -1, box: -1 });
         setMatrix(Array(91).fill(0));
         setPointer(-1);
     }
 
     function handlePointerClick(value: number) {
+        if (!clickable) return;
         const newMatrix = matrix.slice();
-        newMatrix[selectedCell.x * 9 + selectedCell.y] = value;
+        newMatrix[selectedCell.row * 9 + selectedCell.col] = value;
         setMatrix(newMatrix);
         setPointer(value - 1);
         setRemainingPointers(getRemainingPointers(newMatrix));
@@ -99,7 +79,9 @@ const Game: React.FC = () => {
 
     const handleSudokuCellClick = (row: number, column: number) => {
         const box = getBoxCount(row * 9 + column);
-        setSelectedCell({ x: row, y: column, box })
+        setSelectedCell({ row: row, col: column, box });
+        setInvalidMove({ row: -1, col: -1, box: -1 });
+        setClickable(true);
     };
 
     return (
