@@ -110,3 +110,14 @@ export function checkInvalidMove(matrix: number[]) {
     }
     return invalidIndexes;
 }
+
+
+export function findAllSelected(matrix: number[], value: number) {
+    if (!value) return [];
+    return matrix.reduce((acc: number[], element, index) => {
+        if (element === value) {
+            acc.push(index);
+        }
+        return acc;
+    }, []);
+}

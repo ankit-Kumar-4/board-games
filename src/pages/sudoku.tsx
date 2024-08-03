@@ -7,7 +7,8 @@ import {
     getBoxCount,
     getRemainingPointers,
     boxes3x3,
-    checkInvalidMove
+    checkInvalidMove,
+    findAllSelected
 } from '@/utils/sudoku';
 
 
@@ -20,7 +21,7 @@ const Board = (
         }) => {
 
     const invalidCells = checkInvalidMove(matrix);
-    console.log(invalidCells);
+    const getSelectedCells = findAllSelected(matrix, matrix[selectedCell.row * 9 + selectedCell.col]);
 
     const cells = [];
     for (let i = 0; i < 9; i++) {
@@ -30,15 +31,18 @@ const Board = (
                     <div
                         key={i * 9 + j}
                         className={`w-8 h-8 md:w-16 md:h-16 flex items-center justify-center  border 
-                            ${i % 3 === 0 ? 'border-t-2' : ''}  ${j % 3 === 0 ? 'border-l-2' : ''}
-                            ${i === selectedCell.row && j === selectedCell.col ? 'border-2 border-blue-500 ' : 'border-gray-400'}
-                            ${i === selectedCell.row || j === selectedCell.col || checkInBox(boxes3x3[selectedCell.box], i * 9 + j) ? 'bg-blue-300 ' : 'bg-gray-300'} 
+                            ${i % 3 === 0 ? 'border-t-2 border-t-black' : ''}  ${j % 3 === 0 ? 'border-l-2 border-l-black' : ''}
+                            ${i === selectedCell.row && j === selectedCell.col ? 'border-2 border-blue-500 bg-blue-300' : 'border-gray-400'}
+                            ${i === selectedCell.row || j === selectedCell.col || checkInBox(boxes3x3[selectedCell.box], i * 9 + j) ? 'bg-blue-100 ' :
+                                (getSelectedCells.includes(i * 9 + j) ? 'bg-blue-100' : 'bg-gray-300')
+                            } 
                             ${invalidCells.includes(i * 9 + j) ? 'text-red-700 text-2xl' : ''}
+                            ${getSelectedCells.includes(i * 9 + j) ? 'bg-blue-100' : 'bg-gray-300'}
                             `}
 
                         onClick={() => handleSudokuCellClick(i, j)}
                     >
-                        {matrix[i * 9 + j]}
+                        {matrix[i * 9 + j] ? matrix[i * 9 + j] : null}
                     </div >
                 )
             )
@@ -59,8 +63,6 @@ const Game: React.FC = () => {
     const [matrix, setMatrix] = useState(Array(91).fill(0));
     const [pointer, setPointer] = useState(-1);
     const [remainingPointers, setRemainingPointers] = useState(Array(9).fill(9));
-    const [clickable, setClickable] = useState(false);
-    const [invalidMove, setInvalidMove] = useState({ row: -1, col: -1, box: -1 });
 
     function restartGame() {
         setSelectedCell({ row: -1, col: -1, box: -1 });
@@ -69,7 +71,6 @@ const Game: React.FC = () => {
     }
 
     function handlePointerClick(value: number) {
-        if (!clickable) return;
         const newMatrix = matrix.slice();
         newMatrix[selectedCell.row * 9 + selectedCell.col] = value;
         setMatrix(newMatrix);
@@ -80,8 +81,6 @@ const Game: React.FC = () => {
     const handleSudokuCellClick = (row: number, column: number) => {
         const box = getBoxCount(row * 9 + column);
         setSelectedCell({ row: row, col: column, box });
-        setInvalidMove({ row: -1, col: -1, box: -1 });
-        setClickable(true);
     };
 
     return (
