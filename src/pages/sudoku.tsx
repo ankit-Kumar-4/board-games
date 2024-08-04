@@ -37,7 +37,6 @@ const Board = (
                                 (getSelectedCells.includes(i * 9 + j) ? 'bg-blue-100' : 'bg-gray-300')
                             } 
                             ${invalidCells.includes(i * 9 + j) ? 'text-red-700 text-2xl' : ''}
-                            ${getSelectedCells.includes(i * 9 + j) ? 'bg-blue-100' : 'bg-gray-300'}
                             `}
 
                         onClick={() => handleSudokuCellClick(i, j)}
@@ -68,9 +67,11 @@ const Game: React.FC = () => {
         setSelectedCell({ row: -1, col: -1, box: -1 });
         setMatrix(Array(91).fill(0));
         setPointer(-1);
+        setRemainingPointers(Array(9).fill(9));
     }
 
     function handlePointerClick(value: number) {
+        if (remainingPointers[value - 1] === 0) return;
         const newMatrix = matrix.slice();
         newMatrix[selectedCell.row * 9 + selectedCell.col] = value;
         setMatrix(newMatrix);
