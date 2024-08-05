@@ -170,7 +170,6 @@ const Game: React.FC = () => {
 
     return (
         <>
-            <div>Work in progress...</div>
             <div className="flex justify-center mb-2">
                 <div className='p-1 text-pretty text-2xl'>
                     <Timer
