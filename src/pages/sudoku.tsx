@@ -14,11 +14,12 @@ import {
 
 
 const Board = (
-    { matrix, selectedCell, handleSudokuCellClick }:
+    { matrix, selectedCell, handleSudokuCellClick, originalMatrix }:
         {
             matrix: number[]
             selectedCell: { row: number, col: number, box: number };
-            handleSudokuCellClick: (row: number, column: number) => void
+            handleSudokuCellClick: (row: number, column: number) => void;
+            originalMatrix: number[]
         }) => {
 
     const invalidCells = checkInvalidMove(matrix);
@@ -37,7 +38,8 @@ const Board = (
                             ${i === selectedCell.row || j === selectedCell.col || checkInBox(boxes3x3[selectedCell.box], i * 9 + j) ? 'bg-blue-100 ' :
                                 (getSelectedCells.includes(i * 9 + j) ? 'bg-blue-100' : 'bg-gray-300')
                             } 
-                            ${invalidCells.includes(i * 9 + j) ? 'text-red-700 text-2xl' : ''}
+                            ${invalidCells.includes(i * 9 + j) ? 'text-red-700' : originalMatrix[i * 9 + j] ? 'text-2xl' : 'text-green-800'}
+                            ${originalMatrix[i * 9 + j] ? 'text-2xl' : ''}
                             `}
 
                         onClick={() => handleSudokuCellClick(i, j)}
@@ -63,10 +65,12 @@ const Game: React.FC = () => {
     const [matrix, setMatrix] = useState(Array(91).fill(0));
     const [pointer, setPointer] = useState(-1);
     const [remainingPointers, setRemainingPointers] = useState(Array(9).fill(9));
+    const [originalMatrix, setOriginalMatrix] = useState(Array(81).fill(0));
 
     function restartGame() {
         const matrix = getNewSudokuBoard();
         setMatrix(matrix);
+        setOriginalMatrix(matrix);
         setSelectedCell({ row: -1, col: -1, box: -1 });
         setPointer(-1);
         setRemainingPointers(getRemainingPointers(matrix));
@@ -74,6 +78,8 @@ const Game: React.FC = () => {
 
     function handlePointerClick(value: number) {
         if (remainingPointers[value - 1] === 0) return;
+        if (originalMatrix[selectedCell.row * 9 + selectedCell.col]) return;
+
         const newMatrix = matrix.slice();
         newMatrix[selectedCell.row * 9 + selectedCell.col] = value;
         setMatrix(newMatrix);
@@ -89,6 +95,7 @@ const Game: React.FC = () => {
     useEffect(() => {
         const matrix = getNewSudokuBoard();
         setMatrix(matrix);
+        setOriginalMatrix(matrix);
         setRemainingPointers(getRemainingPointers(matrix));
     }, []);
 
@@ -103,7 +110,7 @@ const Game: React.FC = () => {
 
             <div className="flex flex-col md:flex-row gap-2">
                 <div className="flex w-full justify-center">
-                    <Board matrix={matrix} selectedCell={selectedCell} handleSudokuCellClick={handleSudokuCellClick} />
+                    <Board matrix={matrix} selectedCell={selectedCell} handleSudokuCellClick={handleSudokuCellClick} originalMatrix={originalMatrix} />
                 </div>
                 <div className="flex flex-row md:w-1/2 md:flex-col justify-around gap-0.5">
                     {Array.from({ length: 9 }, (_, index) => (
