@@ -1,14 +1,15 @@
 'use client';
 
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     checkInBox,
     getBoxCount,
     getRemainingPointers,
     boxes3x3,
     checkInvalidMove,
-    findAllSelected
+    findAllSelected,
+    getNewSudokuBoard
 } from '@/utils/sudoku';
 
 
@@ -64,10 +65,11 @@ const Game: React.FC = () => {
     const [remainingPointers, setRemainingPointers] = useState(Array(9).fill(9));
 
     function restartGame() {
+        const matrix = getNewSudokuBoard();
+        setMatrix(matrix);
         setSelectedCell({ row: -1, col: -1, box: -1 });
-        setMatrix(Array(91).fill(0));
         setPointer(-1);
-        setRemainingPointers(Array(9).fill(9));
+        setRemainingPointers(getRemainingPointers(matrix));
     }
 
     function handlePointerClick(value: number) {
@@ -83,6 +85,12 @@ const Game: React.FC = () => {
         const box = getBoxCount(row * 9 + column);
         setSelectedCell({ row: row, col: column, box });
     };
+
+    useEffect(() => {
+        const matrix = getNewSudokuBoard();
+        setMatrix(matrix);
+        setRemainingPointers(getRemainingPointers(matrix));
+    }, []);
 
     return (
         <>

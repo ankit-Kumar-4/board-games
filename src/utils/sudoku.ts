@@ -123,10 +123,58 @@ export function findAllSelected(matrix: number[], value: number) {
 }
 
 
-export function shuffleArray(array: number[]): number[] {
-    for (let i = array.length - 1; i > 0; i--) {
+export function shuffleMatrix(matrix: number[]): number[] {
+    for (let i = matrix.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [matrix[i], matrix[j]] = [matrix[j], matrix[i]];
     }
-    return array;
+    return matrix;
+}
+
+
+let temp = Array(81).fill(0);
+let maxIndex = -1;
+
+function createSudoku(matrix: number[], row: number, value: number) {
+    if (row >= 9) return true;;
+
+    for (let j = 0; j < 9; j++) {
+        let index = row * 9 + j;
+        if (matrix[index]) {
+            continue;
+        }
+        matrix[index] = value;
+        const result = checkInvalidMove(matrix);
+        if (result.length === 0) {
+            if (createSudoku(matrix, row + 1, value)) {
+                return true;
+            }
+            matrix[index] = 0;
+        } else {
+            matrix[index] = 0;
+        }
+    }
+    return false;
+}
+
+
+export function getNewSudokuBoard() {
+    const firstRow = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let matrix = Array(72).fill(0);
+    const shuffledRow = shuffleMatrix([...firstRow]);
+    matrix = shuffledRow.concat(matrix);
+
+    for (let i = 1; i <= 9; i++) {
+        createSudoku(matrix, 1, i);
+    }
+    let hiddencells = Array(41).fill(false).concat(Array(30).fill(true));
+    shuffleMatrix(hiddencells);
+
+    for (let i = 0; i < 81; i++) {
+        if (hiddencells[i]) {
+            matrix[i] = 0;
+        }
+    }
+
+    return matrix;
 }
