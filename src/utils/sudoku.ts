@@ -131,9 +131,15 @@ export function shuffleMatrix(matrix: number[]): number[] {
     return matrix;
 }
 
+export function getFilledStatus(matrix: number[]) {
+    for (let i = 0; i < 81; i++) {
+        if (matrix[i] === 0) {
+            return false;
+        }
+    }
+    return true;
+}
 
-let temp = Array(81).fill(0);
-let maxIndex = -1;
 
 function createSudoku(matrix: number[], row: number, value: number) {
     if (row >= 9) return true;;

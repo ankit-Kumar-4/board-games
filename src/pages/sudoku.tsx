@@ -9,9 +9,37 @@ import {
     boxes3x3,
     checkInvalidMove,
     findAllSelected,
-    getNewSudokuBoard
+    getNewSudokuBoard,
+    getFilledStatus
 } from '@/utils/sudoku';
 
+const Timer = ({ gameOver }: { gameOver: boolean }) => {
+    const [seconds, setSeconds] = useState(0);
+
+    useEffect(() => {
+        if (gameOver) {
+            return;
+        }
+
+        const interval = setInterval(() => {
+            setSeconds(prevSeconds => prevSeconds + 1);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [gameOver]);
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    return (
+        <div>
+            <h1>Duration: {formatTime(seconds)}</h1>
+        </div>
+    );
+};
 
 const Board = (
     { matrix, selectedCell, handleSudokuCellClick, originalMatrix }:
@@ -66,6 +94,7 @@ const Game: React.FC = () => {
     const [pointer, setPointer] = useState(-1);
     const [remainingPointers, setRemainingPointers] = useState(Array(9).fill(9));
     const [originalMatrix, setOriginalMatrix] = useState(Array(81).fill(0));
+    const [gameOver, setGameOver] = useState(false);
 
     function restartGame() {
         const matrix = getNewSudokuBoard();
@@ -74,6 +103,7 @@ const Game: React.FC = () => {
         setSelectedCell({ row: -1, col: -1, box: -1 });
         setPointer(-1);
         setRemainingPointers(getRemainingPointers(matrix));
+        setGameOver(false);
     }
 
     function handlePointerClick(value: number) {
@@ -85,6 +115,9 @@ const Game: React.FC = () => {
         setMatrix(newMatrix);
         setPointer(value - 1);
         setRemainingPointers(getRemainingPointers(newMatrix));
+        if (getFilledStatus(newMatrix) && checkInvalidMove(newMatrix).length === 0) {
+            setGameOver(true);
+        }
     }
 
     const handleSudokuCellClick = (row: number, column: number) => {
@@ -103,6 +136,9 @@ const Game: React.FC = () => {
         <>
             <div>Work in progress...</div>
             <div className="flex justify-center mb-2">
+                <div className='p-1 text-pretty text-2xl'>
+                    <Timer gameOver={gameOver} />
+                </div>
                 <button onClick={restartGame}>
                     New Game
                 </button>
