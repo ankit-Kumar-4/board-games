@@ -173,7 +173,7 @@ export function getNewSudokuBoard() {
     for (let i = 1; i <= 9; i++) {
         createSudoku(matrix, 1, i);
     }
-    let hiddencells = Array(41).fill(false).concat(Array(30).fill(true));
+    let hiddencells = Array(51).fill(false).concat(Array(30).fill(true));
     shuffleMatrix(hiddencells);
 
     for (let i = 0; i < 81; i++) {
@@ -184,3 +184,9 @@ export function getNewSudokuBoard() {
 
     return matrix;
 }
+
+export const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+};

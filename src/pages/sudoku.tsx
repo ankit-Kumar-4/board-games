@@ -10,33 +10,65 @@ import {
     checkInvalidMove,
     findAllSelected,
     getNewSudokuBoard,
-    getFilledStatus
+    getFilledStatus,
+    formatTime
 } from '@/utils/sudoku';
 
-const Timer = ({ gameOver }: { gameOver: boolean }) => {
-    const [seconds, setSeconds] = useState(0);
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}
 
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+    if (!isOpen) return null;
+
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" onClick={handleOverlayClick}>
+            <div className="bg-white p-6 rounded shadow-lg">
+                {children}
+                <button onClick={onClose} className="mt-4 p-2 bg-red-500 text-white rounded">Close</button>
+            </div>
+        </div>
+    );
+};
+
+interface TimerProps {
+    seconds: number;
+    setSeconds: React.Dispatch<React.SetStateAction<number>>;
+    isRunning: boolean;
+    setIsRunning: React.Dispatch<React.SetStateAction<boolean>>;
+    stopCondition: boolean;
+}
+
+const Timer: React.FC<TimerProps> = ({ seconds, setSeconds, isRunning, stopCondition }) => {
     useEffect(() => {
-        if (gameOver) {
-            return;
+        let interval: NodeJS.Timeout;
+
+        if (isRunning && !stopCondition) {
+            interval = setInterval(() => {
+                setSeconds(prevSeconds => prevSeconds + 1);
+            }, 1000);
         }
 
-        const interval = setInterval(() => {
-            setSeconds(prevSeconds => prevSeconds + 1);
-        }, 1000);
-
         return () => clearInterval(interval);
-    }, [gameOver]);
+    }, [isRunning, stopCondition, setSeconds]);
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
+    };
 
     return (
         <div>
-            <h1>Duration: {formatTime(seconds)}</h1>
+            <h1>Timer: {formatTime(seconds)}</h1>
         </div>
     );
 };
@@ -95,6 +127,8 @@ const Game: React.FC = () => {
     const [remainingPointers, setRemainingPointers] = useState(Array(9).fill(9));
     const [originalMatrix, setOriginalMatrix] = useState(Array(81).fill(0));
     const [gameOver, setGameOver] = useState(false);
+    const [seconds, setSeconds] = useState(0);
+    const [isRunning, setIsRunning] = useState(true);
 
     function restartGame() {
         const matrix = getNewSudokuBoard();
@@ -104,6 +138,8 @@ const Game: React.FC = () => {
         setPointer(-1);
         setRemainingPointers(getRemainingPointers(matrix));
         setGameOver(false);
+        setIsRunning(true);
+        setSeconds(0);
     }
 
     function handlePointerClick(value: number) {
@@ -137,7 +173,13 @@ const Game: React.FC = () => {
             <div>Work in progress...</div>
             <div className="flex justify-center mb-2">
                 <div className='p-1 text-pretty text-2xl'>
-                    <Timer gameOver={gameOver} />
+                    <Timer
+                        seconds={seconds}
+                        setSeconds={setSeconds}
+                        isRunning={isRunning}
+                        setIsRunning={setIsRunning}
+                        stopCondition={gameOver}
+                    />
                 </div>
                 <button onClick={restartGame}>
                     New Game
@@ -170,7 +212,11 @@ const Game: React.FC = () => {
                     ))}
                 </div>
             </div>
-
+            <Modal isOpen={gameOver} onClose={() => { setGameOver(false); setIsRunning(false) }}>
+                <h2>Game Over</h2>
+                <p>Your final score is: {formatTime(seconds)} </p>
+                <button onClick={restartGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
+            </Modal>
         </>
     );
 };
