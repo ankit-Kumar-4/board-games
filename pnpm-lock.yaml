@@ -32,6 +32,9 @@ importers:
       react-icons:
         specifier: ^5.2.1
         version: 5.2.1(react@18.0.0)
+      react-router-dom:
+        specifier: ^6.26.0
+        version: 6.26.0(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
       react-scripts:
         specifier: 5.0.0
         version: 5.0.0(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.9))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.9))(@types/babel__core@7.20.5)(eslint@8.57.0)(react@18.0.0)(type-fest@0.21.3)(typescript@4.9.5)
@@ -1152,6 +1155,10 @@ packages:
     engines: {node: '>= 12'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+
+  '@remix-run/router@1.19.0':
+    resolution: {integrity: sha512-zDICCLKEwbVYTS6TjYaWtHXxkdoUvD/QXvyVZjGCsWz5vyH7aFeONlPffPdW+Y/t6KT0MgXb2Mfjun9YpWN1dA==}
+    engines: {node: '>=14.0.0'}
 
   '@restart/hooks@0.4.16':
     resolution: {integrity: sha512-f7aCv7c+nU/3mF7NWLtVVr0Ra80RqsO89hO72r+Y/nvQr5+q0UFGkocElTH6MJApvReVh6JHUFYn2cw1WdHF3w==}
@@ -4674,6 +4681,19 @@ packages:
     resolution: {integrity: sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==}
     engines: {node: '>=0.10.0'}
 
+  react-router-dom@6.26.0:
+    resolution: {integrity: sha512-RRGUIiDtLrkX3uYcFiCIxKFWMcWQGMojpYZfcstc63A1+sSnVgILGIm9gNUA6na3Fm1QuPGSBQH2EMbAZOnMsQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+
+  react-router@6.26.0:
+    resolution: {integrity: sha512-wVQq0/iFYd3iZ9H2l3N3k4PL8EEHcb0XlU2Na8nEwmiXgIUElEH6gaJDtUQxJ+JFzmIXaQjfdpcGWaM6IoQGxg==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+
   react-scripts@5.0.0:
     resolution: {integrity: sha512-3i0L2CyIlROz7mxETEdfif6Sfhh9Lfpzi10CtcGs1emDQStmZfWjJbAIMtRD0opVUjQuFWqHZyRZ9PPzKCFxWg==}
     engines: {node: '>=14.0.0'}
@@ -7102,6 +7122,8 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.12
       react: 18.0.0
+
+  '@remix-run/router@1.19.0': {}
 
   '@restart/hooks@0.4.16(react@18.0.0)':
     dependencies:
@@ -11288,6 +11310,18 @@ snapshots:
   react-lifecycles-compat@3.0.4: {}
 
   react-refresh@0.11.0: {}
+
+  react-router-dom@6.26.0(react-dom@18.0.0(react@18.0.0))(react@18.0.0):
+    dependencies:
+      '@remix-run/router': 1.19.0
+      react: 18.0.0
+      react-dom: 18.0.0(react@18.0.0)
+      react-router: 6.26.0(react@18.0.0)
+
+  react-router@6.26.0(react@18.0.0):
+    dependencies:
+      '@remix-run/router': 1.19.0
+      react: 18.0.0
 
   react-scripts@5.0.0(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.9))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.9))(@types/babel__core@7.20.5)(eslint@8.57.0)(react@18.0.0)(type-fest@0.21.3)(typescript@4.9.5):
     dependencies:
