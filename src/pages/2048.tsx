@@ -302,6 +302,9 @@ const Board: React.FC = () => {
             setIsGameOver(true);
             return;
         }
+        if (isEqual) {
+            return;
+        }
 
         const { value, index } = generateNumber(newMatrix);
         if (value > 0) {
@@ -351,6 +354,9 @@ const Board: React.FC = () => {
             return;
         }
 
+        if (isEqual) {
+            return;
+        }
         const { value, index } = generateNumber(newMatrix);
         if (value > 0) {
             newMatrix[index] = value;
@@ -396,6 +402,9 @@ const Board: React.FC = () => {
         const isEqual = compareMatrix(matrix, newMatrix);
         if (isEqual && checkGameOver(matrix) && undoCount === 0) {
             setIsGameOver(true);
+            return;
+        }
+        if (isEqual) {
             return;
         }
 
@@ -444,6 +453,9 @@ const Board: React.FC = () => {
         const isEqual = compareMatrix(matrix, newMatrix);
         if (isEqual && checkGameOver(matrix) && undoCount === 0) {
             setIsGameOver(true);
+            return;
+        }
+        if (isEqual) {
             return;
         }
 
