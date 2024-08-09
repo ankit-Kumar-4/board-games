@@ -2,6 +2,8 @@
 
 
 import { useEffect, useState } from 'react';
+import { FaTrash, FaUndo } from 'react-icons/fa';
+
 import {
     checkInBox,
     getBoxCount,
@@ -161,6 +163,14 @@ const Game: React.FC = () => {
         setSelectedCell({ row: row, col: column, box });
     };
 
+    const handleSudokuCellErase = () => {
+        if (originalMatrix[selectedCell.row * 9 + selectedCell.col]) return;
+        const newMatrix = matrix.slice();
+        newMatrix[selectedCell.row * 9 + selectedCell.col] = 0;
+        setMatrix(newMatrix);
+        setRemainingPointers(getRemainingPointers(newMatrix));
+    }
+
     useEffect(() => {
         const matrix = getNewSudokuBoard();
         setMatrix(matrix);
@@ -189,6 +199,15 @@ const Game: React.FC = () => {
                 <div className="flex w-full justify-center">
                     <Board matrix={matrix} selectedCell={selectedCell} handleSudokuCellClick={handleSudokuCellClick} originalMatrix={originalMatrix} />
                 </div>
+                <div className="flex flex-row md:w-1/12 md:pl-3 md:flex-col justify-around">
+                    <div className='w-2'>
+                        Erase <FaTrash className="text-gray-500 text-3xl" onClick={handleSudokuCellErase} />
+                    </div>
+                    <div className='w-2 opacity-0'>
+                        Undo <FaUndo className="text-gray-500 text-3xl" />
+                    </div>
+                </div>
+
                 <div className="flex flex-row md:w-1/2 md:flex-col justify-around gap-0.5">
                     {Array.from({ length: 9 }, (_, index) => (
                         <div
