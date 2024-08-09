@@ -94,10 +94,10 @@ const Board = (
                         key={i * 9 + j}
                         className={`w-8 h-8 md:w-16 md:h-16 flex items-center justify-center  border 
                             ${i % 3 === 0 ? 'border-t-2 border-t-black' : ''}  ${j % 3 === 0 ? 'border-l-2 border-l-black' : ''}
-                            ${i === selectedCell.row && j === selectedCell.col ? 'border-2 border-blue-500 bg-blue-300' : 'border-gray-400'}
-                            ${i === selectedCell.row || j === selectedCell.col || checkInBox(boxes3x3[selectedCell.box], i * 9 + j) ? 'bg-blue-100 ' :
-                                (getSelectedCells.includes(i * 9 + j) ? 'bg-blue-100' : 'bg-gray-300')
-                            } 
+                            ${i === selectedCell.row && j === selectedCell.col ? 'border-2 border-yellow-500 bg-blue-400' : 'border-gray-400'}
+                            ${getSelectedCells.includes(i * 9 + j) ? 'bg-blue-300' :
+                                i === selectedCell.row || j === selectedCell.col || checkInBox(boxes3x3[selectedCell.box], i * 9 + j) ?
+                                    'bg-blue-100 ' : 'bg-gray-300 border-gray-400'}
                             ${invalidCells.includes(i * 9 + j) ? 'text-red-700' : originalMatrix[i * 9 + j] ? 'text-2xl' : 'text-green-800'}
                             ${originalMatrix[i * 9 + j] ? 'text-2xl' : ''}
                             `}
