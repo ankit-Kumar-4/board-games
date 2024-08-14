@@ -1,90 +1,70 @@
-'use client';
+import { useState } from 'react';
+import Link from 'next/link';
 
+const SignUp = () => {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-import { useRef, useState } from 'react';
-
-const Board = (
-    { matrix, selectedCell, setSelectedCell }:
-        {
-            matrix: number[]
-            selectedCell: { x: number, y: number };
-            setSelectedCell: any
-        }) => {
-    const handleCellClick = (row: number, column: number) => {
-        console.log(row, column);
-        setSelectedCell({ x: row, y: column })
+    const handleSubmit = (event: any) => {
+        event.preventDefault();
+        // Handle sign-up logic here
+        console.log({ username, email, password });
     };
 
-    const cells = [];
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            cells.push(
-                (
-                    <div
-                        key={i * 9 + j}
-                        className={`w-8 h-8 md:w-16 md:h-16 flex items-center justify-center bg-gray-300 border border-gray-400
-                            ${i % 3 === 0 ? 'border-t-2' : ''}  ${j % 3 === 0 ? 'border-l-2' : ''}
-                            ${i === selectedCell.x ? 'bg-blue-100 ' : ''} 
-                            ${j === selectedCell.y ? 'bg-blue-100 ' : ''}
-                            ${i === selectedCell.x && j === selectedCell.y ? 'border-2 border-blue-500 ' : ''}
-                            
-                            `}
-                        onClick={() => handleCellClick(i, j)}
-                    >
-                        {matrix[i * 9 + j]}
-                    </div >
-                )
-            )
-        }
-    }
-
     return (
-        <div >
-            <div className="grid grid-cols-9 ">
-                {cells}
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
+                <h2 className="text-2xl font-bold mb-6">Sign Up</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">Gaming Username</label>
+                        <input
+                            id="username"
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
+                    >
+                        Sign Up
+                    </button>
+                </form>
+                <div className="mt-4 text-center text-sm text-gray-600">
+                    Already have an account? <Link href="/login">
+                        <div className="text-indigo-600 hover:text-indigo-800">Log In</div>
+                    </Link>
+                </div>
             </div>
         </div>
     );
 };
 
-const Game: React.FC = () => {
-    const [selectedCell, setSelectedCell] = useState({ x: -1, y: -1 });
-    const [matrix, setMatrix] = useState(Array(91).fill(0));
-    function restartGame() {
-        setSelectedCell({ x: -1, y: -1 });
-    }
-    return (
-        <>
-            <div>Work in progress...</div>
-            <div className="flex justify-center mb-2">
-                <button onClick={restartGame}>
-                    New Game
-                </button>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-2">
-                <div className="flex w-full justify-center">
-                    <Board matrix={matrix} selectedCell={selectedCell} setSelectedCell={setSelectedCell} />
-                </div>
-                <div className="flex-auto md:w-1/2 content-center">
-                    <div className="flex flex-row flex-wrap md:flex-col justify-around gap-0.5">
-                        {Array.from({ length: 9 }, (_, index) => (
-                            <div
-                                key={index}
-                                className="w-1/12 md:w-full flex items-center justify-center bg-gray-300 border border-gray-400"
-                            >
-                                <div className="flex flex-col flex-wrap md:flex-row justify-around gap-0.5">
-                                    <div>{index + 1}</div>
-                                    <div>2</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-        </>
-    );
-};
-
-export default Game;
+export default SignUp;
