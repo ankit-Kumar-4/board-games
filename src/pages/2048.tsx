@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useHotkeys } from 'react-hotkeys-hook';
+import Head from 'next/head';
 
 type SquareValue = number | 0;
 const undoTrigger = 512;
@@ -527,34 +528,48 @@ const Board: React.FC = () => {
     }
 
     return (
-        <div {...handlers}
-        >
-            <div className="flex justify-center">
-                <p className='text-center font-extrabold text-xl text-score'>Score: {score}</p>
-                <button onClick={undo} className={`bg-orange-300 m-auto hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
-                <button onClick={newGame} className='m-auto'>New Game</button>
-            </div>
-            <div className="flex flex-col items-center max-h-screen pt-8">
-                <div
-                    className="relative select-none"
-                    style={{
-                        width: '80vw',
-                        height: '80vw',
-                        maxWidth: '80vh',
-                        maxHeight: '80vh'
-                    }}
-                >
-                    <div className="grid grid-cols-4 gap-0 h-full w-full bg-black">
-                        {getCells(4 * 4, matrix)}
+        <>
+            <Head>
+                <title>2048 - Board Games by Ankit</title>
+                <meta name="description" content="Play the addictive 2048 puzzle game online. Swipe and merge tiles to reach the 2048 tile. Test your strategy and skill in this fun and challenging game. Play 2048 for free now!" />
+                <meta name="keywords" content="2048, online 2048, free 2048, puzzle games, 2048 by ankit, ankit" />
+                <meta name="author" content="Ankit Kumar" />
+                <meta property="og:title" content="2048 - Addictive Puzzle Game" />
+                <meta property="og:description" content="Play the addictive 2048 puzzle game online. Swipe and merge tiles to reach the 2048 tile. Test your strategy and skill in this fun and challenging game. Play 2048 for free now!" />
+                <meta property="og:image" content="https://example.com/og-2048.jpg" />
+                <meta property="og:url" content="https://example.com/2048" />
+                <link rel="canonical" href="https://games-by-ankit.vercel.app/2048" />
+
+            </Head>
+            <div {...handlers}
+            >
+                <div className="flex justify-center">
+                    <p className='text-center font-extrabold text-xl text-score'>Score: {score}</p>
+                    <button onClick={undo} className={`bg-orange-300 m-auto hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
+                    <button onClick={newGame} className='m-auto'>New Game</button>
+                </div>
+                <div className="flex flex-col items-center max-h-screen pt-8">
+                    <div
+                        className="relative select-none"
+                        style={{
+                            width: '80vw',
+                            height: '80vw',
+                            maxWidth: '80vh',
+                            maxHeight: '80vh'
+                        }}
+                    >
+                        <div className="grid grid-cols-4 gap-0 h-full w-full bg-black">
+                            {getCells(4 * 4, matrix)}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <Modal isOpen={isGameOver} onClose={() => setIsGameOver(false)}>
-                <h2>Game Over</h2>
-                <p>Your final score is: {score}</p>
-                <button onClick={newGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
-            </Modal>
-        </div >
+                <Modal isOpen={isGameOver} onClose={() => setIsGameOver(false)}>
+                    <h2>Game Over</h2>
+                    <p>Your final score is: {score}</p>
+                    <button onClick={newGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
+                </Modal>
+            </div >
+        </>
     );
 };
 

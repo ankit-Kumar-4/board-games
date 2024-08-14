@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { FaTrash, FaUndo } from 'react-icons/fa';
+import Head from 'next/head';
 
 import {
     checkInBox,
@@ -180,6 +181,17 @@ const Game: React.FC = () => {
 
     return (
         <>
+            <Head>
+                <title>Sudoku - Board Games by Ankit</title>
+                <meta name="description" content="Enjoy the classic Sudoku game online. Challenge your logic and problem-solving skills with puzzles ranging from easy to expert difficulty. Play Sudoku for free now!" />
+                <meta name="keywords" content="sudoku, online sudoku, free sudoku, sudoku by ankit, ankit" />
+                <meta name="author" content="Ankit Kumar" />
+                <meta property="og:title" content="Welcome to the classic sudoku" />
+                <meta property="og:description" content="Enjoy the classic Sudoku game online. Challenge your logic and problem-solving skills with puzzles ranging from easy to expert difficulty. Play Sudoku for free now!" />
+                <meta property="og:image" content="https://example.com/og-image.jpg" />
+                <meta property="og:url" content="https://example.com" />
+                <link rel="canonical" href="https://games-by-ankit.vercel.app/" />
+            </Head>
             <div className="flex justify-center mb-2">
                 <div className='p-1 text-pretty text-2xl'>
                     <Timer

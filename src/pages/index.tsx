@@ -16,7 +16,7 @@ const ImageComponent = () => {
                 <Link href="/tic-tac-toe" legacyBehavior>Tic-tac-toe</Link>
             </div>
             <div className="absolute top-14 right-16 md:top-36 md:right-48 text-gray-300 md:text-3xl">
-                <Link href="/wordle" legacyBehavior>Wordle</Link>
+                <Link href="/scramble" legacyBehavior>Scramble</Link>
 
             </div>
             <div className="absolute top-32 left-24 md:top-[340px] md:left-72 text-wrap text-gray-300 md:text-3xl">

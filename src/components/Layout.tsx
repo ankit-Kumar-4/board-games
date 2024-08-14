@@ -27,9 +27,9 @@ export default function Layout({ children }: LayoutProps) {
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
                             onClick={() => setIsOpen(false)}>Tic-Tac-Toe</div>
                     </Link>
-                    <Link href="/wordle" legacyBehavior>
+                    <Link href="/scramble" legacyBehavior>
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
-                            onClick={() => setIsOpen(false)}>Wordle</div>
+                            onClick={() => setIsOpen(false)}>Scramble</div>
                     </Link>
                     <Link href="/snake-n-ladder" legacyBehavior>
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"

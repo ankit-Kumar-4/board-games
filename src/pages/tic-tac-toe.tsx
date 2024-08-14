@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import styles from "@/styles/tic-tac-toe.module.css";
+import Head from "next/head";
+
 
 type SquareValue = 'X' | 'O' | null;
 type TableRow = {
@@ -143,19 +145,33 @@ export default function Game() {
 
 
     return (
-        <div className={styles.game}>
-            <div className={styles["game-row"]}>
-                <div className={styles["game-board"]}>
-                    <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
+        <>
+            <Head>
+                <title>Tic Tac Toe - Board Games by Ankit</title>
+                <meta name="description" content="Play the classic Tic Tac Toe game online. Enjoy this timeless game of Xs and Os, perfect for quick fun or challenging your friends. Play Tic Tac Toe for free now!" />
+                <meta name="keywords" content="tic tac toe, online tic tac toe, free tic tac toe, classic games, tic tac toe by ankit, ankit" />
+                <meta name="author" content="Ankit Kumar" />
+                <meta property="og:title" content="Tic Tac Toe - Classic Game" />
+                <meta property="og:description" content="Play the classic Tic Tac Toe game online. Enjoy this timeless game of Xs and Os, perfect for quick fun or challenging your friends. Play Tic Tac Toe for free now!" />
+                <meta property="og:image" content="https://example.com/og-tictactoe.jpg" />
+                <meta property="og:url" content="https://example.com/tic-tac-toe" />
+                <link rel="canonical" href="https://games-by-ankit.vercel.app/tic-tac-toe" />
+
+            </Head>
+            <div className={styles.game}>
+                <div className={styles["game-row"]}>
+                    <div className={styles["game-board"]}>
+                        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
+                    </div>
+                    <div className={styles["game-info"]}>
+                        {NewGame}
+                    </div>
                 </div>
-                <div className={styles["game-info"]}>
-                    {NewGame}
+                <div className={styles["game-row"]}>
+                    <Table data={score} />
                 </div>
             </div>
-            <div className={styles["game-row"]}>
-                <Table data={score} />
-            </div>
-        </div>
+        </>
     );
 }
 

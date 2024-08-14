@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { words } from "@/data/words";
-import styles from "@/styles/wordle.module.css";
+import styles from "@/styles/scramble.module.css";
+import Head from "next/head";
+
 
 function Square({
   value,
@@ -11,9 +13,8 @@ function Square({
 }: Readonly<{ value: string; onSquareClick: any; isClicked: boolean }>) {
   return (
     <button
-      className={`${styles["square-margin"]}  ${
-        isClicked ? styles.clicked : ""
-      }`}
+      className={`${styles["square-margin"]}  ${isClicked ? styles.clicked : ""
+        }`}
       onClick={onSquareClick}
     >
       {value}
@@ -65,7 +66,7 @@ function getHintText(value: string, hint: number) {
   return output;
 }
 
-export default function Wordle() {
+export default function Scramble() {
   const [randomWord, setRandomWord] = useState<string>("");
   const [originalWord, setOriginalWord] = useState<string>("");
   const [result, setResult] = useState("");
@@ -201,6 +202,18 @@ export default function Wordle() {
 
   return (
     <>
+      <Head>
+        <title>Scramble - Word Games by Ankit</title>
+        <meta name="description" content="Test your vocabulary skills with Scramble. Unscramble the jumbled letters to find the correct word. Challenge yourself with different levels of difficulty!" />
+        <meta name="keywords" content="scramble, word scramble, anagram game, word games, unscramble, ankit" />
+        <meta name="author" content="Ankit Kumar" />
+        <meta property="og:title" content="Scramble - Word Games by Ankit" />
+        <meta property="og:description" content="Test your vocabulary skills with Scramble. Unscramble the jumbled letters to find the correct word. Challenge yourself with different levels of difficulty!" />
+        <meta property="og:image" content="https://example.com/og-image.jpg" />
+        <meta property="og:url" content="https://example.com" />
+        <link rel="canonical" href="https://games-by-ankit.vercel.app/" />
+      </Head>
+
       <div className={styles["game-row"]}>
         {renderUnderscores()}
         {newGame("↺", undoWord)}

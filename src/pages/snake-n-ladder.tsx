@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "@/styles/snake-n-ladder.module.css";
 import Xarrow from "react-xarrows";
 import Dice from 'react-dice-roll';
+import Head from "next/head";
 
 const snakes: {
   [key: number]: number;
@@ -371,6 +372,17 @@ export default function Game() {
 
   return (
     <>
+      <Head>
+        <title>Snake and Ladders - Board Games by Ankit</title>
+        <meta name="description" content="Play the classic Snake and Ladders game online. Roll the dice, climb the ladders, and avoid the snakes in this fun and challenging board game. Enjoy Snake and Ladders for free now!" />
+        <meta name="keywords" content="snake and ladders, online snake and ladders, free snake and ladders, board games, snake and ladders by ankit, ankit" />
+        <meta name="author" content="Ankit Kumar" />
+        <meta property="og:title" content="Snake and Ladders - Classic Board Game Online" />
+        <meta property="og:description" content="Play the classic Snake and Ladders game online. Roll the dice, climb the ladders, and avoid the snakes in this fun and challenging board game. Enjoy Snake and Ladders for free now!" />
+        <meta property="og:image" content="https://example.com/og-snake-ladders.jpg" />
+        <meta property="og:url" content="https://example.com/snake-ladders" />
+        <link rel="canonical" href="https://games-by-ankit.vercel.app/snake-n-ladder" />
+      </Head>
       <div className="flex justify-center">
         <button onClick={restartGame}>
           New Game
