@@ -32,7 +32,7 @@ const ImageComponent = () => {
 
             </div>
             <div className="absolute top-64 right-28 md:top-[670px] md:right-72 text-black md:text-3xl">
-                <Link href="https://asutosh-tetris.vercel.app/" legacyBehavior>
+                <Link href="https://asutosh-swain.vercel.app/tetris" legacyBehavior>
                     <a target="_blank" rel="noopener noreferrer">Tetris</a>
                 </Link>
             </div>

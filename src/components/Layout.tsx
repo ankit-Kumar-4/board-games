@@ -43,11 +43,11 @@ export default function Layout({ children }: LayoutProps) {
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
                             onClick={() => setIsOpen(false)}>Sudoku</div>
                     </Link>
-                    <a href="https://asutosh-tetris.vercel.app/" target="_blank" rel="noopener noreferrer">
+                    <a href="https://asutosh-swain.vercel.app/tetris" target="_blank" rel="noopener noreferrer">
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
                             onClick={() => setIsOpen(false)}>Tetris ↗</div>
                     </a>
-                    <a href="https://asutosh-swain.vercel.app/" target="_blank" rel="noopener noreferrer">
+                    <a href="https://asutosh-swain.vercel.app/snake" target="_blank" rel="noopener noreferrer">
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
                             onClick={() => setIsOpen(false)}>Snake ↗</div>
                     </a>
