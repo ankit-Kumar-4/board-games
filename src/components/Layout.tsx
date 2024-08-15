@@ -7,10 +7,15 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [subMenuOpen, setSubMenuOpen] = useState(false);
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
+
+    const toggleSubMenu = () => {
+        setSubMenuOpen(!subMenuOpen);
+    }
 
     return (
         <div className="flex h-screen bg-gray-100">
@@ -43,14 +48,23 @@ export default function Layout({ children }: LayoutProps) {
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
                             onClick={() => setIsOpen(false)}>Sudoku</div>
                     </Link>
-                    <a href="https://asutosh-swain.vercel.app/tetris" target="_blank" rel="noopener noreferrer">
-                        <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
-                            onClick={() => setIsOpen(false)}>Tetris ↗</div>
-                    </a>
-                    <a href="https://asutosh-swain.vercel.app/snake" target="_blank" rel="noopener noreferrer">
-                        <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
-                            onClick={() => setIsOpen(false)}>Snake ↗</div>
-                    </a>
+                    <div className="relative group">
+                        <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white cursor-pointer"
+                        onClick={toggleSubMenu}>
+                            Games by Asutosh
+                        </div>
+                        {/* &#xfe40; : &gt; */}
+                        <ul className={`absolute left-0 mt-1 w-full bg-sidePanel ${subMenuOpen ? ' ': 'hidden'}`}>
+                            <li>
+                                <a href="https://asutosh-swain.vercel.app/tetris" target="_blank" rel="noopener noreferrer"
+                                    className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Tetris ↗</a>
+                            </li>
+                            <li>
+                                <a href="https://asutosh-swain.vercel.app/snake" target="_blank" rel="noopener noreferrer"
+                                    className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Snake ↗</a>
+                            </li>
+                        </ul>
+                    </div>
                 </nav>
             </div>
             <div className={`fixed inset-0 bg-black opacity-30 ${isOpen ? 'block' : 'hidden'} z-10`} onClick={toggleSidebar}></div>
