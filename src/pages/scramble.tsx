@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { words } from "@/data/words";
 import styles from "@/styles/scramble.module.css";
 import Head from "next/head";
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 
 function Square({
@@ -214,18 +215,20 @@ export default function Scramble() {
         <link rel="canonical" href="https://games-by-ankit.vercel.app/" />
       </Head>
 
-      <div className={styles["game-row"]}>
-        {renderUnderscores()}
-        {newGame("↺", undoWord)}
-      </div>
-      <h3 className={styles["game-row"]}>{result}</h3>
-      <div className={styles["game-row1"]}>{chacterList}</div>
-      <div className={styles["game-row"]}>
-        <div className={styles["square-margin"]}>
-          {newGame("Reset!", resetWord)}
+      <ProtectedRoute>
+        <div className={styles["game-row"]}>
+          {renderUnderscores()}
+          {newGame("↺", undoWord)}
         </div>
-        {newGame("New Game!", refreshWord)}
-      </div>
+        <h3 className={styles["game-row"]}>{result}</h3>
+        <div className={styles["game-row1"]}>{chacterList}</div>
+        <div className={styles["game-row"]}>
+          <div className={styles["square-margin"]}>
+            {newGame("Reset!", resetWord)}
+          </div>
+          {newGame("New Game!", refreshWord)}
+        </div>
+      </ProtectedRoute>
     </>
   );
 }

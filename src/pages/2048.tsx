@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Head from 'next/head';
+import ProtectedRoute from '@/components/ProtectedRoute';
+
 
 type SquareValue = number | 0;
 const undoTrigger = 512;
@@ -541,34 +543,36 @@ const Board: React.FC = () => {
                 <link rel="canonical" href="https://games-by-ankit.vercel.app/2048" />
 
             </Head>
-            <div {...handlers}
-            >
-                <div className="flex justify-center">
-                    <p className='text-center font-extrabold text-xl text-score'>Score: {score}</p>
-                    <button onClick={undo} className={`bg-orange-300 m-auto hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
-                    <button onClick={newGame} className='m-auto'>New Game</button>
-                </div>
-                <div className="flex flex-col items-center max-h-screen pt-8">
-                    <div
-                        className="relative select-none"
-                        style={{
-                            width: '80vw',
-                            height: '80vw',
-                            maxWidth: '80vh',
-                            maxHeight: '80vh'
-                        }}
-                    >
-                        <div className="grid grid-cols-4 gap-0 h-full w-full bg-black">
-                            {getCells(4 * 4, matrix)}
+            <ProtectedRoute>
+                <div {...handlers}
+                >
+                    <div className="flex justify-center">
+                        <p className='text-center font-extrabold text-xl text-score'>Score: {score}</p>
+                        <button onClick={undo} className={`bg-orange-300 m-auto hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
+                        <button onClick={newGame} className='m-auto'>New Game</button>
+                    </div>
+                    <div className="flex flex-col items-center max-h-screen pt-8">
+                        <div
+                            className="relative select-none"
+                            style={{
+                                width: '80vw',
+                                height: '80vw',
+                                maxWidth: '80vh',
+                                maxHeight: '80vh'
+                            }}
+                        >
+                            <div className="grid grid-cols-4 gap-0 h-full w-full bg-black">
+                                {getCells(4 * 4, matrix)}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <Modal isOpen={isGameOver} onClose={() => setIsGameOver(false)}>
-                    <h2>Game Over</h2>
-                    <p>Your final score is: {score}</p>
-                    <button onClick={newGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
-                </Modal>
-            </div >
+                    <Modal isOpen={isGameOver} onClose={() => setIsGameOver(false)}>
+                        <h2>Game Over</h2>
+                        <p>Your final score is: {score}</p>
+                        <button onClick={newGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
+                    </Modal>
+                </div >
+            </ProtectedRoute>
         </>
     );
 };

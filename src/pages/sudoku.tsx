@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { FaTrash, FaUndo } from 'react-icons/fa';
 import Head from 'next/head';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 import {
     checkInBox,
@@ -192,61 +193,64 @@ const Game: React.FC = () => {
                 <meta property="og:url" content="https://example.com" />
                 <link rel="canonical" href="https://games-by-ankit.vercel.app/" />
             </Head>
-            <div className="flex justify-center mb-2">
-                <div className='p-1 text-pretty text-2xl'>
-                    <Timer
-                        seconds={seconds}
-                        setSeconds={setSeconds}
-                        isRunning={isRunning}
-                        setIsRunning={setIsRunning}
-                        stopCondition={gameOver}
-                    />
-                </div>
-                <button onClick={restartGame}>
-                    New Game
-                </button>
-            </div>
 
-            <div className="flex flex-col md:flex-row gap-2">
-                <div className="flex w-full justify-center">
-                    <Board matrix={matrix} selectedCell={selectedCell} handleSudokuCellClick={handleSudokuCellClick} originalMatrix={originalMatrix} />
-                </div>
-                <div className="flex flex-row md:w-1/12 md:pl-3 md:flex-col justify-around">
-                    <div className='w-2'>
-                        Erase <FaTrash className="text-gray-500 text-3xl" onClick={handleSudokuCellErase} />
+            <ProtectedRoute>
+                <div className="flex justify-center mb-2">
+                    <div className='p-1 text-pretty text-2xl'>
+                        <Timer
+                            seconds={seconds}
+                            setSeconds={setSeconds}
+                            isRunning={isRunning}
+                            setIsRunning={setIsRunning}
+                            stopCondition={gameOver}
+                        />
                     </div>
-                    <div className='w-2 opacity-0'>
-                        Undo <FaUndo className="text-gray-500 text-3xl" />
-                    </div>
+                    <button onClick={restartGame}>
+                        New Game
+                    </button>
                 </div>
 
-                <div className="flex flex-row md:w-1/2 md:flex-col justify-around gap-0.5">
-                    {Array.from({ length: 9 }, (_, index) => (
-                        <div
-                            key={index}
-                            className={`w-1/12 md:w-1/3 flex flex-col md:flex-row justify-center content-center
-                                  border  cursor-pointer hover:bg-sky-200
-                                 ${pointer === index ? 'bg-blue-300 border-blue-600 border-2' : 'bg-gray-300 border-gray-400'}
-                                 ${remainingPointers[index] ? '' : 'opacity-0'}
-                                 `}
-                            onClick={() => handlePointerClick(index + 1)}
-                        >
-                            <div className="flex justify-center items-center h-full w-full">
-
-                                <div className='text-xl'>{index + 1}</div>
-                            </div>
-                            <div className="flex justify-center items-center h-full w-full">
-                                <div className='text-gray-500'>{remainingPointers[index]}</div>
-                            </div>
+                <div className="flex flex-col md:flex-row gap-2">
+                    <div className="flex w-full justify-center">
+                        <Board matrix={matrix} selectedCell={selectedCell} handleSudokuCellClick={handleSudokuCellClick} originalMatrix={originalMatrix} />
+                    </div>
+                    <div className="flex flex-row md:w-1/12 md:pl-3 md:flex-col justify-around">
+                        <div className='w-2'>
+                            Erase <FaTrash className="text-gray-500 text-3xl" onClick={handleSudokuCellErase} />
                         </div>
-                    ))}
+                        <div className='w-2 opacity-0'>
+                            Undo <FaUndo className="text-gray-500 text-3xl" />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-row md:w-1/2 md:flex-col justify-around gap-0.5">
+                        {Array.from({ length: 9 }, (_, index) => (
+                            <div
+                                key={index}
+                                className={`w-1/12 md:w-1/3 flex flex-col md:flex-row justify-center content-center
+                            border  cursor-pointer hover:bg-sky-200
+                            ${pointer === index ? 'bg-blue-300 border-blue-600 border-2' : 'bg-gray-300 border-gray-400'}
+                            ${remainingPointers[index] ? '' : 'opacity-0'}
+                            `}
+                                onClick={() => handlePointerClick(index + 1)}
+                            >
+                                <div className="flex justify-center items-center h-full w-full">
+
+                                    <div className='text-xl'>{index + 1}</div>
+                                </div>
+                                <div className="flex justify-center items-center h-full w-full">
+                                    <div className='text-gray-500'>{remainingPointers[index]}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
-            <Modal isOpen={gameOver} onClose={() => { setGameOver(false); setIsRunning(false) }}>
-                <h2>Game Over</h2>
-                <p>Your final score is: {formatTime(seconds)} </p>
-                <button onClick={restartGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
-            </Modal>
+                <Modal isOpen={gameOver} onClose={() => { setGameOver(false); setIsRunning(false) }}>
+                    <h2>Game Over</h2>
+                    <p>Your final score is: {formatTime(seconds)} </p>
+                    <button onClick={restartGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
+                </Modal>
+            </ProtectedRoute>
         </>
     );
 };

@@ -4,6 +4,8 @@ import Layout from '../components/Layout';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { AuthProvider } from '@/components/AuthContext';
+
 
 function MyApp({ Component, pageProps }: AppProps) {
     const router = useRouter();
@@ -26,13 +28,15 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <meta name="twitter:card" content="summary_large_image" />
                 <link rel="canonical" href="https://games-by-ankit.vercel.app/" />
             </Head>
-            {noLayoutRoutes.includes(router.pathname) ? (
-                <Component {...pageProps} />
-            ) : (
-                <Layout>
+            <AuthProvider>
+                {noLayoutRoutes.includes(router.pathname) ? (
                     <Component {...pageProps} />
-                </Layout>
-            )}
+                ) : (
+                    <Layout>
+                        <Component {...pageProps} />
+                    </Layout>
+                )}
+            </AuthProvider>
         </>
     );
 }

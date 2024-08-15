@@ -2,6 +2,7 @@
 import { useState } from "react";
 import styles from "@/styles/tic-tac-toe.module.css";
 import Head from "next/head";
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 
 type SquareValue = 'X' | 'O' | null;
@@ -158,19 +159,22 @@ export default function Game() {
                 <link rel="canonical" href="https://games-by-ankit.vercel.app/tic-tac-toe" />
 
             </Head>
-            <div className={styles.game}>
-                <div className={styles["game-row"]}>
-                    <div className={styles["game-board"]}>
-                        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
+
+            <ProtectedRoute>
+                <div className={styles.game}>
+                    <div className={styles["game-row"]}>
+                        <div className={styles["game-board"]}>
+                            <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
+                        </div>
+                        <div className={styles["game-info"]}>
+                            {NewGame}
+                        </div>
                     </div>
-                    <div className={styles["game-info"]}>
-                        {NewGame}
+                    <div className={styles["game-row"]}>
+                        <Table data={score} />
                     </div>
                 </div>
-                <div className={styles["game-row"]}>
-                    <Table data={score} />
-                </div>
-            </div>
+            </ProtectedRoute>
         </>
     );
 }
