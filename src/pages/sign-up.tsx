@@ -5,30 +5,43 @@ import { auth, createUser } from '@/lib/firebaseConfig';
 
 const SignUp = () => {
   const [username, setUsername] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [error, setError] = useState<string>('');
-    const router = useRouter();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const router = useRouter();
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setError('');
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError('');
 
-      try {
-          // Create user with email and password
-          const userCredential = await createUser(auth, email, password);
+    try {
+      // Create user with email and password
+      const userCredential = await createUser(auth, email, password);
 
-          // Redirect or show success message
-          router.push('/login'); // Redirect to login page or another page
-      } catch (err: any) {
-          setError(err.message);
+      // Redirect or show success message
+      router.push('/login'); // Redirect to login page or another page
+    } catch (err: any) {
+      if (err.code === 'auth/email-already-in-use') {
+        alert('Email id is already in use')
+      } else if (err.code === "auth/invalid-email") {
+        alert('Please enter valid email id')
+      } else {
+        alert('Error in sign-up: ' + err.message)
       }
+      setError(err.message);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold mb-6">Sign Up</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% ">
+      <div className="w-full max-w-md p-8 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg">
+
+        <h1 className="text-3xl font-bold mb-4 text-center">Welcome to Board Games by Ankit!</h1>
+        <p className="text-gray-700 mb-6 text-center">
+          Sign in to access a variety of classic board and puzzle games. Join us and start playing today!
+        </p>
+
+        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">Gaming Username</label>

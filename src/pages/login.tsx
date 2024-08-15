@@ -42,8 +42,14 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% ">
+      <div className="bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%  p-8 rounded w-full max-w-md">
+
+        <h1 className="text-3xl font-bold mb-4 text-center">Welcome to Board Games by Ankit!</h1>
+        <p className="text-gray-700 mb-6 text-center">
+          Sign in to access a variety of classic board and puzzle games. Join us and start playing today!
+        </p>
+
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <form onSubmit={handleLogin}>
           <div className="mb-4">

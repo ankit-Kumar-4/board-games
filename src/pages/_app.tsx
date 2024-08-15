@@ -3,8 +3,12 @@ import '../styles/globals.css';
 import Layout from '../components/Layout';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }: AppProps) {
+    const router = useRouter();
+    const noLayoutRoutes = ['/login', '/sign-up'];
+
     return (
         <>
             <Head>
@@ -22,9 +26,13 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <meta name="twitter:card" content="summary_large_image" />
                 <link rel="canonical" href="https://games-by-ankit.vercel.app/" />
             </Head>
-            <Layout>
+            {noLayoutRoutes.includes(router.pathname) ? (
                 <Component {...pageProps} />
-            </Layout>
+            ) : (
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
+            )}
         </>
     );
 }
