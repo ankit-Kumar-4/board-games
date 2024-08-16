@@ -10,6 +10,11 @@ export default function ProfileMenu({auth}: {auth: any}) {
 
     const handleLogout =  async () => {
         try {
+            const user = auth.currentUser;
+
+            if (user?.isAnonymous) {
+                await user.delete();
+            }
             await signOut(auth);
             router.push("/login");
         } catch (error) {
