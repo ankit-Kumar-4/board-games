@@ -20,10 +20,3 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 export const createUser = createUserWithEmailAndPassword;
-
-// import firebase from 'firebase/app';
-// import 'firebase/auth';
-
-// const signup = firebase.auth();
-
-// export { signup };

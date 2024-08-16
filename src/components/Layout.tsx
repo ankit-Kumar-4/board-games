@@ -1,5 +1,9 @@
 import { useState, ReactNode } from 'react';
 import Link from 'next/link';
+import ProfileMenu from '@/components/ProfileMenu';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebaseConfig';
+
 interface LayoutProps {
     children: ReactNode;
 }
@@ -16,6 +20,8 @@ export default function Layout({ children }: LayoutProps) {
     const toggleSubMenu = () => {
         setSubMenuOpen(!subMenuOpen);
     }
+    auth;
+    debugger;
 
     return (
         <div className="flex h-screen bg-gray-100">
@@ -63,6 +69,10 @@ export default function Layout({ children }: LayoutProps) {
                                 <a href="https://asutosh-swain.vercel.app/snake" target="_blank" rel="noopener noreferrer"
                                     className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Snake ↗</a>
                             </li>
+                            <li>
+                                <a href="https://asutosh-swain.vercel.app/connect4" target="_blank" rel="noopener noreferrer"
+                                    className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Connect 4 ↗</a>
+                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -78,6 +88,7 @@ export default function Layout({ children }: LayoutProps) {
                     <Link href="/" legacyBehavior>
                         <div className="text-xl font-semibold text-white">Bored? Games!</div>
                     </Link>
+                    <ProfileMenu auth={auth}/>
                 </header>
                 <main className="flex-1 p-4">
                     {children}
