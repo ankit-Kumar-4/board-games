@@ -64,7 +64,7 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
             {user ? (
                 <div className="fixed bottom-16 right-4 bg-white w-80 h-96 shadow-lg rounded-lg p-4 flex flex-col">
                     <div className="flex justify-between items-center border-b pb-2 mb-4">
-                        <h3 className="text-lg font-semibold">Chat</h3>
+                        <h3 className="text-lg font-semibold">Welcome, {user.displayName || user.email || user.uid}</h3>
                         <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                             ✖
                         </button>
