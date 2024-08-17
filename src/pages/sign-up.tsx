@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { auth, createUser } from '@/lib/firebaseConfig';
+import { updateProfile } from 'firebase/auth';
 
 const SignUp = () => {
   const [username, setUsername] = useState<string>('');
@@ -17,6 +18,11 @@ const SignUp = () => {
     try {
       // Create user with email and password
       const userCredential = await createUser(auth, email, password);
+      const user = userCredential.user;
+
+      await updateProfile(user, {
+        displayName: username,
+      });
 
       // Redirect or show success message
       router.push('/login'); // Redirect to login page or another page

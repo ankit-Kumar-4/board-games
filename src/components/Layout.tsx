@@ -20,8 +20,6 @@ export default function Layout({ children }: LayoutProps) {
     const toggleSubMenu = () => {
         setSubMenuOpen(!subMenuOpen);
     }
-    auth;
-    debugger;
 
     return (
         <div className="flex h-screen bg-gray-100">
