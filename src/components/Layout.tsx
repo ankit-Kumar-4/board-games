@@ -3,6 +3,7 @@ import Link from 'next/link';
 import ProfileMenu from '@/components/ProfileMenu';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebaseConfig';
+import ChatIcon from '@/components/ChatIcon'
 
 interface LayoutProps {
     children: ReactNode;
@@ -92,6 +93,7 @@ export default function Layout({ children }: LayoutProps) {
                     {children}
                 </main>
             </div>
+            <ChatIcon />
         </div>
     );
 }
