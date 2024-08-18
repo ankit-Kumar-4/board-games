@@ -75,7 +75,7 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
     const handleSendMessage = async () => {
         if (input.trim() === '') return;
 
-        if (isChatActive) {
+        if (activeTab === 'private') {
             await sendPrivateMessage(chatroomId, input);
         } else {
             await addDoc(collection(db, 'messages'), {
