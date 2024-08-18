@@ -69,6 +69,8 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
                             ✖
                         </button>
                     </div>
+
+                    
                     <div className="flex-1 overflow-y-auto mb-4">
                         {messages.map((message) => (
                             <div

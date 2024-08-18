@@ -1,6 +1,6 @@
 // components/ChatIcon.tsx
 import { useState } from "react";
-import ChatWindow from '@/pages/messages';
+import ChatWindow from '@/components/ChatWindow';
 
 export default function ChatIcon() {
   const [isOpen, setIsOpen] = useState(false);
