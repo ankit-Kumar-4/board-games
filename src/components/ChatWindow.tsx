@@ -102,10 +102,10 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
         const result = await joinChatroom(chatroomId);
         if (result) {
             alert('Welcome to the chat!')
+            setIsChatActive(true);
         } else {
             alert('Invalid chatroom ID')
         }
-        setIsChatActive(true);
     }
 
     return (
