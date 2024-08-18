@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import { auth } from '@/lib/firebaseConfig';
 import { signInAnonymously } from "firebase/auth";
 import { useRouter } from 'next/router';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import Link from "next/link";
+import { words } from "@/data/words";
+
+
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max);
+}
 
 
 const LoginPage: React.FC = () => {
@@ -32,6 +38,13 @@ const LoginPage: React.FC = () => {
     try {
       const userCredential = await signInAnonymously(auth);
       const user = userCredential.user;
+
+      const index = getRandomInt(words.length);
+
+      await updateProfile(user, {
+        displayName: words[index],
+      });
+
       console.log("Guest user signed in:", user.uid);
       router.push("/");
     } catch (error) {
