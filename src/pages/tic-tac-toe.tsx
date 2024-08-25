@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import styles from "@/styles/tic-tac-toe.module.css";
 import Head from "next/head";
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { joinGame, createGame, makeMove, rematchGame } from '@/lib/tic-tac-toe';
+import { joinGame, createGame, makeMove, rematchGame, updateScore } from '@/lib/tic-tac-toe';
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db, auth } from "@/lib/firebaseConfig";
 
@@ -49,15 +49,22 @@ function generateRandomString(): string {
 }
 
 
-const Table = ({ data }: { data: TableRow[]; }) => {
+const Table = ({ data, gameData }: { data: TableRow[]; gameData: any }) => {
     const sumColumn1 = data.reduce((acc, row) => acc + row.playerX, 0);
     const sumColumn2 = data.reduce((acc, row) => acc + row.playerO, 0);
+
+    let nameX = 'Player X';
+    let nameO = 'Player O';
+    if (gameData.playerX) {
+        nameX = gameData.nameX || gameData.playerX;
+        nameO = gameData.nameO || gameData.playerO;
+    }
     return (
         <table className={`${styles.table} ${styles['game-info']}`}>
             <thead>
                 <tr>
-                    <th>Player X</th>
-                    <th>Player O</th>
+                    <th>{nameX}</th>
+                    <th>{nameO}</th>
                 </tr>
             </thead>
             <tbody>
@@ -183,31 +190,29 @@ export default function Game() {
     const [gameData, setGameData] = useState<any>({});
     const [currentUid, setCurrentUid] = useState('');
 
-    const [gameOver, setGameOver] = useState(true);
-    const [isRunning, setIsRunning] = useState(true);
-
-
-    useEffect(() => {
-        if (!currentUid.length && auth.currentUser?.uid) {
-            setCurrentUid(auth.currentUser.uid);
-        }
-    }, [currentUid])
 
     useEffect(() => {
         if (isMultiplayer) {
+            if (!currentUid.length && auth.currentUser?.uid) {
+                setCurrentUid(auth.currentUser.uid);
+            }
             const gamesRef = collection(db, "games");
             const q = query(gamesRef, where("chatroomId", "==", roomId));
             const unsubscribe = onSnapshot(q, (querySnapshot: any) => {
                 let data = {
                     board: [],
-                    currentTurn: false
+                    currentTurn: null,
+                    score: []
                 };
                 querySnapshot.forEach((doc: any) => {
                     data = doc.data();
                 });
                 setCurrentSquares(data.board);
-                setXIsNext(data.currentTurn);
+                if (data.currentTurn !== null) {
+                    setXIsNext(data.currentTurn);
+                }
                 setGameData({ ...data, currentUid });
+                setScore(data.score);
             });
 
             return () => {
@@ -274,7 +279,10 @@ export default function Game() {
         <button onClick={() => jumpTo()}>Rematch</button>
     );
 
-    function handleScore(currentScore: TableRow) {
+    async function handleScore(currentScore: TableRow) {
+        if (isMultiplayer) {
+            await updateScore(roomId, [...score, currentScore]);
+        }
         setScore([...score, currentScore]);
     }
 
@@ -345,7 +353,7 @@ export default function Game() {
                         </div>
                     </div>
                     <div className={styles["game-row"]}>
-                        <Table data={score} />
+                        <Table data={score} gameData={gameData}/>
                     </div>
                 </div>
             </ProtectedRoute>

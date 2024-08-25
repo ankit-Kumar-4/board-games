@@ -18,6 +18,22 @@ export async function joinGame(gameId: string) {
     }
 }
 
+export async function updateScore(gameId: string, score: any[]) {
+    const gamesRef = collection(db, "games");
+    const q = query(gamesRef, where("chatroomId", "==", gameId));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        const chatroomRef = querySnapshot.docs[0].ref;
+        await updateDoc(chatroomRef, {
+            score
+        });
+        return true;
+    } else {
+        return false;
+    }
+}
+
 export async function rematchGame(gameId: string, player: string) {
     const gamesRef = collection(db, "games");
     const q = query(gamesRef, where("chatroomId", "==", gameId));
@@ -57,6 +73,7 @@ export async function createGame(gameId: string) {
         currentTurn: true,
         winner: null,
         chatroomId: gameId,
+        score: [],
         createdAt: new Date(),
     });
     return gameRef.id;
@@ -77,23 +94,4 @@ export async function makeMove(gameId: string, board: any[], currentTurn: boolea
     } else {
         return false;
     }
-}
-
-
-
-export function gameChange(gameId: string) {
-    const game: any[] = [];
-
-    const gamesRef = collection(db, "games");
-    const q = query(gamesRef, where("chatroomId", "==", gameId));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const messagesData: any[] = [];
-        querySnapshot.forEach((doc) => {
-            messagesData.push({ id: doc.id, ...doc.data() });
-        });
-        game.push(messagesData);
-    });
-
-    unsubscribe();
-    return game;
 }
