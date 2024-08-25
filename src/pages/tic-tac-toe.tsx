@@ -14,6 +14,30 @@ type TableRow = {
     playerO: number;
 };
 
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+    if (!isOpen) return null;
+
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" onClick={handleOverlayClick}>
+            <div className="bg-white p-6 rounded shadow-lg">
+                {children}
+            </div>
+        </div>
+    );
+};
+
 function generateRandomString(): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
@@ -159,6 +183,10 @@ export default function Game() {
     const [gameData, setGameData] = useState<any>({});
     const [currentUid, setCurrentUid] = useState('');
 
+    const [gameOver, setGameOver] = useState(true);
+    const [isRunning, setIsRunning] = useState(true);
+
+
     useEffect(() => {
         if (!currentUid.length && auth.currentUser?.uid) {
             setCurrentUid(auth.currentUser.uid);
@@ -271,34 +299,37 @@ export default function Game() {
                     {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
                     {isMultiplayer && roomId ? <div>Room Id: {roomId}</div> : ''}
                     {playOnline ?
-                        <div className="flex-col justify-around mb-4">
-                            <button
-                                className={`w-full py-2 " : ""
+                        <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
+                            <div className="flex-col justify-around mb-4">
+                                <button
+                                    className={`w-full py-2 " : ""
                                         }`}
-                                onClick={() => handleCreateRoom()}
-                            >
-                                Create Game
-                            </button>
-                            <div className='text-center m-5'>OR</div>
-                            <input
-                                type="text"
-                                value={roomId}
-                                onChange={(e) => {
-                                    const newValue = e.target.value.toUpperCase();
-                                    if (/^[A-Z0-9]*$/.test(newValue) && newValue.length <= 5) {
-                                        setRoomId(newValue);
-                                    }
-                                }}
-                                className="flex-grow p-2 w-full border rounded"
-                                pattern="[A-Z0-9]{5}"
-                            />
-                            <button
-                                className={`w-full py-2 `}
-                                onClick={() => handleJoinRoom()}
-                            >
-                                Join Game with ID
-                            </button>
-                        </div> : ''
+                                    onClick={() => handleCreateRoom()}
+                                >
+                                    Create Game
+                                </button>
+                                <div className='text-center m-5'>OR</div>
+                                <input
+                                    type="text"
+                                    value={roomId}
+                                    onChange={(e) => {
+                                        const newValue = e.target.value.toUpperCase();
+                                        if (/^[A-Z0-9]*$/.test(newValue) && newValue.length <= 5) {
+                                            setRoomId(newValue);
+                                        }
+                                    }}
+                                    className="flex-grow p-2 w-full border rounded"
+                                    pattern="[A-Z0-9]{5}"
+                                />
+                                <button
+                                    className={`w-full py-2 `}
+                                    onClick={() => handleJoinRoom()}
+                                >
+                                    Join Game with ID
+                                </button>
+                            </div>
+                        </Modal>
+                        : ''
                     }
                     {isMultiplayer ? (<div>
                         {currentUid === gameData.playerX ? 'You are X' : 'You are O'}
