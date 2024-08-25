@@ -99,6 +99,9 @@ export default function ChatWindow({ onClose }: { onClose: () => void }) {
     }
 
     const handleChatroomJoining = async () => {
+        if (chatroomId.length < 5) {
+            return;
+        }
         const result = await joinChatroom(chatroomId);
         if (result) {
             alert('Welcome to the chat!')

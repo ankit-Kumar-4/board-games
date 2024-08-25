@@ -1,4 +1,4 @@
-import { addDoc, collection, updateDoc, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, updateDoc, query, where, getDocs } from "firebase/firestore";
 import { db, auth } from "@/lib/firebaseConfig";
 
 export async function joinGame(gameId: string) {

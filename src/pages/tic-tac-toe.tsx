@@ -227,6 +227,10 @@ export default function Game() {
                 alert('Wait for your turn!');
                 return;
             }
+            if (!gameData.playerO) {
+                alert('Waiting for second player to join the game!');
+                return;
+            }
         }
         setCurrentSquares(nextSquares);
         setXIsNext(!xIsNext);
@@ -242,10 +246,15 @@ export default function Game() {
         setRoomId(game_id);
         setPlayOnline(false);
         setIsMultiplayer(true);
+        alert('Please share the Game ID to a friend: ' + game_id)
     }
 
     async function handleJoinRoom() {
-        await joinGame(roomId);
+        const result = await joinGame(roomId);
+        if (!result) {
+            alert('Please enter valid Game Id');
+            return;
+        }
         setPlayOnline(false);
         setIsMultiplayer(true);
     }
@@ -256,7 +265,7 @@ export default function Game() {
             if (player === 'X') {
                 if (gameData.rematchO) {
                     setCurrentSquares(Array(9).fill(null));
-                    await makeMove(roomId, Array(9).fill(null), !xIsNext);
+                    await makeMove(roomId, Array(9).fill(null), xIsNext);
                     await rematchGame(roomId, '=');
                 } else {
                     await rematchGame(roomId, player);
@@ -264,7 +273,7 @@ export default function Game() {
             } else {
                 if (gameData.rematchX) {
                     setCurrentSquares(Array(9).fill(null));
-                    await makeMove(roomId, Array(9).fill(null), !xIsNext);
+                    await makeMove(roomId, Array(9).fill(null), xIsNext);
                     await rematchGame(roomId, '=');
                 } else {
                     await rematchGame(roomId, player);
@@ -305,7 +314,7 @@ export default function Game() {
             <ProtectedRoute>
                 <div>
                     {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
-                    {isMultiplayer && roomId ? <div>Room Id: {roomId}</div> : ''}
+                    {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
                     {playOnline ?
                         <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
                             <div className="flex-col justify-around mb-4">
