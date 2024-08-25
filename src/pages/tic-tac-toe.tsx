@@ -1,8 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/styles/tic-tac-toe.module.css";
 import Head from "next/head";
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { joinGame, createGame, makeMove, rematchGame } from '@/lib/tic-tac-toe';
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db, auth } from "@/lib/firebaseConfig";
 
 
 type SquareValue = 'X' | 'O' | null;
@@ -10,6 +13,16 @@ type TableRow = {
     playerX: number;
     playerO: number;
 };
+
+function generateRandomString(): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 5; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters[randomIndex];
+    }
+    return result;
+}
 
 
 const Table = ({ data }: { data: TableRow[]; }) => {
@@ -49,12 +62,13 @@ function Square({ value, onSquareClick, isGreen }: { value: SquareValue; onSquar
 }
 
 
-function Board({ xIsNext, squares, onPlay, handleScore }:
+function Board({ xIsNext, squares, onPlay, handleScore, data }:
     {
         xIsNext: boolean;
         squares: Array<SquareValue>;
         onPlay: (items: SquareValue[]) => void;
         handleScore: (items: TableRow) => void;
+        data: any;
     }) {
 
     const winner = calculateWinner(squares);
@@ -86,8 +100,20 @@ function Board({ xIsNext, squares, onPlay, handleScore }:
     let status = '';
     if (winner) {
         status = `Winner: ${squares[winner[0]]}`;
+        if (data.playerX) {
+            if ((data.currentUid === data.playerX) === (squares[winner[0]] === 'X')) {
+                status = `You Won :)`
+            } else {
+                status = 'You lost :('
+            }
+        }
     } else {
         status = `Next Player: ${xIsNext ? 'X' : 'O'}`;
+        if (data.playerX) {
+            const nameX = data.nameX || data.playerX;
+            const nameO = data.nameO || data.playerO;
+            status = `Next Player: ${xIsNext ? nameX + ' - X' : nameO + ' - O'}`;
+        }
         if (!squares.includes(null)) {
             status = 'Game is draw!';
         }
@@ -125,21 +151,101 @@ function Board({ xIsNext, squares, onPlay, handleScore }:
 export default function Game() {
     const [currentSquares, setCurrentSquares] = useState(Array(9).fill(null));
     const [xIsNext, setXIsNext] = useState(true);
+    const [score, setScore] = useState<TableRow[]>([]);
 
-    function handlePlay(nextSquares: Array<SquareValue>) {
+    const [playOnline, setPlayOnline] = useState(true);
+    const [isMultiplayer, setIsMultiplayer] = useState(false);
+    const [roomId, setRoomId] = useState('');
+    const [gameData, setGameData] = useState<any>({});
+    const [currentUid, setCurrentUid] = useState('');
+
+    useEffect(() => {
+        if (!currentUid.length && auth.currentUser?.uid) {
+            setCurrentUid(auth.currentUser.uid);
+        }
+    }, [currentUid])
+
+    useEffect(() => {
+        if (isMultiplayer) {
+            const gamesRef = collection(db, "games");
+            const q = query(gamesRef, where("chatroomId", "==", roomId));
+            const unsubscribe = onSnapshot(q, (querySnapshot: any) => {
+                let data = {
+                    board: [],
+                    currentTurn: false
+                };
+                querySnapshot.forEach((doc: any) => {
+                    data = doc.data();
+                });
+                setCurrentSquares(data.board);
+                setXIsNext(data.currentTurn);
+                setGameData({ ...data, currentUid });
+            });
+
+            return () => {
+                unsubscribe();
+            };
+        }
+    }, [isMultiplayer, roomId, currentUid]);
+
+    async function handlePlay(nextSquares: Array<SquareValue>) {
+        if (isMultiplayer) {
+            if ((currentUid === gameData.playerX) !== xIsNext) {
+                alert('Wait for your turn!');
+                return;
+            }
+        }
         setCurrentSquares(nextSquares);
         setXIsNext(!xIsNext);
+
+        if (isMultiplayer) {
+            await makeMove(roomId, nextSquares, !xIsNext);
+        }
     }
 
-    function jumpTo() {
-        setCurrentSquares(Array(9).fill(null));
+    async function handleCreateRoom() {
+        const game_id = generateRandomString();
+        await createGame(game_id);
+        setRoomId(game_id);
+        setPlayOnline(false);
+        setIsMultiplayer(true);
+    }
+
+    async function handleJoinRoom() {
+        await joinGame(roomId);
+        setPlayOnline(false);
+        setIsMultiplayer(true);
+    }
+
+    async function jumpTo() {
+        if (isMultiplayer) {
+            const player = currentUid === gameData.playerX ? 'X' : 'O';
+            if (player === 'X') {
+                if (gameData.rematchO) {
+                    setCurrentSquares(Array(9).fill(null));
+                    await makeMove(roomId, Array(9).fill(null), !xIsNext);
+                    await rematchGame(roomId, '=');
+                } else {
+                    await rematchGame(roomId, player);
+                }
+            } else {
+                if (gameData.rematchX) {
+                    setCurrentSquares(Array(9).fill(null));
+                    await makeMove(roomId, Array(9).fill(null), !xIsNext);
+                    await rematchGame(roomId, '=');
+                } else {
+                    await rematchGame(roomId, player);
+                }
+            }
+        } else {
+            setCurrentSquares(Array(9).fill(null));
+        }
     }
 
     const NewGame = (
-        <button onClick={() => jumpTo()}>New Game!</button>
+        <button onClick={() => jumpTo()}>Rematch</button>
     );
 
-    const [score, setScore] = useState<TableRow[]>([]);
     function handleScore(currentScore: TableRow) {
         setScore([...score, currentScore]);
     }
@@ -161,10 +267,47 @@ export default function Game() {
             </Head>
 
             <ProtectedRoute>
+                <div>
+                    {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
+                    {isMultiplayer && roomId ? <div>Room Id: {roomId}</div> : ''}
+                    {playOnline ?
+                        <div className="flex-col justify-around mb-4">
+                            <button
+                                className={`w-full py-2 " : ""
+                                        }`}
+                                onClick={() => handleCreateRoom()}
+                            >
+                                Create Game
+                            </button>
+                            <div className='text-center m-5'>OR</div>
+                            <input
+                                type="text"
+                                value={roomId}
+                                onChange={(e) => {
+                                    const newValue = e.target.value.toUpperCase();
+                                    if (/^[A-Z0-9]*$/.test(newValue) && newValue.length <= 5) {
+                                        setRoomId(newValue);
+                                    }
+                                }}
+                                className="flex-grow p-2 w-full border rounded"
+                                pattern="[A-Z0-9]{5}"
+                            />
+                            <button
+                                className={`w-full py-2 `}
+                                onClick={() => handleJoinRoom()}
+                            >
+                                Join Game with ID
+                            </button>
+                        </div> : ''
+                    }
+                    {isMultiplayer ? (<div>
+                        {currentUid === gameData.playerX ? 'You are X' : 'You are O'}
+                    </div>) : ''}
+                </div>
                 <div className={styles.game}>
                     <div className={styles["game-row"]}>
                         <div className={styles["game-board"]}>
-                            <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} />
+                            <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} data={gameData} />
                         </div>
                         <div className={styles["game-info"]}>
                             {NewGame}
