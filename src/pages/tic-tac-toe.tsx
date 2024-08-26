@@ -349,7 +349,7 @@ export default function Game() {
                         : ''
                     }
                     {isMultiplayer ? (<div>
-                        {currentUid === gameData.playerX ? 'You are X' : 'You are O'}
+                        {currentUid === gameData.playerX ? 'You play as X' : 'You play as O'}
                     </div>) : ''}
                 </div>
                 <div className={styles.game}>
