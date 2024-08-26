@@ -184,7 +184,7 @@ export default function Game() {
     const [xIsNext, setXIsNext] = useState(true);
     const [score, setScore] = useState<TableRow[]>([]);
 
-    const [playOnline, setPlayOnline] = useState(true);
+    const [playOnline, setPlayOnline] = useState(false);
     const [isMultiplayer, setIsMultiplayer] = useState(false);
     const [roomId, setRoomId] = useState('');
     const [gameData, setGameData] = useState<any>({});

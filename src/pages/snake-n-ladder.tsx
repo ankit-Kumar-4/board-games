@@ -274,8 +274,6 @@ function checkPlayerCapture(playerPosition: number[], currentPostition: number) 
 }
 
 
-
-
 export default function Game() {
   const [playerPosition, setPlayerPosition] = useState<number[]>(Array(4).fill(1));
   const [playerTurn, setPlayerTurn] = useState<number>(0);

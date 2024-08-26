@@ -58,7 +58,6 @@ export default function Layout({ children }: LayoutProps) {
                         onClick={toggleSubMenu}>
                             Games by Asutosh
                         </div>
-                        {/* &#xfe40; : &gt; */}
                         <ul className={`absolute left-0 mt-1 w-full bg-sidePanel ${subMenuOpen ? ' ': 'hidden'}`}>
                             <li>
                                 <a href="https://asutosh-swain.vercel.app/tetris" target="_blank" rel="noopener noreferrer"
@@ -71,6 +70,10 @@ export default function Layout({ children }: LayoutProps) {
                             <li>
                                 <a href="https://asutosh-swain.vercel.app/connect4" target="_blank" rel="noopener noreferrer"
                                     className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Connect 4 ↗</a>
+                            </li>
+                            <li>
+                                <a href="https://asutosh-swain.vercel.app/flappy" target="_blank" rel="noopener noreferrer"
+                                    className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Flappy Bird ↗</a>
                             </li>
                         </ul>
                     </div>
