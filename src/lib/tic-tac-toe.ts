@@ -8,10 +8,25 @@ export async function joinGame(gameId: string) {
 
     if (!querySnapshot.empty) {
         const chatroomRef = querySnapshot.docs[0].ref;
-        await updateDoc(chatroomRef, {
-            playerO: auth.currentUser?.uid,
-            nameO: auth.currentUser?.displayName,
+        let data = {
+            playerO: null,
+            playerX: null
+        };
+        
+        querySnapshot.forEach((doc: any) => {
+            data = {...doc.data()};
         });
+
+        if (!data.playerO || data.playerO === auth.currentUser?.uid) {
+            await updateDoc(chatroomRef, {
+                playerO: auth.currentUser?.uid,
+                nameO: auth.currentUser?.displayName,
+            });
+        } else if (data.playerX === auth.currentUser?.uid) {
+            return true;
+        } else {
+            return false;
+        }
         return true;
     } else {
         return false;
