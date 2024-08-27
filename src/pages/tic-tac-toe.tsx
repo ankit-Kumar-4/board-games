@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { joinGame, createGame, makeMove, rematchGame, updateScore } from '@/lib/tic-tac-toe';
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db, auth } from "@/lib/firebaseConfig";
+import { generateRandomString } from "@/utils/common-functions";
 
 
 type SquareValue = 'X' | 'O' | null;
@@ -37,16 +38,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         </div>
     );
 };
-
-function generateRandomString(): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < 5; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        result += characters[randomIndex];
-    }
-    return result;
-}
 
 
 const Table = ({ data, gameData }: { data: TableRow[]; gameData: any }) => {

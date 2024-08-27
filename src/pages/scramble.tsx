@@ -5,6 +5,7 @@ import { words } from "@/data/words";
 import styles from "@/styles/scramble.module.css";
 import Head from "next/head";
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { getRandomInt } from "@/utils/common-functions";
 
 
 function Square({
@@ -21,10 +22,6 @@ function Square({
       {value}
     </button>
   );
-}
-
-function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max);
 }
 
 function shuffleString(input: string): string {
@@ -75,9 +72,16 @@ export default function Scramble() {
   const [inputValue, setInputValue] = useState("");
   const [charStates, setCharStates] = useState<boolean[]>(Array(5).fill(false));
   const [clickedChars, setClickedChars] = useState<number[]>([]);
+  const [difficulty, setDifficulty] = useState(1);
 
   function refreshWord() {
-    const index = getRandomInt(words.length);
+    const DIFFICULTY: { [key: number]: number } = {
+      0: getRandomInt(1517),
+      1: getRandomInt(3122)+1517,
+      2: getRandomInt(1009)+4369
+    }
+
+    const index = DIFFICULTY[difficulty];
     const shuffledWord = shuffleString(words[index]);
     setRandomWord(shuffledWord);
     setOriginalWord(words[index]);
@@ -201,6 +205,7 @@ export default function Scramble() {
     return underscores;
   };
 
+
   return (
     <>
       <Head>
@@ -216,6 +221,23 @@ export default function Scramble() {
       </Head>
 
       <ProtectedRoute>
+        <div className="flex justify-around mb-4">
+          <button
+            className={`w-full py-2 ${difficulty === 0 ? "bg-green-400" : ""
+              }`}
+            onClick={() => setDifficulty(0)}
+          >Easy</button>
+          <button
+            className={`w-full py-2 ${difficulty === 1 ? "bg-green-400" : ""
+              }`}
+            onClick={() => setDifficulty(1)}
+          >Medium</button>
+          <button
+            className={`w-full py-2 ${difficulty === 2 ? "bg-green-400" : ""
+              }`}
+            onClick={() => setDifficulty(2)}
+          >Hard</button>
+        </div>
         <div className={styles["game-row"]}>
           {renderUnderscores()}
           {newGame("↺", undoWord)}
