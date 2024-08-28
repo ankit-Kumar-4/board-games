@@ -73,6 +73,18 @@ export default function Scramble() {
   const [charStates, setCharStates] = useState<boolean[]>(Array(5).fill(false));
   const [clickedChars, setClickedChars] = useState<number[]>([]);
   const [difficulty, setDifficulty] = useState(1);
+  const [expanded, setExpanded] = useState(false);
+  // const [difficulty, setDifficulty] = useState<number | null>(null);
+
+  const handleButtonClick = (level: number) => {
+    if (expanded) {
+      setDifficulty(level);
+      refreshWord(level);
+      setExpanded(false);
+    } else {
+      setExpanded(true);
+    }
+  };
 
   function refreshWord(level: number) {
     const DIFFICULTY: { [key: number]: number } = {
@@ -221,32 +233,36 @@ export default function Scramble() {
       </Head>
 
       <ProtectedRoute>
-        <div className="flex justify-around mb-4">
-          <button
-            className={`w-full py-2 ${difficulty === 0 ? "bg-green-400" : ""
-              }`}
-            onClick={() => {
-              setDifficulty(0);
-              refreshWord(0);
-            }}
-          >Easy</button>
-          <button
-            className={`w-full py-2 ${difficulty === 1 ? "bg-green-400" : ""
-              }`}
-            onClick={() => {
-              setDifficulty(1);
-              refreshWord(1)
-            }}
-          >Medium</button>
-          <button
-            className={`w-full py-2 ${difficulty === 2 ? "bg-green-400" : ""
-              }`}
-            onClick={() => {
-              setDifficulty(2);
-              refreshWord(2);
-            }}
-          >Hard</button>
+      <div className="flex items-center mb-4 space-x-4">
+      {/* Label */}
+      <label className="text-gray-700 font-semibold">Difficulty:</label>
+
+      {/* Button Group */}
+      {!expanded ? (
+        // Single button view
+        <button
+          className="py-2 px-4 bg-blue-500 text-white rounded"
+          onClick={() => setExpanded(true)}
+        >
+          {difficulty !== null ? ["Easy", "Medium", "Hard"][difficulty] : "Select Difficulty"}
+        </button>
+      ) : (
+        // Expanded button view with animation
+        <div className="flex space-x-2">
+          {[0, 1, 2].map((level) => (
+            <button
+              key={level}
+              className={`w-full py-2  ${
+                difficulty === level ? "bg-green-400" : "bg-gray-300"
+              } text-white rounded`}
+              onClick={() => handleButtonClick(level)}
+            >
+              {["Easy", "Medium", "Hard"][level]}
+            </button>
+          ))}
         </div>
+      )}
+    </div>
         <div className={styles["game-row"]}>
           {renderUnderscores()}
           {newGame("↺", undoWord)}
