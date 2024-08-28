@@ -74,14 +74,14 @@ export default function Scramble() {
   const [clickedChars, setClickedChars] = useState<number[]>([]);
   const [difficulty, setDifficulty] = useState(1);
 
-  function refreshWord() {
+  function refreshWord(level: number) {
     const DIFFICULTY: { [key: number]: number } = {
       0: getRandomInt(1517),
-      1: getRandomInt(3122)+1517,
-      2: getRandomInt(1009)+4369
+      1: getRandomInt(2455) + 1517,
+      2: getRandomInt(1676) + 3972
     }
 
-    const index = DIFFICULTY[difficulty];
+    const index = DIFFICULTY[level];
     const shuffledWord = shuffleString(words[index]);
     setRandomWord(shuffledWord);
     setOriginalWord(words[index]);
@@ -132,7 +132,7 @@ export default function Scramble() {
   }
 
   useEffect(() => {
-    refreshWord();
+    refreshWord(1);
   }, []);
 
   if (!randomWord) {
@@ -182,11 +182,11 @@ export default function Scramble() {
       />
     ));
 
-  function newGame(text: string, refreshFunction: () => void) {
+  function newGame(text: string, refreshFunction: (value: number) => void) {
     return (
       <button
         className={styles["new-game-button"]}
-        onClick={() => refreshFunction()}
+        onClick={() => refreshFunction(difficulty)}
       >
         {text}
       </button>
@@ -225,17 +225,26 @@ export default function Scramble() {
           <button
             className={`w-full py-2 ${difficulty === 0 ? "bg-green-400" : ""
               }`}
-            onClick={() => setDifficulty(0)}
+            onClick={() => {
+              setDifficulty(0);
+              refreshWord(0);
+            }}
           >Easy</button>
           <button
             className={`w-full py-2 ${difficulty === 1 ? "bg-green-400" : ""
               }`}
-            onClick={() => setDifficulty(1)}
+            onClick={() => {
+              setDifficulty(1);
+              refreshWord(1)
+            }}
           >Medium</button>
           <button
             className={`w-full py-2 ${difficulty === 2 ? "bg-green-400" : ""
               }`}
-            onClick={() => setDifficulty(2)}
+            onClick={() => {
+              setDifficulty(2);
+              refreshWord(2);
+            }}
           >Hard</button>
         </div>
         <div className={styles["game-row"]}>
