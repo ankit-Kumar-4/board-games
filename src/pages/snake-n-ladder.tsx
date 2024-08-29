@@ -229,15 +229,16 @@ function Board({
 
 function getNextPlayerTurn(
   playerPosition: Array<number>,
-  currentPlayer: number
+  currentPlayer: number,
+  playerCount: number
 ) {
-  let nextPlayer = (currentPlayer + 1) % 4;
+  let nextPlayer = (currentPlayer + 1) % playerCount;
   const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
   if (count > 3) {
     return nextPlayer;
   }
   while (playerPosition[nextPlayer] === 100) {
-    nextPlayer = (nextPlayer + 1) % 4;
+    nextPlayer = (nextPlayer + 1) % playerCount;
   }
   return nextPlayer;
 }
@@ -283,12 +284,14 @@ export default function Game() {
     { player_id: 0, dicenumber: 0, last_position: 1 },
     { player_id: 0, dicenumber: 0, last_position: 1 }
   ]);
+  const [playerCount, setPlayerCount] = useState(4);
+  const [expanded, setExpanded] = useState(false);
 
   /*
     Reset the board to start a new game
   */
   function restartGame() {
-    setPlayerPosition(Array(4).fill(1))
+    setPlayerPosition(Array(playerCount).fill(1))
     setPlayerTurn(0)
     setStatus("")
     setRanking([])
@@ -298,6 +301,16 @@ export default function Game() {
     ])
   }
 
+  const handleButtonClick = (level: number) => {
+    if (expanded) {
+      setPlayerCount(level);
+      restartGame();
+      setExpanded(false);
+    } else {
+      setExpanded(true);
+    }
+  };
+
   function rollDice(diceNumber: number) {
     const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
     if (count >= 3) {
@@ -305,7 +318,7 @@ export default function Game() {
     }
 
     setLastTwoTurn([lastTwoTurn[1], { player_id: playerTurn, dicenumber: diceNumber, last_position: playerPosition[playerTurn] }]);
-    let nextPlayer = getNextPlayerTurn(playerPosition, playerTurn);
+    let nextPlayer = getNextPlayerTurn(playerPosition, playerTurn, playerCount);
 
     const nextPlayerPositions = playerPosition.slice();
     nextPlayerPositions[playerTurn] += diceNumber;
@@ -386,11 +399,36 @@ export default function Game() {
       <ProtectedRoute>
 
         <div className="flex justify-center">
-          <button onClick={restartGame}>
+          <label className="text-gray-700 font-semibold content-center justify-center">Number of Players:</label>
+          {!expanded ? (
+            // Single button view
+            <button
+              className="py-2 px-4 bg-blue-500 text-white rounded"
+              onClick={() => setExpanded(true)}
+            >
+              {playerCount !== null ? playerCount : "Number of Players: "}
+            </button>
+          ) : (
+            // Expanded button view with animation
+            <div className="flex space-x-2">
+              {[2, 3, 4].map((level) => (
+                <button
+                  key={level}
+                  className={`w-full py-2  ${playerCount === level ? "bg-green-400" : "bg-gray-300"
+                    } text-white rounded`}
+                  onClick={() => handleButtonClick(level)}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          )}
+          <button onClick={restartGame} className="ml-5">
             New Game
           </button>
 
         </div>
+
 
         <div className="flex flex-col md:flex-row">
           <div className="flex-grow w-full">
