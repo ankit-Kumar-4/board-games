@@ -8,7 +8,7 @@ import { joinGame, createGame, makeMove, rematchGame, updateScore } from '@/lib/
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db, auth } from "@/lib/firebaseConfig";
 import { generateRandomString } from "@/utils/common-functions";
-
+import Image from "next/image";
 
 const snakes: {
   [key: number]: number;
@@ -21,8 +21,7 @@ const snakes: {
   65: 22,
   60: 19,
   52: 27,
-  46: 6,
-  32: 5
+  46: 6
 };
 
 const ladders: {
@@ -183,17 +182,20 @@ const homeStart = (step: number, playerPosition: number[]) => {
   );
 };
 
-const Cell = ({ step, playerId }: { step: number; playerId: number[] }) => {
+const Cell = ({ step, playerId, boardStyle }: { step: number; playerId: number[]; boardStyle: number; }) => {
   let color = "";
-  if (step in snakes || Object.values(snakes).includes(step)) {
-    color = styles["snake-cell"];
-  } else if (step in ladders || Object.values(ladders).includes(step)) {
-    color = styles["ladder-cell"];
+  if (boardStyle === 0) {
+    if (step in snakes || Object.values(snakes).includes(step)) {
+      color = 'bg-red-400';
+    } else if (step in ladders || Object.values(ladders).includes(step)) {
+      color = 'bg-green-200';
+    }
   }
 
 
   return (
-    <div key={step} id={`${step}`} className={styles.cell + " " + color}>
+    <div key={step} id={`${step}`} className={'text-black w-full pt-[100%] flex justify-center items-center relative' +
+      (boardStyle === 0  ? (" border border-green-700 " + (color.length ? color : 'bg-yellow-100')) : '')}>
       <div
         className={`${styles["cell-content"]} 
       ${playerId[0] === step ? styles.player1 : ""}
@@ -202,7 +204,7 @@ const Cell = ({ step, playerId }: { step: number; playerId: number[] }) => {
       ${playerId[3] === step ? styles.player4 : ""}
       `}
       >
-        {step}
+        {boardStyle === 0? step: null}
       </div>
     </div>
   );
@@ -216,9 +218,10 @@ function getCellNumber(i: number, j: number) {
 }
 
 function Board({
-  chaal,
+  chaal, boardStyle
 }: Readonly<{
   chaal: Array<number>;
+  boardStyle: number;
 }>) {
   const board = [];
   for (let i = 9; i >= 0; i--) {
@@ -229,29 +232,26 @@ function Board({
           <div
             key={cellNumber}
             id={`${cellNumber}`}
-            className={styles.cell + ' ' + styles[cellNumber === 1 ? 'start' : 'home']}>
+            className={'text-black w-full pt-[100%] bg-lightgoldenrodyellow border border-darkgreen flex justify-center items-center relative' +
+              ' ' + (cellNumber === 1 ? 'bg-yellow-400' : 'bg-green-400')}>
             {homeStart(cellNumber, chaal)}
           </div>
         ));
       } else {
-        board.push(<Cell step={cellNumber} playerId={chaal}></Cell>);
+        board.push(<Cell step={cellNumber} playerId={chaal} boardStyle={boardStyle}></Cell>);
       }
     }
   }
 
-  //   return (
-  //     <div className="flex justify-center items-start p-2 box-border h-screen">
-  //       <div className={styles["image-board"]} />
-  //     </div>
-  //   );
 
   return (
     <div className="flex justify-center items-start p-2 box-border">
-      <div className={styles.board}>
+      <div className='grid grid-cols-10 grid-rows-10 gap-[1px] w-full max-w-[500px] mx-auto relative bg-cover bg-center'
+        style={boardStyle ? { backgroundImage: `url('/snl-board.jpg')` } : {}}
+      >
         {board}
-        {fillArrow()}
+        {boardStyle ? '' : fillArrow()}
       </div>
-      {/* <div className={styles["image-board"]} /> */}
     </div>
   );
 }
@@ -321,6 +321,9 @@ export default function Game() {
   const [roomId, setRoomId] = useState('');
   const [gameData, setGameData] = useState<any>({});
   const [currentUid, setCurrentUid] = useState('');
+
+  const [styleExpanded, setStyleExpanded] = useState(false);
+  const [boardStyle, setBoardStyle] = useState(0);
 
   useEffect(() => {
     if (isMultiplayer) {
@@ -598,10 +601,36 @@ export default function Game() {
           {!isMultiplayer || gameData.player1?.id === currentUid ? <button onClick={restartGame} className="ml-5">
             New Game
           </button> : ''}
-
         </div>
-        <div>
-          {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
+        <div className="flex justify-center mt-2">
+          <label className="text-gray-700 font-semibold content-center justify-center">Board Style:</label>
+          {!styleExpanded ? (
+            // Single button view
+            <button
+              className="py-2 px-4 bg-blue-500 text-white rounded"
+              onClick={() => setStyleExpanded(true)}
+            >
+              {boardStyle ? 'Classic' : "Minimalistic"}
+            </button>
+          ) : (
+            // Expanded button view with animation
+            <div className="flex space-x-2">
+              {[0, 1].map((level) => (
+                <button
+                  key={level}
+                  className={`w-full py-2  ${boardStyle === level ? "bg-green-400" : "bg-gray-300"
+                    } text-white rounded`}
+                  onClick={() => {
+                    setBoardStyle(level);
+                    setStyleExpanded(false);
+                  }}
+                >
+                  {level ? 'Classic' : "Minimalistic"}
+                </button>
+              ))}
+            </div>
+          )}
+          {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)} className="ml-5">Play Online</button>}
           {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
           {playOnline ?
             <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
@@ -639,9 +668,10 @@ export default function Game() {
         </div>
 
         <div className="flex flex-col md:flex-row">
-          <div className="flex-grow w-full">
+          <div className="flex-grow w-full ">
             <Board
               chaal={playerPosition}
+              boardStyle={boardStyle}
             ></Board>
           </div>
           <div className="flex-auto md:w-1/2 p-4 content-center">

@@ -1,24 +1,9 @@
-/* Board styles */
-.board {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  gap: 1px;
-  width: 100%;
-  /* Make the board width flexible */
-  max-width: 500px;
-  /* Maximum width for larger screens */
-  margin: 0 auto;
-  position: relative;
-}
 
 /* Cell styles */
 .cell {
   color: black;
   width: 100%;
-  /* Make the cell width flexible */
   padding-top: 100%;
-  /* Maintain the aspect ratio */
   background-color: lightgoldenrodyellow;
   border: 1px solid darkgreen;
   display: flex;
@@ -39,18 +24,6 @@
   align-items: center;
 }
 
-/* Media queries for responsiveness */
-@media (max-width: 600px) {
-  .board {
-    grid-template-columns: repeat(10, minmax(20px, 1fr));
-    grid-template-rows: repeat(10, minmax(20px, 1fr));
-    gap: 0.5px;
-  }
-
-  .cell {
-    border: 0.5px solid darkgreen;
-  }
-}
 
 .arrow {
   display: "flex";
@@ -85,12 +58,9 @@
 
 .circle {
   width: 43%;
-  /* Adjust size as needed */
   height: 43%;
-  /* Adjust size as needed */
   border-radius: 50%;
   position: absolute;
-  /* Allows positioning within the cell-content div */
   visibility: hidden;
   border: 5px solid black;
 }
