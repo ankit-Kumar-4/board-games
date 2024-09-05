@@ -233,36 +233,35 @@ export default function Scramble() {
       </Head>
 
       <ProtectedRoute>
-      <div className="flex items-center mb-4 space-x-4">
-      {/* Label */}
-      <label className="text-gray-700 font-semibold">Difficulty:</label>
+        <div className="flex items-center mb-4 space-x-4">
+          {/* Label */}
+          <label className="text-gray-700 font-semibold">Difficulty:</label>
 
-      {/* Button Group */}
-      {!expanded ? (
-        // Single button view
-        <button
-          className="py-2 px-4 bg-blue-500 text-white rounded"
-          onClick={() => setExpanded(true)}
-        >
-          {difficulty !== null ? ["Easy", "Medium", "Hard"][difficulty] : "Select Difficulty"}
-        </button>
-      ) : (
-        // Expanded button view with animation
-        <div className="flex space-x-2">
-          {[0, 1, 2].map((level) => (
+          {/* Button Group */}
+          {!expanded ? (
+            // Single button view
             <button
-              key={level}
-              className={`w-full py-2  ${
-                difficulty === level ? "bg-green-400" : "bg-gray-300"
-              } text-white rounded`}
-              onClick={() => handleButtonClick(level)}
+              className="py-2 px-4 bg-blue-500 text-white rounded"
+              onClick={() => setExpanded(true)}
             >
-              {["Easy", "Medium", "Hard"][level]}
+              {difficulty !== null ? ["Easy", "Medium", "Hard"][difficulty] : "Select Difficulty"}
             </button>
-          ))}
+          ) : (
+            // Expanded button view with animation
+            <div className="flex space-x-2">
+              {[0, 1, 2].map((level) => (
+                <button
+                  key={level}
+                  className={`w-full py-2  ${difficulty === level ? "bg-green-400" : "bg-gray-300"
+                    } text-white rounded`}
+                  onClick={() => handleButtonClick(level)}
+                >
+                  {["Easy", "Medium", "Hard"][level]}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-      )}
-    </div>
         <div className={styles["game-row"]}>
           {renderUnderscores()}
           {newGame("↺", undoWord)}

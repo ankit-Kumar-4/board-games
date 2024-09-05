@@ -12,18 +12,18 @@ export async function joinGame(gameId: string) {
             playerO: null,
             playerX: null
         };
-        
+
         querySnapshot.forEach((doc: any) => {
-            data = {...doc.data()};
+            data = { ...doc.data() };
         });
 
-        if (!data.playerO || data.playerO === auth.currentUser?.uid) {
+        if (data.playerX === auth.currentUser?.uid) {
+            return true;
+        } else if (!data.playerO || data.playerO === auth.currentUser?.uid) {
             await updateDoc(chatroomRef, {
                 playerO: auth.currentUser?.uid,
                 nameO: auth.currentUser?.displayName,
             });
-        } else if (data.playerX === auth.currentUser?.uid) {
-            return true;
         } else {
             return false;
         }

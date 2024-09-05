@@ -233,7 +233,11 @@ export default function Game() {
 
     async function handleCreateRoom() {
         const game_id = generateRandomString();
-        await createGame(game_id);
+        const result = await createGame(game_id);
+        if (!result) {
+            alert('Failed to create room');
+            return;
+        }
         setRoomId(game_id);
         setPlayOnline(false);
         setIsMultiplayer(true);
@@ -353,7 +357,7 @@ export default function Game() {
                         </div>
                     </div>
                     <div className={styles["game-row"]}>
-                        <Table data={score} gameData={gameData}/>
+                        <Table data={score} gameData={gameData} />
                     </div>
                 </div>
             </ProtectedRoute>

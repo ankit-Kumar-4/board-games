@@ -4,6 +4,11 @@ import Xarrow from "react-xarrows";
 import Dice from 'react-dice-roll';
 import Head from "next/head";
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { joinGame, createGame, makeMove, rematchGame, updateScore } from '@/lib/snake-n-ladder';
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db, auth } from "@/lib/firebaseConfig";
+import { generateRandomString } from "@/utils/common-functions";
+
 
 const snakes: {
   [key: number]: number;
@@ -41,6 +46,30 @@ type playerTurn = {
   last_position: number;
 }
 
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center" onClick={handleOverlayClick}>
+      <div className="bg-white p-6 rounded shadow-lg">
+        {children}
+      </div>
+    </div>
+  );
+};
 
 function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
   const [arrowParams, setArrowParams] = useState({
@@ -244,7 +273,7 @@ function getNextPlayerTurn(
 }
 
 
-const Table = ({ data }: { data: number[]; }) => {
+const Table = ({ data }: { data: string[]; }) => {
   return (
     <table className={`${styles.table} ${styles['game-info']}`}>
       <thead>
@@ -257,7 +286,7 @@ const Table = ({ data }: { data: number[]; }) => {
         {data.map((row, index) => (
           <tr key={index}>
             <td>{index + 1}</td>
-            <td>{'Player-' + (index + 1)}</td>
+            <td>{row}</td>
           </tr>
         ))}
       </tbody>
@@ -279,7 +308,7 @@ export default function Game() {
   const [playerPosition, setPlayerPosition] = useState<number[]>(Array(4).fill(1));
   const [playerTurn, setPlayerTurn] = useState<number>(0);
   const [status, setStatus] = useState("");
-  const [ranking, setRanking] = useState<number[]>([]);
+  const [ranking, setRanking] = useState<string[]>([]);
   const [lastTwoTurn, setLastTwoTurn] = useState<playerTurn[]>([
     { player_id: 0, dicenumber: 0, last_position: 1 },
     { player_id: 0, dicenumber: 0, last_position: 1 }
@@ -287,10 +316,40 @@ export default function Game() {
   const [playerCount, setPlayerCount] = useState(4);
   const [expanded, setExpanded] = useState(false);
 
-  /*
-    Reset the board to start a new game
-  */
-  function restartGame() {
+  const [playOnline, setPlayOnline] = useState(false);
+  const [isMultiplayer, setIsMultiplayer] = useState(false);
+  const [roomId, setRoomId] = useState('');
+  const [gameData, setGameData] = useState<any>({});
+  const [currentUid, setCurrentUid] = useState('');
+
+  useEffect(() => {
+    if (isMultiplayer) {
+      if (!currentUid.length && auth.currentUser?.uid) {
+        setCurrentUid(auth.currentUser.uid);
+      }
+      const gamesRef = collection(db, "snl");
+      const q = query(gamesRef, where("chatroomId", "==", roomId));
+      const unsubscribe = onSnapshot(q, (querySnapshot: any) => {
+        let data: any = {};
+        querySnapshot.forEach((doc: any) => {
+          data = doc.data();
+        });
+        setGameData({ ...data, currentUid });
+        setPlayerPosition(data.playerPosition);
+        setPlayerTurn(data.playerTurn);
+        setStatus(data.status);
+        setRanking(data.ranking);
+        setLastTwoTurn(data.lastTwoTurn);
+        setPlayerCount(data.playerCount);
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [isMultiplayer, roomId, currentUid]);
+
+  async function restartGame() {
     setPlayerPosition(Array(playerCount).fill(1))
     setPlayerTurn(0)
     setStatus("")
@@ -299,6 +358,9 @@ export default function Game() {
       { player_id: 0, dicenumber: 0, last_position: 1 },
       { player_id: 0, dicenumber: 0, last_position: 1 }
     ])
+    if (isMultiplayer) {
+      await rematchGame(roomId);
+    }
   }
 
   const handleButtonClick = (level: number) => {
@@ -311,13 +373,42 @@ export default function Game() {
     }
   };
 
-  function rollDice(diceNumber: number) {
+  function getPlayerName(gameData: any, playerTurn: number) {
+    if (playerTurn === 0) {
+      return gameData.player1 || {};
+    }
+    if (playerTurn === 1) {
+      return gameData.player2 || {};
+    }
+    if (playerTurn === 2) {
+      return gameData.player3 || {};
+    }
+    if (playerTurn === 3) {
+      return gameData.player4 || {};
+    }
+    return {}
+  }
+
+  async function rollDice(diceNumber: number) {
     const count = playerPosition.reduce((acc, e) => e === 100 ? 1 + acc : acc, 0);
     if (count >= 3) {
       return;
     }
+    if (isMultiplayer) {
+      if (!gameData.player2.id) {
+        alert('Waiting for second player to join');
+        return;
+      } else if (!gameData.player3.id && gameData.playerCount > 2) {
+        alert('Waiting for third player to join');
+        return;
+      } else if (!gameData.player4.id && gameData.playerCount > 3) {
+        alert('Waiting for fourth player to join');
+        return;
+      }
+    }
 
-    setLastTwoTurn([lastTwoTurn[1], { player_id: playerTurn, dicenumber: diceNumber, last_position: playerPosition[playerTurn] }]);
+    const newLastTwoTurn = [lastTwoTurn[1], { player_id: playerTurn, dicenumber: diceNumber, last_position: playerPosition[playerTurn] }];
+    setLastTwoTurn(newLastTwoTurn);
     let nextPlayer = getNextPlayerTurn(playerPosition, playerTurn, playerCount);
 
     const nextPlayerPositions = playerPosition.slice();
@@ -328,46 +419,83 @@ export default function Game() {
     if (lastTwoTurn[0].player_id === lastTwoTurn[1].player_id && lastTwoTurn[0].dicenumber && lastTwoTurn[1].dicenumber &&
       lastTwoTurn[0].player_id === playerTurn && diceNumber === lastTwoTurn[0].dicenumber
     ) {
-      setStatus(
-        `Player-${playerTurn + 1} void move, 3 consecutive 6.`
-      );
+      if (isMultiplayer) {
+        newStatus = `${getPlayerName(gameData, playerTurn).name} void move, 3 consecutive 6.`;
+      } else {
+        newStatus = `Player-${playerTurn + 1} void move, 3 consecutive 6.`;
+      }
+      setStatus(newStatus);
       setPlayerTurn(nextPlayer);
+      if (isMultiplayer) {
+        await makeMove(roomId, newStatus, nextPlayer, newLastTwoTurn, [], []);
+      }
       return;
     }
     if (playerPosition[playerTurn] === 1 && ![1, 6].includes(diceNumber)) {
-      setStatus(
-        `Player-${playerTurn + 1} needs to roll 1 or 6 to start.`
-      );
+      if (isMultiplayer) {
+        newStatus = `${getPlayerName(gameData, playerTurn).name} needs to roll 1 or 6 to start.`;
+      } else {
+        newStatus = `Player-${playerTurn + 1} needs to roll 1 or 6 to start.`;
+      }
+      setStatus(newStatus);
       setPlayerTurn(nextPlayer);
+      if (isMultiplayer) {
+        await makeMove(roomId, newStatus, nextPlayer, newLastTwoTurn, [], []);
+      }
       return;
     }
     if (playerPosition[playerTurn] + diceNumber > 100) {
-      setStatus(
-        `Player-${playerTurn + 1} couldn't move, needs to roll ${100 - playerPosition[playerTurn]} or lower`
-      );
+      if (isMultiplayer) {
+        newStatus = `${getPlayerName(gameData, playerTurn).name} couldn't move, needs to roll ${100 - playerPosition[playerTurn]} or lower`;
+      } else {
+        newStatus = `Player-${playerTurn + 1} couldn't move, needs to roll ${100 - playerPosition[playerTurn]} or lower`;
+      }
+      setStatus(newStatus);
       setPlayerTurn(nextPlayer);
+      if (isMultiplayer) {
+        await makeMove(roomId, newStatus, nextPlayer, newLastTwoTurn, [], []);
+      }
       return;
     }
+
+    let newRanking: any = [];
     if (playerPosition[playerTurn] + diceNumber === 100) {
-      newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and reached Home!`;
-      setRanking([...ranking, playerTurn + 1]);
+      if (isMultiplayer) {
+        newStatus = `Last Move: ${getPlayerName(gameData, playerTurn).name} took ${diceNumber} steps and reached Home!`;
+      } else {
+        newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and reached Home!`;
+      }
+      setRanking([...ranking, 'Player-' + (playerTurn + 1)]);
+      newRanking = [...ranking, getPlayerName(gameData, playerTurn).name];
     } else if (playerPosition[playerTurn] + diceNumber in ladders) {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and climbs ladder!`;
+      if (isMultiplayer) {
+        newStatus = `Last Move: ${getPlayerName(gameData, playerTurn).name} took ${diceNumber} steps and climbs ladder!`;
+      } else {
+        newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and climbs ladder!`;
+      }
       nextPlayerPositions[playerTurn] = ladders[playerPosition[playerTurn] + diceNumber];
     } else if (playerPosition[playerTurn] + diceNumber in snakes) {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and got bit by snake!`;
+      if (isMultiplayer) {
+        newStatus = `Last Move: ${getPlayerName(gameData, playerTurn).name} took ${diceNumber} steps and got bit by snake!`;
+      } else {
+        newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps and got bit by snake!`;
+      }
       nextPlayerPositions[playerTurn] = snakes[playerPosition[playerTurn] + diceNumber];
     } else {
       if (diceNumber === 6) {
         nextPlayer = playerTurn;
       }
-      newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps`;
+      if (isMultiplayer) {
+        newStatus = `Last Move: ${getPlayerName(gameData, playerTurn).name} took ${diceNumber} steps`;
+      } else {
+        newStatus = `Last Move: Player-${playerTurn + 1} took ${diceNumber} steps`;
+      }
     }
 
 
@@ -380,6 +508,50 @@ export default function Game() {
     setStatus(newStatus);
     setPlayerPosition(nextPlayerPositions);
     setPlayerTurn(nextPlayer);
+    if (isMultiplayer) {
+      await makeMove(roomId, newStatus, nextPlayer, newLastTwoTurn, nextPlayerPositions, newRanking);
+    }
+
+  }
+
+  async function handleCreateRoom() {
+    const game_id = generateRandomString();
+    const result = await createGame(game_id, playerCount);
+    if (!result) {
+      alert('Failed to create room');
+      return;
+    }
+    setRoomId(game_id);
+    setPlayOnline(false);
+    setIsMultiplayer(true);
+    alert('Please share the Game ID to a friend: ' + game_id)
+  }
+
+  async function handleJoinRoom() {
+    const result = await joinGame(roomId);
+    if (!result) {
+      alert('Please enter valid Game Id');
+      return;
+    }
+    setPlayOnline(false);
+    setIsMultiplayer(true);
+  }
+
+  function checkCurrentTurn() {
+    if (!isMultiplayer) return true;
+    if (gameData.player1?.id === gameData.currentUid && playerTurn === 0) {
+      return true;
+    }
+    if (gameData.player2?.id === gameData.currentUid && playerTurn === 1) {
+      return true;
+    }
+    if (gameData.player3?.id === gameData.currentUid && playerTurn === 2) {
+      return true;
+    }
+    if (gameData.player4?.id === gameData.currentUid && playerTurn === 3) {
+      return true;
+    }
+    return false;
   }
 
   return (
@@ -428,7 +600,43 @@ export default function Game() {
           </button>
 
         </div>
-
+        <div>
+          {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
+          {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
+          {playOnline ?
+            <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
+              <div className="flex-col justify-around mb-4">
+                <button
+                  className={`w-full py-2 " : ""
+                                        }`}
+                  onClick={() => handleCreateRoom()}
+                >
+                  Create Game
+                </button>
+                <div className='text-center m-5'>OR</div>
+                <input
+                  type="text"
+                  value={roomId}
+                  onChange={(e) => {
+                    const newValue = e.target.value.toUpperCase();
+                    if (/^[A-Z0-9]*$/.test(newValue) && newValue.length <= 5) {
+                      setRoomId(newValue);
+                    }
+                  }}
+                  className="flex-grow p-2 w-full border rounded"
+                  pattern="[A-Z0-9]{5}"
+                />
+                <button
+                  className={`w-full py-2 `}
+                  onClick={() => handleJoinRoom()}
+                >
+                  Join Game with ID
+                </button>
+              </div>
+            </Modal>
+            : ''
+          }
+        </div>
 
         <div className="flex flex-col md:flex-row">
           <div className="flex-grow w-full">
@@ -444,11 +652,14 @@ export default function Game() {
             </div>
             <div className={styles["game-row1"]}>
               <div className={`${styles["player" + (playerTurn + 1)]} ${styles['player-turn']}`}>
-                {`Turn of Player-${playerTurn + 1}`}
+                {!isMultiplayer ? `Turn of Player-${playerTurn + 1}` : `Turn of ${getPlayerName(gameData, playerTurn).name}`}
               </div>
-              <Dice onRoll={(value) => rollDice(value)} size={33}
-                faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
-              />
+              {checkCurrentTurn() ?
+                <Dice onRoll={(value) => rollDice(value)} size={33}
+                  faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
+                /> :
+                ''
+              }
             </div>
             {lastArrow(lastTwoTurn, playerPosition)}
             {
