@@ -595,9 +595,9 @@ export default function Game() {
               ))}
             </div>
           )}
-          <button onClick={restartGame} className="ml-5">
+          {!isMultiplayer || gameData.player1?.id === currentUid ? <button onClick={restartGame} className="ml-5">
             New Game
-          </button>
+          </button> : ''}
 
         </div>
         <div>
