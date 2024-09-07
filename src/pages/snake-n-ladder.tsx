@@ -131,6 +131,9 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
 }
 
 function lastArrow(lastTwoTurn: playerTurn[], currentPostition: number[]) {
+  console.log(lastTwoTurn[1].last_position + ' : start')
+  console.log(currentPostition[lastTwoTurn[1].player_id] + ' : end')
+
   return (
     <div >
       <Xarrow
@@ -195,16 +198,19 @@ const Cell = ({ step, playerId, boardStyle }: { step: number; playerId: number[]
 
   return (
     <div key={step} id={`${step}`} className={'text-black w-full pt-[100%] flex justify-center items-center relative' +
-      (boardStyle === 0  ? (" border border-green-700 " + (color.length ? color : 'bg-yellow-100')) : '')}>
+      (boardStyle === 0 ? (" border border-green-700 " + (color.length ? color : 'bg-yellow-100')) : '')}>
+      {[1, 100].includes(step)? 
+            homeStart(step, playerId) : ''
+      }
       <div
         className={`${styles["cell-content"]} 
-      ${playerId[0] === step ? styles.player1 : ""}
-      ${playerId[1] === step ? styles.player2 : ""}
-      ${playerId[2] === step ? styles.player3 : ""}
-      ${playerId[3] === step ? styles.player4 : ""}
+      ${playerId[0] === step && ![1, 100].includes(step) ? styles.player1 : ""}
+      ${playerId[1] === step && ![1, 100].includes(step) ? styles.player2 : ""}
+      ${playerId[2] === step && ![1, 100].includes(step) ? styles.player3 : ""}
+      ${playerId[3] === step && ![1, 100].includes(step) ? styles.player4 : ""}
       `}
       >
-        {boardStyle === 0? step: null}
+        {boardStyle === 0 ? step : null}
       </div>
     </div>
   );
@@ -227,26 +233,28 @@ function Board({
   for (let i = 9; i >= 0; i--) {
     for (let j = 9; j >= 0; j--) {
       const cellNumber = getCellNumber(i, j) + 1;
-      if ([1, 100].includes(cellNumber)) {
-        board.push((
-          <div
-            key={cellNumber}
-            id={`${cellNumber}`}
-            className={'text-black w-full pt-[100%] bg-lightgoldenrodyellow border border-darkgreen flex justify-center items-center relative' +
-              ' ' + (cellNumber === 1 ? 'bg-yellow-400' : 'bg-green-400')}>
-            {homeStart(cellNumber, chaal)}
-          </div>
-        ));
-      } else {
-        board.push(<Cell step={cellNumber} playerId={chaal} boardStyle={boardStyle}></Cell>);
-      }
+      // if ([1, 100].includes(cellNumber) && boardStyle === 0) {
+      //   board.push((
+      //     <div
+      //       key={cellNumber}
+      //       id={`${cellNumber}`}
+      //       className={'text-black w-full pt-[100%] bg-lightgoldenrodyellow border border-darkgreen flex justify-center items-center relative' +
+      //         ' ' + (cellNumber === 1 ? 'bg-yellow-400' : 'bg-green-400')}
+      //     >
+      //       {homeStart(cellNumber, chaal)}
+      //     </div>
+      //   ));
+      // } else {
+      //   board.push(<Cell step={cellNumber} playerId={chaal} boardStyle={boardStyle}></Cell>);
+      // }
+      board.push(<Cell step={cellNumber} playerId={chaal} boardStyle={boardStyle}></Cell>);
     }
   }
 
 
   return (
     <div className="flex justify-center items-start p-2 box-border">
-      <div className='grid grid-cols-10 grid-rows-10 gap-[1px] w-full max-w-[500px] mx-auto relative bg-cover bg-center'
+      <div className='grid grid-cols-10 grid-rows-10 w-full max-w-[625px] bg-cover bg-center'
         style={boardStyle ? { backgroundImage: `url('/snl-board.jpg')` } : {}}
       >
         {board}
@@ -323,7 +331,7 @@ export default function Game() {
   const [currentUid, setCurrentUid] = useState('');
 
   const [styleExpanded, setStyleExpanded] = useState(false);
-  const [boardStyle, setBoardStyle] = useState(0);
+  const [boardStyle, setBoardStyle] = useState(1);
 
   useEffect(() => {
     if (isMultiplayer) {
