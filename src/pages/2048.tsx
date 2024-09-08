@@ -62,17 +62,17 @@ function compareMatrix(matrixA: number[], matrixB: number[]) {
     return true;
 }
 
-function checkGameOver(matrix: number[]) {
+function checkGameOver(matrix: number[], boardSize: number) {
     let left = false;
     let right = false;
     let up = false;
     let down = false;
 
     let newMatrix = matrix.slice();
-    for (let i = 0; i < matrix.length; i += 4) {
+    for (let i = 0; i < matrix.length; i += boardSize) {
         let x = i;
         let y = i + 1;
-        while (y - i < 4) {
+        while (y - i < boardSize) {
             if (x === y) {
                 y++;
             } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
@@ -96,10 +96,10 @@ function checkGameOver(matrix: number[]) {
     left = compareMatrix(matrix, newMatrix);
     newMatrix = matrix.slice()
 
-    for (let i = 3; i < matrix.length; i = i + 4) {
+    for (let i = 3; i < matrix.length; i = i + boardSize) {
         let x = i;
         let y = i - 1;
-        while (i - y < 4) {
+        while (i - y < boardSize) {
             if (x === y) {
                 y--;
             } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
@@ -125,52 +125,52 @@ function checkGameOver(matrix: number[]) {
 
     for (let i = 0; i * i < matrix.length; i++) {
         let x = i;
-        let y = i + 4;
+        let y = i + boardSize;
         while (y < matrix.length) {
             if (x === y) {
-                y += 4;
+                y += boardSize;
             } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
-                y += 4;
+                y += boardSize;
             } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
                 newMatrix[x] = newMatrix[y];
                 newMatrix[y] = 0;
-                y += 4;
+                y += boardSize;
             } else if (newMatrix[y] === 0) {
-                y += 4;
+                y += boardSize;
             } else if (newMatrix[x] !== newMatrix[y]) {
-                x += 4;
+                x += boardSize;
             } else {
                 newMatrix[x] = 2 * newMatrix[y];
                 newMatrix[y] = 0;
-                x += 4;
-                y += 4;
+                x += boardSize;
+                y += boardSize;
             }
         }
     }
     up = compareMatrix(matrix, newMatrix);
     newMatrix = matrix.slice()
 
-    for (let i = matrix.length - 1; matrix.length - i <= 4; i--) {
+    for (let i = matrix.length - 1; matrix.length - i <= boardSize; i--) {
         let x = i;
-        let y = i - 4;
+        let y = i - boardSize;
         while (y >= 0) {
             if (x === y) {
-                y -= 4;
+                y -= boardSize;
             } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
-                y -= 4;
+                y -= boardSize;
             } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
                 newMatrix[x] = newMatrix[y];
                 newMatrix[y] = 0;
-                y -= 4;
+                y -= boardSize;
             } else if (newMatrix[y] === 0) {
-                y -= 4;
+                y -= boardSize;
             } else if (newMatrix[x] !== newMatrix[y]) {
-                x -= 4;
+                x -= boardSize;
             } else {
                 newMatrix[x] = 2 * newMatrix[y];
                 newMatrix[y] = 0;
-                x -= 4;
-                y -= 4;
+                x -= boardSize;
+                y -= boardSize;
             }
         }
     }
@@ -183,7 +183,8 @@ function checkGameOver(matrix: number[]) {
 }
 
 
-function getCells(size: number, matrix: SquareValue[]) {
+function getCells(boardSize: number, matrix: SquareValue[]) {
+    const size = boardSize * boardSize;
     const result = [];
     for (let i = 0; i < size; i++) {
         let cell_color = 'bg-white';
@@ -241,7 +242,11 @@ function getCells(size: number, matrix: SquareValue[]) {
             </div>)
         );
     }
-    return result;
+    return (
+        <div className={`grid grid-cols-${boardSize} gap-0 h-full w-full bg-black`}>
+            {result}
+        </div>
+    );
 }
 
 
@@ -251,6 +256,9 @@ const Board: React.FC = () => {
     const [undoCount, setUndoCount] = useState(0);
     const [history, setHistory] = useState<{ matrix: SquareValue[], score: number }[]>([]);
     const [isGameOver, setIsGameOver] = useState(false);
+
+    const [boardSize, setBoardSize] = useState(4);
+    const [expanded, setExpanded] = useState(false);
 
     function generateNumber(matrix: SquareValue[]) {
         const newCellValue = getNewCellValue();
@@ -271,10 +279,10 @@ const Board: React.FC = () => {
         let newMatrix = matrix.slice();
         let newScore = score;
 
-        for (let i = 0; i < matrix.length; i += 4) {
+        for (let i = 0; i < matrix.length; i += boardSize) {
             let x = i;
             let y = i + 1;
-            while (y - i < 4) {
+            while (y - i < boardSize) {
                 if (x === y) {
                     y++;
                 } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
@@ -301,7 +309,7 @@ const Board: React.FC = () => {
         }
 
         const isEqual = compareMatrix(matrix, newMatrix);
-        if (isEqual && checkGameOver(matrix) && undoCount === 0) {
+        if (isEqual && checkGameOver(matrix, boardSize) && undoCount === 0) {
             setIsGameOver(true);
             return;
         }
@@ -322,10 +330,10 @@ const Board: React.FC = () => {
         let newMatrix = matrix.slice();
         let newScore = score;
 
-        for (let i = 3; i < matrix.length; i = i + 4) {
+        for (let i = boardSize-1; i < matrix.length; i = i + boardSize) {
             let x = i;
             let y = i - 1;
-            while (i - y < 4) {
+            while (i - y < boardSize) {
                 if (x === y) {
                     y--;
                 } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
@@ -352,7 +360,7 @@ const Board: React.FC = () => {
         }
 
         const isEqual = compareMatrix(matrix, newMatrix);
-        if (isEqual && checkGameOver(matrix) && undoCount === 0) {
+        if (isEqual && checkGameOver(matrix, boardSize) && undoCount === 0) {
             setIsGameOver(true);
             return;
         }
@@ -375,20 +383,20 @@ const Board: React.FC = () => {
 
         for (let i = 0; i * i < matrix.length; i++) {
             let x = i;
-            let y = i + 4;
+            let y = i + boardSize;
             while (y < matrix.length) {
                 if (x === y) {
-                    y += 4;
+                    y += boardSize;
                 } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
-                    y += 4;
+                    y += boardSize;
                 } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
                     newMatrix[x] = newMatrix[y];
                     newMatrix[y] = 0;
-                    y += 4;
+                    y += boardSize;
                 } else if (newMatrix[y] === 0) {
-                    y += 4;
+                    y += boardSize;
                 } else if (newMatrix[x] !== newMatrix[y]) {
-                    x += 4;
+                    x += boardSize;
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
@@ -396,14 +404,14 @@ const Board: React.FC = () => {
                         setUndoCount(undoCount + 1);
                     }
                     newMatrix[y] = 0;
-                    x += 4;
-                    y += 4;
+                    x += boardSize;
+                    y += boardSize;
                 }
             }
         }
 
         const isEqual = compareMatrix(matrix, newMatrix);
-        if (isEqual && checkGameOver(matrix) && undoCount === 0) {
+        if (isEqual && checkGameOver(matrix, boardSize) && undoCount === 0) {
             setIsGameOver(true);
             return;
         }
@@ -424,22 +432,22 @@ const Board: React.FC = () => {
         let newMatrix = matrix.slice();
         let newScore = score;
 
-        for (let i = matrix.length - 1; matrix.length - i <= 4; i--) {
+        for (let i = matrix.length - 1; matrix.length - i <= boardSize; i--) {
             let x = i;
-            let y = i - 4;
+            let y = i - boardSize;
             while (y >= 0) {
                 if (x === y) {
-                    y -= 4;
+                    y -= boardSize;
                 } else if (newMatrix[x] === 0 && newMatrix[y] === 0) {
-                    y -= 4;
+                    y -= boardSize;
                 } else if (newMatrix[x] === 0 && newMatrix[y] !== 0) {
                     newMatrix[x] = newMatrix[y];
                     newMatrix[y] = 0;
-                    y -= 4;
+                    y -= boardSize;
                 } else if (newMatrix[y] === 0) {
-                    y -= 4;
+                    y -= boardSize;
                 } else if (newMatrix[x] !== newMatrix[y]) {
-                    x -= 4;
+                    x -= boardSize;
                 } else {
                     newMatrix[x] = 2 * newMatrix[y];
                     newScore += 2 * newMatrix[y];
@@ -447,14 +455,14 @@ const Board: React.FC = () => {
                         setUndoCount(undoCount + 1);
                     }
                     newMatrix[y] = 0;
-                    x -= 4;
-                    y -= 4;
+                    x -= boardSize;
+                    y -= boardSize;
                 }
             }
         }
 
         const isEqual = compareMatrix(matrix, newMatrix);
-        if (isEqual && checkGameOver(matrix) && undoCount === 0) {
+        if (isEqual && checkGameOver(matrix, boardSize) && undoCount === 0) {
             setIsGameOver(true);
             return;
         }
@@ -516,17 +524,24 @@ const Board: React.FC = () => {
         setHistory(newHistory);
     }
 
-    const newGame = () => {
+    const newGame = (level: number) => {
         setScore(0);
         setUndoCount(0);
         setHistory([]);
         setIsGameOver(false);
-        const newMatrix = Array(4 * 4).fill(0);
+        const newMatrix = Array(level * level).fill(0);
+        newMatrix[0] = 0;
         const { value, index } = generateNumber(newMatrix);
         if (value > 0) {
             newMatrix[index] = value;
             setMatrix(newMatrix);
         }
+    }
+
+    const updateBoardSize = (level: number) => {
+        newGame(level);
+        setBoardSize(level);
+        setExpanded(false);
     }
 
     return (
@@ -549,7 +564,30 @@ const Board: React.FC = () => {
                     <div className="flex justify-center">
                         <p className='text-center font-extrabold text-xl text-score'>Score: {score}</p>
                         <button onClick={undo} className={`bg-orange-300 m-auto hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
-                        <button onClick={newGame} className='m-auto'>New Game</button>
+                        <label className="text-gray-700 font-semibold content-center justify-center ml-4">Board Size:</label>
+                        {!expanded ? (
+                            // Single button view
+                            <button
+                                className="py-2 px-4 bg-blue-500 text-white rounded"
+                                onClick={() => setExpanded(true)}>
+                                {boardSize + 'x' + boardSize}
+                            </button>
+                        ) : (
+                            // Expanded button view with animation
+                            <div className="flex space-x-2">
+                                {[4, 6, 8].map((level) => (
+                                    <button
+                                        key={level}
+                                        className={`w-full py-2  ${boardSize === level ? "bg-green-400" : "bg-gray-300"
+                                            } text-white rounded`}
+                                        onClick={() => updateBoardSize(level)}
+                                    >
+                                        {level + 'x' + level}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                        <button onClick={() => newGame(boardSize)} className='m-auto'>New Game</button>
                     </div>
                     <div className="flex flex-col items-center max-h-screen pt-8">
                         <div
@@ -561,15 +599,15 @@ const Board: React.FC = () => {
                                 maxHeight: '80vh'
                             }}
                         >
-                            <div className="grid grid-cols-4 gap-0 h-full w-full bg-black">
-                                {getCells(4 * 4, matrix)}
-                            </div>
+                            {getCells(boardSize, matrix)}
+                            {/* <div className={`grid grid-cols-8 gap-0 h-full w-full bg-black`}>
+                            </div> */}
                         </div>
                     </div>
                     <Modal isOpen={isGameOver} onClose={() => setIsGameOver(false)}>
                         <h2>Game Over</h2>
                         <p>Your final score is: {score}</p>
-                        <button onClick={newGame} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
+                        <button onClick={() => newGame(boardSize)} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
                     </Modal>
                 </div >
             </ProtectedRoute>
