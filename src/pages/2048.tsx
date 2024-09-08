@@ -242,8 +242,30 @@ function getCells(boardSize: number, matrix: SquareValue[]) {
             </div>)
         );
     }
+    switch (boardSize) {
+        case 4:
+            return (
+                <div className={`grid grid-cols-4 gap-0 h-full w-full bg-black`}>
+                    {result}
+                </div>
+            );
+        case 6:
+            return (
+                <div className={`grid grid-cols-6 gap-0 h-full w-full bg-black`}>
+                    {result}
+                </div>
+            );
+        case 8:
+            return (
+                <div className={`grid grid-cols-8 gap-0 h-full w-full bg-black`}>
+                    {result}
+                </div>
+            );
+        default:
+            break;
+    }
     return (
-        <div className={`grid grid-cols-${boardSize} gap-0 h-full w-full bg-black`}>
+        <div className={`grid grid-cols-6 gap-0 h-full w-full bg-black`}>
             {result}
         </div>
     );
@@ -330,7 +352,7 @@ const Board: React.FC = () => {
         let newMatrix = matrix.slice();
         let newScore = score;
 
-        for (let i = boardSize-1; i < matrix.length; i = i + boardSize) {
+        for (let i = boardSize - 1; i < matrix.length; i = i + boardSize) {
             let x = i;
             let y = i - 1;
             while (i - y < boardSize) {
