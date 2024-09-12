@@ -13,7 +13,7 @@ const Dot = () => {
 const Dash = () => {
     return (
         <div
-            className="h-[1vw] w-[6vw] bg-gray-300 "
+            className="h-2 w-12 bg-gray-300 hover:bg-purple-300"
         />
     )
 }
@@ -21,7 +21,7 @@ const Dash = () => {
 const Stroke = () => {
     return (
         <div
-            className="w-[1vw] h-[6vw] bg-gray-300"
+            className="w-2 h-12 bg-gray-300 hover:bg-purple-300"
         />
     )
 }
@@ -29,7 +29,7 @@ const Stroke = () => {
 const Box = () => {
     return (
         <div
-            className="border border-transparent bg-gray-500 "
+            className="border border-transparent "
         />
     )
 }
@@ -57,24 +57,22 @@ const Board = ({ row, column }: { row: number; column: number }) => {
 
     console.log(board.length)
     return (
-        <div className={`grid gap-1 bg-amber-300`}
-            style={{ gridTemplateColumns: `repeat(${column}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${row}, minmax(0, 1fr))` }}>
+        <div className={`grid gap-1 content-center justify-center`}
+            style={{ gridTemplateColumns: `repeat(${column}, auto)`, gridTemplateRows: `repeat(${row}, auto)` }}>
             {board}
-
         </div>
     );
 }
 
 export default function Game() {
     const [row, setRow] = useState(5);
-    const [column, setColumn] = useState(5);
+    const [column, setColumn] = useState(9);
 
     const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
     return (
         <>
             <div className="pl-36">
-
                 <Dropdown options={options} value={row} setValue={setRow} />
                 <Dropdown options={options} value={column} setValue={setColumn} />
             </div>
