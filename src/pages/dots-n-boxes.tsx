@@ -2,81 +2,62 @@ import { useState } from "react"
 import Dropdown from "@/components/Dropdown";
 
 
+const Dot = () => {
+    return (
+        <div
+            className="bg-black w-2 h-2 rounded-full"
+        />
+    )
+}
+
+const Dash = () => {
+    return (
+        <div
+            className="h-[1vw] w-[6vw] bg-gray-300 "
+        />
+    )
+}
+
+const Stroke = () => {
+    return (
+        <div
+            className="w-[1vw] h-[6vw] bg-gray-300"
+        />
+    )
+}
+
+const Box = () => {
+    return (
+        <div
+            className="border border-transparent bg-gray-500 "
+        />
+    )
+}
+
 const Board = ({ row, column }: { row: number; column: number }) => {
     const board = [];
-    const dot = (<div className="bg-black w-2 h-2 rounded-full"></div>);
-    const dash = (<div className="h-0.5 bg-gray-300 w-12"></div>);
-    const stroke = (<div className="w-0.5 bg-gray-300 h-12"></div>);
-    const box = (<div className="border border-transparent"></div>);
-
-    // dot - dash - dot
-    // stroke - box - stroke
-    // dot -dash - dot
-
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < column; j++) {
+            const key = i * column + j;
             if (i % 2 == 0) {
                 if (j % 2 == 0) {
-                    board.push(dot);
+                    board.push(<Dot key={key} />);
                 } else {
-                    board.push(dash);
+                    board.push(<Dash key={key} />);
                 }
             } else {
                 if (j % 2 == 0) {
-                    board.push(stroke);
+                    board.push(<Stroke key={key} />);
                 } else {
-                    board.push(box);
+                    board.push(<Box key={key} />);
                 }
             }
         }
     }
 
-    let rowSize = 'grid-rows-3';
-    switch (row) {
-        case 3:
-            rowSize = 'grid-rows-3'
-            break;
-        case 5:
-            rowSize = 'grid-rows-5'
-            break;
-        case 7:
-            rowSize = 'grid-rows-7'
-            break;
-        case 9:
-            rowSize = 'grid-rows-9'
-            break;
-        case 11:
-            rowSize = 'grid-rows-11'
-            break;
-        default:
-            rowSize = 'grid-rows-5'
-            break;
-    }
-
-    let colSize = 'grid-cols-3';
-    switch (column) {
-        case 3:
-            colSize = 'grid-cols-3'
-            break;
-        case 5:
-            colSize = 'grid-cols-5'
-            break;
-        case 7:
-            colSize = 'grid-cols-7'
-            break;
-        case 9:
-            colSize = 'grid-cols-9'
-            break;
-        case 11:
-            colSize = 'grid-cols-11'
-            break;
-        default:
-            colSize = 'grid-cols-5'
-            break;
-    }
-
+    console.log(board.length)
     return (
-        <div className={`grid gap-0 max-h-full`}
+        <div className={`grid gap-1 bg-amber-300`}
             style={{ gridTemplateColumns: `repeat(${column}, minmax(0, 1fr))`, gridTemplateRows: `repeat(${row}, minmax(0, 1fr))` }}>
             {board}
 
