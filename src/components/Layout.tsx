@@ -53,12 +53,16 @@ export default function Layout({ children }: LayoutProps) {
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
                             onClick={() => setIsOpen(false)}>Sudoku</div>
                     </Link>
+                    <Link href="/dots-n-boxes" legacyBehavior>
+                        <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white"
+                            onClick={() => setIsOpen(false)}>Dots & Boxes</div>
+                    </Link>
                     <div className="relative group">
                         <div className="block py-2.5 px-4 rounded transition duration-200 hover:bg-sidePanelLink text-white cursor-pointer"
-                        onClick={toggleSubMenu}>
+                            onClick={toggleSubMenu}>
                             Games by Asutosh
                         </div>
-                        <ul className={`absolute left-0 mt-1 w-full bg-sidePanel ${subMenuOpen ? ' ': 'hidden'}`}>
+                        <ul className={`absolute left-0 mt-1 w-full bg-sidePanel ${subMenuOpen ? ' ' : 'hidden'}`}>
                             <li>
                                 <a href="https://asutosh-swain.vercel.app/tetris" target="_blank" rel="noopener noreferrer"
                                     className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Tetris ↗</a>
@@ -75,6 +79,10 @@ export default function Layout({ children }: LayoutProps) {
                                 <a href="https://asutosh-swain.vercel.app/flappy" target="_blank" rel="noopener noreferrer"
                                     className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Flappy Bird ↗</a>
                             </li>
+                            <li>
+                                <a href="https://asutosh-swain.vercel.app/uno" target="_blank" rel="noopener noreferrer"
+                                    className="block py-2.5 px-4 hover:bg-sidePanelLink text-white">Uno ↗</a>
+                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -90,7 +98,7 @@ export default function Layout({ children }: LayoutProps) {
                     <Link href="/" legacyBehavior>
                         <div className="text-xl font-semibold text-white">Bored? Games!</div>
                     </Link>
-                    <ProfileMenu auth={auth}/>
+                    <ProfileMenu auth={auth} />
                 </header>
                 <main className="flex-1 p-4">
                     {children}

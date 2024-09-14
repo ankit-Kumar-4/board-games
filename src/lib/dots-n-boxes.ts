@@ -9,20 +9,20 @@ export async function joinGame(gameId: string) {
     if (!querySnapshot.empty) {
         const chatroomRef = querySnapshot.docs[0].ref;
         let data = {
-            playerO: null,
-            playerX: null
+            player2: null,
+            player1: null
         };
 
         querySnapshot.forEach((doc: any) => {
             data = { ...doc.data() };
         });
 
-        if (data.playerX === auth.currentUser?.uid) {
+        if (data.player1 === auth.currentUser?.uid) {
             return true;
-        } else if (!data.playerO || data.playerO === auth.currentUser?.uid) {
+        } else if (!data.player2 || data.player2 === auth.currentUser?.uid) {
             await updateDoc(chatroomRef, {
-                playerO: auth.currentUser?.uid,
-                nameO: auth.currentUser?.displayName,
+                player2: auth.currentUser?.uid,
+                name2: auth.currentUser?.displayName,
             });
         } else {
             return false;
@@ -33,68 +33,29 @@ export async function joinGame(gameId: string) {
     }
 }
 
-export async function updateScore(gameId: string, score: any[]) {
-    const gamesRef = collection(db, "dots-n-boxes");
-    const q = query(gamesRef, where("chatroomId", "==", gameId));
-    const querySnapshot = await getDocs(q);
 
-    if (!querySnapshot.empty) {
-        const chatroomRef = querySnapshot.docs[0].ref;
-        await updateDoc(chatroomRef, {
-            score
-        });
-        return true;
-    } else {
-        return false;
-    }
-}
-
-export async function rematchGame(gameId: string, player: string) {
-    const gamesRef = collection(db, "dots-n-boxes");
-    const q = query(gamesRef, where("chatroomId", "==", gameId));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-        const chatroomRef = querySnapshot.docs[0].ref;
-        if (player === 'X') {
-            await updateDoc(chatroomRef, {
-                rematchX: true,
-            });
-        } else if (player === 'O') {
-            await updateDoc(chatroomRef, {
-                rematchO: true
-            });
-        } else {
-            await updateDoc(chatroomRef, {
-                rematchO: false,
-                rematchX: false
-            });
-        }
-        return true;
-    } else {
-        return false;
-    }
-}
-
-export async function createGame(gameId: string) {
+export async function createGame(gameId: string, boxes: number[], strokes: number[], dashes: number[],
+    row: number, column: number
+) {
     const gameRef = await addDoc(collection(db, "dots-n-boxes"), {
-        playerX: auth.currentUser?.uid,
-        playerO: null,
-        nameX: auth.currentUser?.displayName,
-        nameO: null,
-        board: Array(9).fill(null),
-        rematchX: false,
-        rematchO: false,
-        currentTurn: true,
+        player1: auth.currentUser?.uid,
+        player2: null,
+        name1: auth.currentUser?.displayName,
+        name2: null,
+        boxes,
+        strokes,
+        dashes,
+        row,
+        column,
+        currentTurn: 0,
         winner: null,
         chatroomId: gameId,
-        score: [],
         createdAt: new Date(),
     });
     return gameRef.id;
 }
 
-export async function makeMove(gameId: string, board: any[], currentTurn: boolean) {
+export async function makeMove(gameId: string, boxes: number[], strokes: number[], dashes: number[], currentTurn: number, winner: number) {
     const gamesRef = collection(db, "dots-n-boxes");
     const q = query(gamesRef, where("chatroomId", "==", gameId));
     const querySnapshot = await getDocs(q);
@@ -102,8 +63,11 @@ export async function makeMove(gameId: string, board: any[], currentTurn: boolea
     if (!querySnapshot.empty) {
         const chatroomRef = querySnapshot.docs[0].ref;
         await updateDoc(chatroomRef, {
-            board: board,
-            currentTurn: currentTurn
+            boxes,
+            strokes,
+            dashes,
+            currentTurn,
+            winner
         });
         return true;
     } else {

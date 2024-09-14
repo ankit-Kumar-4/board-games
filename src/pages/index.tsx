@@ -31,12 +31,9 @@ const ImageComponent = () => {
                 </div>
                 <div className="absolute top-52 left-14 md:left-40 md:top-[540px] text-gray-300 md:text-3xl">
                     <Link href="/sudoku" legacyBehavior>Sudoku</Link>
-
                 </div>
                 <div className="absolute top-64 right-28 md:top-[670px] md:right-72 text-black md:text-3xl">
-                    <Link href="https://asutosh-swain.vercel.app/tetris" legacyBehavior>
-                        <a target="_blank" rel="noopener noreferrer">Tetris</a>
-                    </Link>
+                    <Link href="/dots-n-boxes" legacyBehavior>Dots & Boxes</Link>
                 </div>
                 <div className='absolute bottom-10 left-14 md:bottom-40 md:left-32 md:text-7xl text-white'> My Website</div>
             </div>

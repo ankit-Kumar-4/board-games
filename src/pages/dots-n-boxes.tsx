@@ -1,6 +1,35 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Dropdown from "@/components/Dropdown";
+import Head from "next/head";
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { joinGame, createGame, makeMove } from '@/lib/dots-n-boxes';
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db, auth } from "@/lib/firebaseConfig";
+import { generateRandomString } from "@/utils/common-functions";
 
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+    if (!isOpen) return null;
+
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" onClick={handleOverlayClick}>
+            <div className="bg-white p-6 rounded shadow-lg">
+                {children}
+            </div>
+        </div>
+    );
+};
 
 const Dot = () => {
     return (
@@ -170,9 +199,67 @@ export default function Game() {
     const [playerTurn, setPlayerTurn] = useState(0);
     const [winner, setWinner] = useState<number | null>(null);
 
+    const [playOnline, setPlayOnline] = useState(false);
+    const [isMultiplayer, setIsMultiplayer] = useState(false);
+    const [roomId, setRoomId] = useState('');
+    const [gameData, setGameData] = useState<any>({});
+    const [currentUid, setCurrentUid] = useState('');
+
     const options = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
-    function handleDashClick(index: number, value: number) {
+    useEffect(() => {
+        if (isMultiplayer) {
+            if (!currentUid.length && auth.currentUser?.uid) {
+                setCurrentUid(auth.currentUser.uid);
+            }
+            const gamesRef = collection(db, "games");
+            const q = query(gamesRef, where("chatroomId", "==", roomId));
+            const unsubscribe = onSnapshot(q, (querySnapshot: any) => {
+                let data: any = {};
+                querySnapshot.forEach((doc: any) => {
+                    data = doc.data();
+                });
+                setBoxes(data.boxes);
+                setDashes(data.dashes);
+                setStrokes(data.strokes);
+                setRow(data.row);
+                setColumn(data.column);
+                if (data.currentTurn !== null) {
+                    setPlayerTurn(data.currentTurn);
+                }
+                setGameData({ ...data, currentUid });
+            });
+
+            return () => {
+                unsubscribe();
+            };
+        }
+    }, [isMultiplayer, roomId, currentUid]);
+
+    async function handleCreateRoom() {
+        const game_id = generateRandomString();
+        const result = await createGame(game_id, boxes, strokes, dashes, row, column);
+        if (!result) {
+            alert('Failed to create room');
+            return;
+        }
+        setRoomId(game_id);
+        setPlayOnline(false);
+        setIsMultiplayer(true);
+        alert('Please share the Game ID to a friend: ' + game_id)
+    }
+
+    async function handleJoinRoom() {
+        const result = await joinGame(roomId);
+        if (!result) {
+            alert('Please enter valid Game Id');
+            return;
+        }
+        setPlayOnline(false);
+        setIsMultiplayer(true);
+    }
+
+    async function handleDashClick(index: number, value: number) {
         if (dashes[index] !== null) return;
         const newDashes = dashes.slice();
         newDashes[index] = playerTurn;
@@ -203,9 +290,12 @@ export default function Game() {
         if (remaining === 0) {
             setWinner(potentialWinner);
         }
+        if (isMultiplayer) {
+            await makeMove(roomId, newBoxes, strokes, newDashes, playerTurn, potentialWinner);
+        }
     }
 
-    function handleStrokeClick(index: number, value: number) {
+    async function handleStrokeClick(index: number, value: number) {
         if (strokes[index] !== null) return;
         const newStrokes = strokes.slice();
         newStrokes[index] = playerTurn;
@@ -236,6 +326,10 @@ export default function Game() {
         if (remaining === 0) {
             setWinner(potentialWinner);
         }
+
+        if (isMultiplayer) {
+            await makeMove(roomId, newBoxes, newStrokes, dashes, playerTurn, potentialWinner);
+        }
     }
 
     function handleNewGame() {
@@ -247,34 +341,90 @@ export default function Game() {
 
     return (
         <>
-            <div className="flex content-center justify-center">
-                <label className="text-xl">Board Size:</label>
-                <Dropdown options={options} value={row} setValue={(value) => {
-                    setRow(value);
-                    setDashes(Array((value + 1) * column).fill(null));
-                    setStrokes(Array(value * (column + 1)).fill(null));
-                    setBoxes(Array(value * column).fill(null));
-                    setWinner(null);
-                }} />
-                <Dropdown options={options} value={column} setValue={(value) => {
-                    setColumn(value);
-                    setDashes(Array((row + 1) * value).fill(null));
-                    setStrokes(Array(row * (value + 1)).fill(null));
-                    setBoxes(Array(row * value).fill(null));
-                    setWinner(null);
-                }} />
-            </div>
-            <div className="flex justify-center mt-5">
+            <Head>
+                <title>Dots and Boxes - Board Games by Ankit</title>
+                <meta name="description" content="Play the classic Tic Tac Toe game online. Enjoy this timeless game of Xs and Os, perfect for quick fun or challenging your friends. Play Tic Tac Toe for free now!" />
+                <meta name="keywords" content="tic tac toe, online tic tac toe, free tic tac toe, classic games, tic tac toe by ankit, ankit" />
+                <meta name="author" content="Ankit Kumar" />
+                <meta property="og:title" content="Tic Tac Toe - Classic Game" />
+                <meta property="og:description" content="Play the classic Tic Tac Toe game online. Enjoy this timeless game of Xs and Os, perfect for quick fun or challenging your friends. Play Tic Tac Toe for free now!" />
+                <meta property="og:image" content="https://example.com/og-tictactoe.jpg" />
+                <meta property="og:url" content="https://example.com/tic-tac-toe" />
+                <link rel="canonical" href="https://games-by-ankit.vercel.app/tic-tac-toe" />
 
-                <button onClick={handleNewGame} className="mr-2">New Game</button>
-                <div className="text-2xl">{winner === null ? `Turn of Player - ${playerTurn + 1}` :
-                    (winner !== -1 ? `Player - ${winner + 1} wins :)` : 'The game is draw :(')}</div>
-            </div>
-            <div className="flex flex-col items-center justify-center max-h-screen ">
-                <div className="m-2"></div>
-                <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
-                    boxes={boxes} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
-            </div>
+            </Head>
+
+            <ProtectedRoute>
+                <div className="flex content-center justify-center">
+                    <label className="text-xl">Board Size:</label>
+                    <Dropdown options={options} value={row} setValue={(value) => {
+                        setRow(value);
+                        setDashes(Array((value + 1) * column).fill(null));
+                        setStrokes(Array(value * (column + 1)).fill(null));
+                        setBoxes(Array(value * column).fill(null));
+                        setWinner(null);
+                    }} />
+                    <Dropdown options={options} value={column} setValue={(value) => {
+                        setColumn(value);
+                        setDashes(Array((row + 1) * value).fill(null));
+                        setStrokes(Array(row * (value + 1)).fill(null));
+                        setBoxes(Array(row * value).fill(null));
+                        setWinner(null);
+                    }} />
+                </div>
+
+                <div className="flex justify-center mt-5">
+
+                    <button onClick={handleNewGame} className="mr-2">New Game</button>
+                    <div className="text-2xl">{winner === null ? `Turn of Player - ${playerTurn + 1}` :
+                        (winner !== -1 ? `Player - ${winner + 1} wins :)` : 'The game is draw :(')}</div>
+                </div>
+                {/* <div>
+                    {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
+                    {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
+                    {playOnline ?
+                        <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
+                            <div className="flex-col justify-around mb-4">
+                                <button
+                                    className={`w-full py-2 " : ""
+                                        }`}
+                                    onClick={() => handleCreateRoom()}
+                                >
+                                    Create Game
+                                </button>
+                                <div className='text-center m-5'>OR</div>
+                                <input
+                                    type="text"
+                                    value={roomId}
+                                    onChange={(e) => {
+                                        const newValue = e.target.value.toUpperCase();
+                                        if (/^[A-Z0-9]*$/.test(newValue) && newValue.length <= 5) {
+                                            setRoomId(newValue);
+                                        }
+                                    }}
+                                    className="flex-grow p-2 w-full border rounded"
+                                    pattern="[A-Z0-9]{5}"
+                                />
+                                <button
+                                    className={`w-full py-2 `}
+                                    onClick={() => handleJoinRoom()}
+                                >
+                                    Join Game with ID
+                                </button>
+                            </div>
+                        </Modal>
+                        : ''
+                    }
+                    {isMultiplayer ? (<div>
+                        {currentUid === gameData.playerX ? 'You play as X' : 'You play as O'}
+                    </div>) : ''}
+                </div> */}
+                <div className="flex flex-col items-center justify-center max-h-screen ">
+                    <div className="m-2"></div>
+                    <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
+                        boxes={boxes} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
+                </div>
+            </ProtectedRoute>
         </>
 
 
