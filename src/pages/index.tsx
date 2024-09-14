@@ -32,7 +32,8 @@ const ImageComponent = () => {
                 <div className="absolute top-52 left-14 md:left-40 md:top-[540px] text-gray-300 md:text-3xl">
                     <Link href="/sudoku" legacyBehavior>Sudoku</Link>
                 </div>
-                <div className="absolute top-64 right-28 md:top-[670px] md:right-72 text-black md:text-3xl">
+                <div className="absolute top-[266px] right-20 md:top-[670px] md:right-[220px] text-white md:text-3xl"
+                    style={{ textShadow: '2px 2px 4px rgba(29, 47, 47, 0.5)' }}>
                     <Link href="/dots-n-boxes" legacyBehavior>Dots & Boxes</Link>
                 </div>
                 <div className='absolute bottom-10 left-14 md:bottom-40 md:left-32 md:text-7xl text-white'> My Website</div>
