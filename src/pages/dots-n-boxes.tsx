@@ -54,7 +54,7 @@ function getBoxNeighbours(row: number, column: number, index: number) {
     const j = index % column;
 
     const d1 = (i * column) + j;
-    const d2 = i + 1 === row ? -1 : ((i + 1) * column) + j;
+    const d2 = i === row ? -1 : ((i + 1) * column) + j;
 
     const s1 = (i * (column + 1)) + j;
     const s2 = j === column ? -1 : (i * (column + 1)) + j + 1;
@@ -86,6 +86,36 @@ function getStrokeBoxIndex(row: number, column: number, index: number) {
     result.push(getBoxNeighbours(row, column, b1));
     result.push(getBoxNeighbours(row, column, b2));
     return result;
+}
+
+function getWinner(boxes: number[], playerCount: number) {
+    const boxCounts = Array(playerCount).fill(0);
+    let remaining = 0;
+    for (const cell of boxes) {
+        if (cell === null) {
+            remaining++;
+        } else {
+            boxCounts[cell]++;
+        }
+    }
+
+    let max = -1;
+    let winner = -1;
+    let winnerCount = 0;
+    for (let i = 0; i < playerCount; i++) {
+        if (boxCounts[i] > max) {
+            max = boxCounts[i];
+            winner = i;
+        }
+    }
+    for (const w of boxCounts) {
+        if (max === w) {
+            winnerCount++;
+        }
+    }
+    return {
+        remaining, potentialWinner: winnerCount === 1 ? winner : -1
+    }
 }
 
 const Board = ({ row, column, dashes, strokes, boxes, dashClick, strokeClick }:
@@ -138,6 +168,7 @@ export default function Game() {
     const [boxes, setBoxes] = useState(Array(45).fill(null));
 
     const [playerTurn, setPlayerTurn] = useState(0);
+    const [winner, setWinner] = useState<number | null>(null);
 
     const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
@@ -167,6 +198,11 @@ export default function Game() {
         } else {
             setBoxes(newBoxes);
         }
+
+        const { remaining, potentialWinner } = getWinner(newBoxes, 2);
+        if (remaining === 0) {
+            setWinner(potentialWinner);
+        }
     }
 
     function handleStrokeClick(index: number, value: number) {
@@ -195,6 +231,18 @@ export default function Game() {
         } else {
             setBoxes(newBoxes);
         }
+
+        const { remaining, potentialWinner } = getWinner(newBoxes, 2);
+        if (remaining === 0) {
+            setWinner(potentialWinner);
+        }
+    }
+
+    function handleNewGame() {
+        setDashes(Array((row + 1) * column).fill(null));
+        setStrokes(Array(row * (column + 1)).fill(null));
+        setBoxes(Array(row * column).fill(null));
+        setWinner(null);
     }
 
     return (
@@ -205,14 +253,19 @@ export default function Game() {
                     setDashes(Array((value + 1) * column).fill(null));
                     setStrokes(Array(value * (column + 1)).fill(null));
                     setBoxes(Array(value * column).fill(null));
+                    setWinner(null);
                 }} />
                 <Dropdown options={options} value={column} setValue={(value) => {
                     setColumn(value);
                     setDashes(Array((row + 1) * value).fill(null));
                     setStrokes(Array(row * (value + 1)).fill(null));
                     setBoxes(Array(row * value).fill(null));
+                    setWinner(null);
                 }} />
             </div>
+            <button onClick={handleNewGame}>New Game</button>
+            <div className="text-2xl">{winner === null ? `Turn of Player - ${playerTurn + 1}` :
+                (winner !== -1 ? `Player - ${winner + 1} wins :)` : 'The game is draw :(')}</div>
             <div className="flex flex-col items-center justify-center max-h-screen ">
                 <div className="m-2"></div>
                 <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
