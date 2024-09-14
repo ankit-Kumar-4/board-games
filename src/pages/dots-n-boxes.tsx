@@ -192,9 +192,10 @@ const Board = ({ row, column, dashes, strokes, boxes, dashClick, strokeClick }:
 export default function Game() {
     const [row, setRow] = useState(7);
     const [column, setColumn] = useState(5);
-    const [dashes, setDashes] = useState(Array(54).fill(null));
-    const [strokes, setStrokes] = useState(Array(50).fill(null));
-    const [boxes, setBoxes] = useState(Array(45).fill(null));
+    const [dashes, setDashes] = useState(Array(40).fill(null));
+    const [strokes, setStrokes] = useState(Array(42).fill(null));
+    const [boxes, setBoxes] = useState(Array(35).fill(null));
+    const [status, setStatus] = useState('');
 
     const [playerTurn, setPlayerTurn] = useState(0);
     const [winner, setWinner] = useState<number | null>(null);
@@ -212,7 +213,7 @@ export default function Game() {
             if (!currentUid.length && auth.currentUser?.uid) {
                 setCurrentUid(auth.currentUser.uid);
             }
-            const gamesRef = collection(db, "games");
+            const gamesRef = collection(db, "dots-n-boxes");
             const q = query(gamesRef, where("chatroomId", "==", roomId));
             const unsubscribe = onSnapshot(q, (querySnapshot: any) => {
                 let data: any = {};
@@ -228,7 +229,9 @@ export default function Game() {
                     setPlayerTurn(data.currentTurn);
                 }
                 setGameData({ ...data, currentUid });
+                updateStatus(data.currentTurn);
             });
+
 
             return () => {
                 unsubscribe();
@@ -260,6 +263,17 @@ export default function Game() {
     }
 
     async function handleDashClick(index: number, value: number) {
+        if (isMultiplayer) {
+            if (!gameData.player2) {
+                alert('Waiting for second player to join the game!');
+                return;
+            }
+            if ((currentUid === gameData.player1) !== (playerTurn === 0)) {
+                alert('Wait for your turn!');
+                return;
+            }
+        }
+
         if (dashes[index] !== null) return;
         const newDashes = dashes.slice();
         newDashes[index] = playerTurn;
@@ -280,8 +294,10 @@ export default function Game() {
         }
 
         setDashes(newDashes);
+        let newTurn = playerTurn;
         if (!updateBoxes) {
             setPlayerTurn((playerTurn + 1) % 2);
+            newTurn = (playerTurn + 1) % 2;
         } else {
             setBoxes(newBoxes);
         }
@@ -291,11 +307,26 @@ export default function Game() {
             setWinner(potentialWinner);
         }
         if (isMultiplayer) {
-            await makeMove(roomId, newBoxes, strokes, newDashes, playerTurn, potentialWinner);
+            await makeMove(roomId, newBoxes, strokes, newDashes, newTurn, potentialWinner);
+        }
+        if (!isMultiplayer) {
+            updateStatus(playerTurn);
         }
     }
 
     async function handleStrokeClick(index: number, value: number) {
+
+        if (isMultiplayer) {
+            if (!gameData.player2) {
+                alert('Waiting for second player to join the game!');
+                return;
+            }
+            if ((currentUid === gameData.player1) !== (playerTurn === 0)) {
+                alert('Wait for your turn!');
+                return;
+            }
+        }
+
         if (strokes[index] !== null) return;
         const newStrokes = strokes.slice();
         newStrokes[index] = playerTurn;
@@ -315,9 +346,11 @@ export default function Game() {
             }
         }
 
+        let newTurn = playerTurn;
         setStrokes(newStrokes);
         if (!updateBoxes) {
             setPlayerTurn((playerTurn + 1) % 2);
+            newTurn = (playerTurn + 1) % 2;
         } else {
             setBoxes(newBoxes);
         }
@@ -328,7 +361,10 @@ export default function Game() {
         }
 
         if (isMultiplayer) {
-            await makeMove(roomId, newBoxes, newStrokes, dashes, playerTurn, potentialWinner);
+            await makeMove(roomId, newBoxes, newStrokes, dashes, newTurn, potentialWinner);
+        }
+        if (!isMultiplayer) {
+            updateStatus(playerTurn);
         }
     }
 
@@ -337,6 +373,32 @@ export default function Game() {
         setStrokes(Array(row * (column + 1)).fill(null));
         setBoxes(Array(row * column).fill(null));
         setWinner(null);
+    }
+
+    const updateStatus = (turn: number) => {
+        let newStatus = ''
+        if (isMultiplayer) {
+            let player = turn === 0 ? gameData.name1 : gameData.name2;
+            let winnerName = winner === 0 ? gameData.name1 : gameData.name2;
+
+            if (winner === null) {
+                if ((currentUid === gameData.player1) !== (turn === 0)) {
+                    newStatus = `Turn of Player - ${player}`
+                } else {
+                    newStatus = 'Your Turn!'
+                }
+            } else {
+                if (winner === -1) {
+                    newStatus = 'The game is draw :('
+                } else {
+                    newStatus = `Player - ${winnerName} wins :)`
+                }
+            }
+        } else {
+            newStatus = winner === null ? `Turn of Player - ${playerTurn + 1}` :
+                (winner !== -1 ? `Player - ${winner + 1} wins :)` : 'The game is draw :(')
+        }
+        setStatus(newStatus);
     }
 
     return (
@@ -376,10 +438,9 @@ export default function Game() {
                 <div className="flex justify-center mt-5">
 
                     <button onClick={handleNewGame} className="mr-2">New Game</button>
-                    <div className="text-2xl">{winner === null ? `Turn of Player - ${playerTurn + 1}` :
-                        (winner !== -1 ? `Player - ${winner + 1} wins :)` : 'The game is draw :(')}</div>
+                    <div className="text-2xl">{status}</div>
                 </div>
-                {/* <div>
+                <div>
                     {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
                     {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
                     {playOnline ?
@@ -416,9 +477,9 @@ export default function Game() {
                         : ''
                     }
                     {isMultiplayer ? (<div>
-                        {currentUid === gameData.playerX ? 'You play as X' : 'You play as O'}
+                        {currentUid === gameData.player1 ? 'You play as Blue' : 'You play as Red'}
                     </div>) : ''}
-                </div> */}
+                </div>
                 <div className="flex flex-col items-center justify-center max-h-screen ">
                     <div className="m-2"></div>
                     <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
