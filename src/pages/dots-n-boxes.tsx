@@ -16,7 +16,7 @@ const Dash = ({ index, value, dashClick }: {
 }) => {
     return (
         <div
-            className={`h-2 w-12 hover:bg-purple-300 ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
+            className={`h-2 w-12  ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
             onClick={() => dashClick(index, value)}
         ></div>
     )
@@ -28,7 +28,7 @@ const Stroke = ({ index, value, strokeClick }: {
 }) => {
     return (
         <div
-            className={`w-2 h-12 hover:bg-purple-300 ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
+            className={`w-2 h-12  ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
             onClick={() => strokeClick(index, value)}
         ></div>
     )
@@ -161,8 +161,8 @@ const Board = ({ row, column, dashes, strokes, boxes, dashClick, strokeClick }:
 }
 
 export default function Game() {
-    const [row, setRow] = useState(5);
-    const [column, setColumn] = useState(9);
+    const [row, setRow] = useState(7);
+    const [column, setColumn] = useState(5);
     const [dashes, setDashes] = useState(Array(54).fill(null));
     const [strokes, setStrokes] = useState(Array(50).fill(null));
     const [boxes, setBoxes] = useState(Array(45).fill(null));
@@ -170,7 +170,7 @@ export default function Game() {
     const [playerTurn, setPlayerTurn] = useState(0);
     const [winner, setWinner] = useState<number | null>(null);
 
-    const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+    const options = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
     function handleDashClick(index: number, value: number) {
         if (dashes[index] !== null) return;
@@ -247,7 +247,8 @@ export default function Game() {
 
     return (
         <>
-            <div className="pl-36">
+            <div className="flex content-center justify-center">
+                <label className="text-xl">Board Size:</label>
                 <Dropdown options={options} value={row} setValue={(value) => {
                     setRow(value);
                     setDashes(Array((value + 1) * column).fill(null));
@@ -263,9 +264,12 @@ export default function Game() {
                     setWinner(null);
                 }} />
             </div>
-            <button onClick={handleNewGame}>New Game</button>
-            <div className="text-2xl">{winner === null ? `Turn of Player - ${playerTurn + 1}` :
-                (winner !== -1 ? `Player - ${winner + 1} wins :)` : 'The game is draw :(')}</div>
+            <div className="flex justify-center mt-5">
+
+                <button onClick={handleNewGame} className="mr-2">New Game</button>
+                <div className="text-2xl">{winner === null ? `Turn of Player - ${playerTurn + 1}` :
+                    (winner !== -1 ? `Player - ${winner + 1} wins :)` : 'The game is draw :(')}</div>
+            </div>
             <div className="flex flex-col items-center justify-center max-h-screen ">
                 <div className="m-2"></div>
                 <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}

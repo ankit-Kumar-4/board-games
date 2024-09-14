@@ -39,7 +39,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, setValue }) => {
                 </svg>
             </div>
             {isOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                <div className="absolute right-0 z-10 mt-2 w-12 rounded-md bg-white shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                     <div className="p-1">
                         {options.map((option) => (
                             <div
