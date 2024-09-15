@@ -129,8 +129,9 @@ function getWinner(boxes: number[], playerCount: number) {
     }
 
     let max = -1;
-    let winner = -1;
+    let winner = null;
     let winnerCount = 0;
+
     for (let i = 0; i < playerCount; i++) {
         if (boxCounts[i] > max) {
             max = boxCounts[i];
@@ -142,8 +143,13 @@ function getWinner(boxes: number[], playerCount: number) {
             winnerCount++;
         }
     }
+    if (remaining > 0) {
+        winner = null;
+    } else if (winnerCount > 1) {
+        winner = -1;
+    }
     return {
-        remaining, potentialWinner: winnerCount === 1 ? winner : -1
+        remaining, potentialWinner: winner
     }
 }
 
@@ -206,7 +212,7 @@ export default function Game() {
     const [gameData, setGameData] = useState<any>({});
     const [currentUid, setCurrentUid] = useState('');
 
-    const options = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+    const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
     useEffect(() => {
         if (isMultiplayer) {
@@ -229,7 +235,7 @@ export default function Game() {
                     setPlayerTurn(data.currentTurn);
                 }
                 setGameData({ ...data, currentUid });
-                updateStatus(data.currentTurn);
+                updateStatus(data.currentTurn, data.winner);
             });
 
 
@@ -310,7 +316,7 @@ export default function Game() {
             await makeMove(roomId, newBoxes, strokes, newDashes, newTurn, potentialWinner);
         }
         if (!isMultiplayer) {
-            updateStatus(playerTurn);
+            updateStatus(newTurn, potentialWinner);
         }
     }
 
@@ -364,7 +370,7 @@ export default function Game() {
             await makeMove(roomId, newBoxes, newStrokes, dashes, newTurn, potentialWinner);
         }
         if (!isMultiplayer) {
-            updateStatus(playerTurn);
+            updateStatus(newTurn, potentialWinner);
         }
     }
 
@@ -375,28 +381,28 @@ export default function Game() {
         setWinner(null);
     }
 
-    const updateStatus = (turn: number) => {
+    const updateStatus = (turn: number, potentialWinner: number | null) => {
         let newStatus = ''
         if (isMultiplayer) {
             let player = turn === 0 ? gameData.name1 : gameData.name2;
-            let winnerName = winner === 0 ? gameData.name1 : gameData.name2;
+            let winnerName = potentialWinner === 0 ? gameData.name1 : gameData.name2;
 
-            if (winner === null) {
+            if (potentialWinner === null) {
                 if ((currentUid === gameData.player1) !== (turn === 0)) {
                     newStatus = `Turn of Player - ${player}`
                 } else {
                     newStatus = 'Your Turn!'
                 }
             } else {
-                if (winner === -1) {
+                if (potentialWinner === -1) {
                     newStatus = 'The game is draw :('
                 } else {
                     newStatus = `Player - ${winnerName} wins :)`
                 }
             }
         } else {
-            newStatus = winner === null ? `Turn of Player - ${playerTurn + 1}` :
-                (winner !== -1 ? `Player - ${winner + 1} wins :)` : 'The game is draw :(')
+            newStatus = potentialWinner === null ? `Turn of Player - ${turn + 1}` :
+                (potentialWinner !== -1 ? `Player - ${potentialWinner + 1} wins :)` : 'The game is draw :(')
         }
         setStatus(newStatus);
     }
@@ -417,8 +423,8 @@ export default function Game() {
             </Head>
 
             <ProtectedRoute>
-                <div className="flex content-center justify-center">
-                    <label className="text-xl">Board Size:</label>
+                <div className="flex content-center justify-center gap-2">
+                    <div className=" text-wrap pt-2">Board:</div>
                     <Dropdown options={options} value={row} setValue={(value) => {
                         setRow(value);
                         setDashes(Array((value + 1) * column).fill(null));
@@ -426,6 +432,7 @@ export default function Game() {
                         setBoxes(Array(value * column).fill(null));
                         setWinner(null);
                     }} />
+                    <p className="mt-2">x</p>
                     <Dropdown options={options} value={column} setValue={(value) => {
                         setColumn(value);
                         setDashes(Array((row + 1) * value).fill(null));
@@ -433,15 +440,13 @@ export default function Game() {
                         setBoxes(Array(row * value).fill(null));
                         setWinner(null);
                     }} />
+                    <button onClick={handleNewGame} className="">New Game</button>
                 </div>
 
-                <div className="flex justify-center mt-5">
-
-                    <button onClick={handleNewGame} className="mr-2">New Game</button>
-                    <div className="text-2xl">{status}</div>
-                </div>
-                <div>
+                <div className="flex justify-center gap-2 mt-5">
                     {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
+                </div>
+                <div className="flex justify-around gap-2">
                     {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
                     {playOnline ?
                         <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
@@ -479,6 +484,9 @@ export default function Game() {
                     {isMultiplayer ? (<div>
                         {currentUid === gameData.player1 ? 'You play as Blue' : 'You play as Red'}
                     </div>) : ''}
+                </div>
+                <div className="flex items-center justify-center">
+                    {status}
                 </div>
                 <div className="flex flex-col items-center justify-center max-h-screen ">
                     <div className="m-2"></div>

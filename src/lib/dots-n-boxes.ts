@@ -55,7 +55,7 @@ export async function createGame(gameId: string, boxes: number[], strokes: numbe
     return gameRef.id;
 }
 
-export async function makeMove(gameId: string, boxes: number[], strokes: number[], dashes: number[], currentTurn: number, winner: number) {
+export async function makeMove(gameId: string, boxes: number[], strokes: number[], dashes: number[], currentTurn: number, winner: number|null) {
     const gamesRef = collection(db, "dots-n-boxes");
     const q = query(gamesRef, where("chatroomId", "==", gameId));
     const querySnapshot = await getDocs(q);
