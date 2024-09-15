@@ -55,7 +55,8 @@ export async function createGame(gameId: string, boxes: number[], strokes: numbe
     return gameRef.id;
 }
 
-export async function makeMove(gameId: string, boxes: number[], strokes: number[], dashes: number[], currentTurn: number, winner: number|null) {
+
+export async function makeMove(gameId: string, boxes: number[], strokes: number[], dashes: number[], currentTurn: number, winner: number | null) {
     const gamesRef = collection(db, "dots-n-boxes");
     const q = query(gamesRef, where("chatroomId", "==", gameId));
     const querySnapshot = await getDocs(q);
@@ -68,6 +69,29 @@ export async function makeMove(gameId: string, boxes: number[], strokes: number[
             dashes,
             currentTurn,
             winner
+        });
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
+export async function restartGame(gameId: string, row: number, column: number) {
+    const gamesRef = collection(db, "dots-n-boxes");
+    const q = query(gamesRef, where("chatroomId", "==", gameId));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        const chatroomRef = querySnapshot.docs[0].ref;
+        await updateDoc(chatroomRef, {
+            boxes: Array(row * column).fill(null),
+            strokes: Array(row * (column + 1)).fill(null),
+            dashes: Array((row + 1) * column).fill(null),
+            row,
+            column,
+            winner: null,
         });
         return true;
     } else {

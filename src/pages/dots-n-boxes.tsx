@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import Dropdown from "@/components/Dropdown";
 import Head from "next/head";
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { joinGame, createGame, makeMove } from '@/lib/dots-n-boxes';
+import { joinGame, createGame, makeMove, restartGame } from '@/lib/dots-n-boxes';
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db, auth } from "@/lib/firebaseConfig";
 import { generateRandomString } from "@/utils/common-functions";
@@ -188,8 +188,16 @@ const Board = ({ row, column, dashes, strokes, boxes, dashClick, strokeClick }:
     }
 
     return (
-        <div className={`grid gap-0 content-center justify-center`}
-            style={{ gridTemplateColumns: `repeat(${column}, auto)`, gridTemplateRows: `repeat(${row}, auto)` }}>
+        <div className={`grid gap-0 content-center justify-center m-3`}
+            style={{
+                gridTemplateColumns: `repeat(${column}, auto)`,
+                gridTemplateRows: `repeat(${row}, auto)`,
+                // overflow: 'auto',
+                // maxHeight: '90vh',
+                // maxWidth: '90vw',
+                // height: '100%',
+                // width: '100%'
+            }}>
             {board}
         </div>
     );
@@ -212,7 +220,7 @@ export default function Game() {
     const [gameData, setGameData] = useState<any>({});
     const [currentUid, setCurrentUid] = useState('');
 
-    const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+    const options = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
     useEffect(() => {
         if (isMultiplayer) {
@@ -235,7 +243,7 @@ export default function Game() {
                     setPlayerTurn(data.currentTurn);
                 }
                 setGameData({ ...data, currentUid });
-                updateStatus(data.currentTurn, data.winner);
+                updateStatus(data.currentTurn, data.winner, { ...data, currentUid });
             });
 
 
@@ -316,7 +324,7 @@ export default function Game() {
             await makeMove(roomId, newBoxes, strokes, newDashes, newTurn, potentialWinner);
         }
         if (!isMultiplayer) {
-            updateStatus(newTurn, potentialWinner);
+            updateStatus(newTurn, potentialWinner, gameData);
         }
     }
 
@@ -370,34 +378,45 @@ export default function Game() {
             await makeMove(roomId, newBoxes, newStrokes, dashes, newTurn, potentialWinner);
         }
         if (!isMultiplayer) {
-            updateStatus(newTurn, potentialWinner);
+            updateStatus(newTurn, potentialWinner, gameData);
         }
     }
 
-    function handleNewGame() {
-        setDashes(Array((row + 1) * column).fill(null));
-        setStrokes(Array(row * (column + 1)).fill(null));
-        setBoxes(Array(row * column).fill(null));
+    async function handleNewGame() {
+        const newDashes = Array((row + 1) * column).fill(null);
+        const newStrokes = Array(row * (column + 1)).fill(null);
+        const newBoxes = Array(row * column).fill(null);
+
+        setDashes(newDashes);
+        setStrokes(newStrokes);
+        setBoxes(newBoxes);
         setWinner(null);
+        setStatus('');
+        setWinner(null);
+        if (isMultiplayer) {
+            await restartGame(roomId, row, column);
+        }
     }
 
-    const updateStatus = (turn: number, potentialWinner: number | null) => {
+    const updateStatus = (turn: number, potentialWinner: number | null, data: any) => {
         let newStatus = ''
         if (isMultiplayer) {
-            let player = turn === 0 ? gameData.name1 : gameData.name2;
-            let winnerName = potentialWinner === 0 ? gameData.name1 : gameData.name2;
+            let player = turn === 0 ? data.name1 : data.name2;
+            let winnerName = potentialWinner === 0 ? data.name1 : data.name2;
 
             if (potentialWinner === null) {
-                if ((currentUid === gameData.player1) !== (turn === 0)) {
-                    newStatus = `Turn of Player - ${player}`
+                if ((currentUid === data.player1) !== (turn === 0)) {
+                    newStatus = `Turn of ${player}`
                 } else {
                     newStatus = 'Your Turn!'
                 }
             } else {
                 if (potentialWinner === -1) {
                     newStatus = 'The game is draw :('
+                } else if ((currentUid === data.player1) !== (turn === 0)) {
+                    newStatus = `${winnerName} wins :(`
                 } else {
-                    newStatus = `Player - ${winnerName} wins :)`
+                    newStatus = 'You win!'
                 }
             }
         } else {
@@ -423,25 +442,44 @@ export default function Game() {
             </Head>
 
             <ProtectedRoute>
-                <div className="flex content-center justify-center gap-2">
-                    <div className=" text-wrap pt-2">Board:</div>
-                    <Dropdown options={options} value={row} setValue={(value) => {
-                        setRow(value);
-                        setDashes(Array((value + 1) * column).fill(null));
-                        setStrokes(Array(value * (column + 1)).fill(null));
-                        setBoxes(Array(value * column).fill(null));
-                        setWinner(null);
-                    }} />
-                    <p className="mt-2">x</p>
-                    <Dropdown options={options} value={column} setValue={(value) => {
-                        setColumn(value);
-                        setDashes(Array((row + 1) * value).fill(null));
-                        setStrokes(Array(row * (value + 1)).fill(null));
-                        setBoxes(Array(row * value).fill(null));
-                        setWinner(null);
-                    }} />
-                    <button onClick={handleNewGame} className="">New Game</button>
-                </div>
+                {(!isMultiplayer || (currentUid === gameData.player1)) ?
+
+                    <div className="flex content-center justify-center gap-2">
+                        <div className=" text-wrap pt-2">Board:</div>
+                        <Dropdown options={options} value={row} setValue={async (value) => {
+                            const newDashes = Array((value + 1) * column).fill(null);
+                            const newStrokes = Array(value * (column + 1)).fill(null);
+                            const newBoxes = Array(value * column).fill(null);
+
+                            setRow(value);
+                            setDashes(newDashes);
+                            setStrokes(newStrokes);
+                            setBoxes(newBoxes);
+                            setWinner(null);
+
+                            if (isMultiplayer) {
+                                await restartGame(roomId, value, column);
+                            }
+                        }} />
+                        <p className="mt-2">x</p>
+                        <Dropdown options={options} value={column} setValue={async (value) => {
+                            const newDashes = Array((row + 1) * value).fill(null);
+                            const newStrokes = Array(row * (value + 1)).fill(null);
+                            const newBoxes = Array(row * value).fill(null);
+
+                            setColumn(value);
+                            setDashes(newDashes);
+                            setStrokes(newStrokes);
+                            setBoxes(newBoxes);
+                            setWinner(null);
+
+                            if (isMultiplayer) {
+                                await restartGame(roomId, row, value);
+                            }
+                        }} />
+                        <button onClick={handleNewGame} className="">New Game</button>
+                    </div>
+                    : ''}
 
                 <div className="flex justify-center gap-2 mt-5">
                     {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
@@ -493,6 +531,7 @@ export default function Game() {
                     <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
                         boxes={boxes} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
                 </div>
+
             </ProtectedRoute>
         </>
 
