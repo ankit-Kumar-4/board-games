@@ -100,7 +100,7 @@ export default function Layout({ children }: LayoutProps) {
                     </Link>
                     <ProfileMenu auth={auth} />
                 </header>
-                <main className="flex-1 p-4">
+                <main className="flex-1 p-4 bg-white">
                     {children}
                 </main>
             </div>

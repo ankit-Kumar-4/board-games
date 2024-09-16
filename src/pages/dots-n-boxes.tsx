@@ -192,11 +192,6 @@ const Board = ({ row, column, dashes, strokes, boxes, dashClick, strokeClick }:
             style={{
                 gridTemplateColumns: `repeat(${column}, auto)`,
                 gridTemplateRows: `repeat(${row}, auto)`,
-                // overflow: 'auto',
-                // maxHeight: '90vh',
-                // maxWidth: '90vw',
-                // height: '100%',
-                // width: '100%'
             }}>
             {board}
         </div>
@@ -526,7 +521,7 @@ export default function Game() {
                 <div className="flex items-center justify-center">
                     {status}
                 </div>
-                <div className="flex flex-col items-center justify-center max-h-screen ">
+                <div className="flex flex-col items-center justify-center h-full w-full overflow-visible ">
                     <div className="m-2"></div>
                     <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
                         boxes={boxes} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
