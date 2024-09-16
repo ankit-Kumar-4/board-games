@@ -149,7 +149,7 @@ function getWinner(boxes: number[], playerCount: number) {
         winner = -1;
     }
     return {
-        remaining, potentialWinner: winner
+        remaining, potentialWinner: winner, cellCount: boxCounts
     }
 }
 
@@ -207,7 +207,7 @@ export default function Game() {
     const [status, setStatus] = useState('');
 
     const [playerTurn, setPlayerTurn] = useState(0);
-    const [winner, setWinner] = useState<number | null>(null);
+    const [boxCount, setBoxCount] = useState([0, 0]);
 
     const [playOnline, setPlayOnline] = useState(false);
     const [isMultiplayer, setIsMultiplayer] = useState(false);
@@ -311,10 +311,8 @@ export default function Game() {
             setBoxes(newBoxes);
         }
 
-        const { remaining, potentialWinner } = getWinner(newBoxes, 2);
-        if (remaining === 0) {
-            setWinner(potentialWinner);
-        }
+        const { remaining, potentialWinner, cellCount } = getWinner(newBoxes, 2);
+        setBoxCount(cellCount);
         if (isMultiplayer) {
             await makeMove(roomId, newBoxes, strokes, newDashes, newTurn, potentialWinner);
         }
@@ -364,11 +362,8 @@ export default function Game() {
             setBoxes(newBoxes);
         }
 
-        const { remaining, potentialWinner } = getWinner(newBoxes, 2);
-        if (remaining === 0) {
-            setWinner(potentialWinner);
-        }
-
+        const { remaining, potentialWinner, cellCount } = getWinner(newBoxes, 2);
+        setBoxCount(cellCount);
         if (isMultiplayer) {
             await makeMove(roomId, newBoxes, newStrokes, dashes, newTurn, potentialWinner);
         }
@@ -385,9 +380,7 @@ export default function Game() {
         setDashes(newDashes);
         setStrokes(newStrokes);
         setBoxes(newBoxes);
-        setWinner(null);
         setStatus('');
-        setWinner(null);
         if (isMultiplayer) {
             await restartGame(roomId, row, column);
         }
@@ -450,7 +443,6 @@ export default function Game() {
                             setDashes(newDashes);
                             setStrokes(newStrokes);
                             setBoxes(newBoxes);
-                            setWinner(null);
 
                             if (isMultiplayer) {
                                 await restartGame(roomId, value, column);
@@ -466,7 +458,6 @@ export default function Game() {
                             setDashes(newDashes);
                             setStrokes(newStrokes);
                             setBoxes(newBoxes);
-                            setWinner(null);
 
                             if (isMultiplayer) {
                                 await restartGame(roomId, row, value);
@@ -518,8 +509,10 @@ export default function Game() {
                         {currentUid === gameData.player1 ? 'You play as Blue' : 'You play as Red'}
                     </div>) : ''}
                 </div>
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-around">
+                    <div className="bg-blue-500 text-white w-12 h-12 text-center content-center text-2xl border-4 border-blue-900 ">{boxCount[0]}</div>
                     {status}
+                    <div className="bg-red-600 text-white w-12 h-12 text-center content-center text-2xl border-red-900 border-4">{boxCount[1]}</div>
                 </div>
                 <div className="flex flex-col items-center justify-center h-full w-full overflow-visible ">
                     <div className="m-2"></div>
