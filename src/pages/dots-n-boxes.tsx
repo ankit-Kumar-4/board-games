@@ -521,7 +521,7 @@ export default function Game() {
                     {status}
                     <div className="bg-red-600 text-white w-12 h-12 text-center content-center text-2xl border-red-900 border-4">{boxCount[1]}</div>
                 </div>
-                <div className="flex flex-col items-center justify-center h-full w-full overflow-visible ">
+                <div className="flex flex-col items-center justify-center h-full w-full overflow-scroll ">
                     <div className="m-2"></div>
                     <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
                         boxes={boxes} lastMove={lastMove} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
@@ -529,7 +529,5 @@ export default function Game() {
 
             </ProtectedRoute>
         </>
-
-
     )
 }
