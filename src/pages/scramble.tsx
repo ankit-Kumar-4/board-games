@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { words } from "@/data/words";
 import styles from "@/styles/scramble.module.css";
 import Head from "next/head";
-import ProtectedRoute from '@/components/ProtectedRoute';
 import { getRandomInt } from "@/utils/common-functions";
 
 
@@ -232,49 +231,47 @@ export default function Scramble() {
         <link rel="canonical" href="https://games-by-ankit.vercel.app/" />
       </Head>
 
-      <ProtectedRoute>
-        <div className="flex items-center mb-4 space-x-4">
-          {/* Label */}
-          <label className="text-gray-700 font-semibold">Difficulty:</label>
+      <div className="flex items-center mb-4 space-x-4">
+        {/* Label */}
+        <label className="text-gray-700 font-semibold">Difficulty:</label>
 
-          {/* Button Group */}
-          {!expanded ? (
-            // Single button view
-            <button
-              className="py-2 px-4 bg-blue-500 text-white rounded"
-              onClick={() => setExpanded(true)}
-            >
-              {difficulty !== null ? ["Easy", "Medium", "Hard"][difficulty] : "Select Difficulty"}
-            </button>
-          ) : (
-            // Expanded button view with animation
-            <div className="flex space-x-2">
-              {[0, 1, 2].map((level) => (
-                <button
-                  key={level}
-                  className={`w-full py-2  ${difficulty === level ? "bg-green-400" : "bg-gray-300"
-                    } text-white rounded`}
-                  onClick={() => handleButtonClick(level)}
-                >
-                  {["Easy", "Medium", "Hard"][level]}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className={styles["game-row"]}>
-          {renderUnderscores()}
-          {newGame("↺", undoWord)}
-        </div>
-        <h3 className={styles["game-row"]}>{result}</h3>
-        <div className={styles["game-row1"]}>{chacterList}</div>
-        <div className={styles["game-row"]}>
-          <div className={styles["square-margin"]}>
-            {newGame("Reset!", resetWord)}
+        {/* Button Group */}
+        {!expanded ? (
+          // Single button view
+          <button
+            className="py-2 px-4 bg-blue-500 text-white rounded"
+            onClick={() => setExpanded(true)}
+          >
+            {difficulty !== null ? ["Easy", "Medium", "Hard"][difficulty] : "Select Difficulty"}
+          </button>
+        ) : (
+          // Expanded button view with animation
+          <div className="flex space-x-2">
+            {[0, 1, 2].map((level) => (
+              <button
+                key={level}
+                className={`w-full py-2  ${difficulty === level ? "bg-green-400" : "bg-gray-300"
+                  } text-white rounded`}
+                onClick={() => handleButtonClick(level)}
+              >
+                {["Easy", "Medium", "Hard"][level]}
+              </button>
+            ))}
           </div>
-          {newGame("New Game!", refreshWord)}
+        )}
+      </div>
+      <div className={styles["game-row"]}>
+        {renderUnderscores()}
+        {newGame("↺", undoWord)}
+      </div>
+      <h3 className={styles["game-row"]}>{result}</h3>
+      <div className={styles["game-row1"]}>{chacterList}</div>
+      <div className={styles["game-row"]}>
+        <div className={styles["square-margin"]}>
+          {newGame("Reset!", resetWord)}
         </div>
-      </ProtectedRoute>
+        {newGame("New Game!", refreshWord)}
+      </div>
     </>
   );
 }

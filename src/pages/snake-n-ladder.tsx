@@ -8,7 +8,6 @@ import { joinGame, createGame, makeMove, rematchGame, updateScore } from '@/lib/
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db, auth } from "@/lib/firebaseConfig";
 import { generateRandomString } from "@/utils/common-functions";
-import Image from "next/image";
 
 const snakes: {
   [key: number]: number;
@@ -199,8 +198,8 @@ const Cell = ({ step, playerId, boardStyle }: { step: number; playerId: number[]
   return (
     <div key={step} id={`${step}`} className={'text-black w-full pt-[100%] flex justify-center items-center relative' +
       (boardStyle === 0 ? (" border border-green-700 " + (color.length ? color : 'bg-yellow-100')) : '')}>
-      {[1, 100].includes(step)? 
-            homeStart(step, playerId) : ''
+      {[1, 100].includes(step) ?
+        homeStart(step, playerId) : ''
       }
       <div
         className={`${styles["cell-content"]} 
@@ -579,68 +578,68 @@ export default function Game() {
         <link rel="canonical" href="https://games-by-ankit.vercel.app/snake-n-ladder" />
       </Head>
 
-      <ProtectedRoute>
 
-        <div className="flex justify-center">
-          <label className="text-gray-700 font-semibold content-center justify-center">Number of Players:</label>
-          {!expanded ? (
-            // Single button view
-            <button
-              className="py-2 px-4 bg-blue-500 text-white rounded"
-              onClick={() => setExpanded(true)}
-            >
-              {playerCount !== null ? playerCount : "Number of Players: "}
-            </button>
-          ) : (
-            // Expanded button view with animation
-            <div className="flex space-x-2">
-              {[2, 3, 4].map((level) => (
-                <button
-                  key={level}
-                  className={`w-full py-2  ${playerCount === level ? "bg-green-400" : "bg-gray-300"
-                    } text-white rounded`}
-                  onClick={() => handleButtonClick(level)}
-                >
-                  {level}
-                </button>
-              ))}
-            </div>
-          )}
-          {!isMultiplayer || gameData.player1?.id === currentUid ? <button onClick={restartGame} className="ml-5">
-            New Game
-          </button> : ''}
-        </div>
-        <div className="flex justify-center mt-2">
-          <label className="text-gray-700 font-semibold content-center justify-center">Board Style:</label>
-          {!styleExpanded ? (
-            // Single button view
-            <button
-              className="py-2 px-4 bg-blue-500 text-white rounded"
-              onClick={() => setStyleExpanded(true)}
-            >
-              {boardStyle ? 'Classic' : "Minimalistic"}
-            </button>
-          ) : (
-            // Expanded button view with animation
-            <div className="flex space-x-2">
-              {[0, 1].map((level) => (
-                <button
-                  key={level}
-                  className={`w-full py-2  ${boardStyle === level ? "bg-green-400" : "bg-gray-300"
-                    } text-white rounded`}
-                  onClick={() => {
-                    setBoardStyle(level);
-                    setStyleExpanded(false);
-                  }}
-                >
-                  {level ? 'Classic' : "Minimalistic"}
-                </button>
-              ))}
-            </div>
-          )}
-          {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)} className="ml-5">Play Online</button>}
-          {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
-          {playOnline ?
+      <div className="flex justify-center">
+        <label className="text-gray-700 font-semibold content-center justify-center">Number of Players:</label>
+        {!expanded ? (
+          // Single button view
+          <button
+            className="py-2 px-4 bg-blue-500 text-white rounded"
+            onClick={() => setExpanded(true)}
+          >
+            {playerCount !== null ? playerCount : "Number of Players: "}
+          </button>
+        ) : (
+          // Expanded button view with animation
+          <div className="flex space-x-2">
+            {[2, 3, 4].map((level) => (
+              <button
+                key={level}
+                className={`w-full py-2  ${playerCount === level ? "bg-green-400" : "bg-gray-300"
+                  } text-white rounded`}
+                onClick={() => handleButtonClick(level)}
+              >
+                {level}
+              </button>
+            ))}
+          </div>
+        )}
+        {!isMultiplayer || gameData.player1?.id === currentUid ? <button onClick={restartGame} className="ml-5">
+          New Game
+        </button> : ''}
+      </div>
+      <div className="flex justify-center mt-2">
+        <label className="text-gray-700 font-semibold content-center justify-center">Board Style:</label>
+        {!styleExpanded ? (
+          // Single button view
+          <button
+            className="py-2 px-4 bg-blue-500 text-white rounded"
+            onClick={() => setStyleExpanded(true)}
+          >
+            {boardStyle ? 'Classic' : "Minimalistic"}
+          </button>
+        ) : (
+          // Expanded button view with animation
+          <div className="flex space-x-2">
+            {[0, 1].map((level) => (
+              <button
+                key={level}
+                className={`w-full py-2  ${boardStyle === level ? "bg-green-400" : "bg-gray-300"
+                  } text-white rounded`}
+                onClick={() => {
+                  setBoardStyle(level);
+                  setStyleExpanded(false);
+                }}
+              >
+                {level ? 'Classic' : "Minimalistic"}
+              </button>
+            ))}
+          </div>
+        )}
+        {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)} className="ml-5">Play Online</button>}
+        {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
+        {playOnline ?
+          <ProtectedRoute>
             <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
               <div className="flex-col justify-around mb-4">
                 <button
@@ -671,45 +670,45 @@ export default function Game() {
                 </button>
               </div>
             </Modal>
-            : ''
-          }
-        </div>
+          </ProtectedRoute>
+          : ''
+        }
+      </div>
 
-        <div className="flex flex-col md:flex-row">
-          <div className="flex-grow w-full ">
-            <Board
-              chaal={playerPosition}
-              boardStyle={boardStyle}
-            ></Board>
+      <div className="flex flex-col md:flex-row">
+        <div className="flex-grow w-full ">
+          <Board
+            chaal={playerPosition}
+            boardStyle={boardStyle}
+          ></Board>
+        </div>
+        <div className="flex-auto md:w-1/2 p-4 content-center">
+          <div className={styles["game-row1"]}>
+            {status.length > 0 ? <div className={`${styles["player" + (lastTwoTurn[1].player_id + 1)]} ${styles['player-turn']}`}>
+              {status}
+            </div> : ''}
           </div>
-          <div className="flex-auto md:w-1/2 p-4 content-center">
-            <div className={styles["game-row1"]}>
-              {status.length > 0 ? <div className={`${styles["player" + (lastTwoTurn[1].player_id + 1)]} ${styles['player-turn']}`}>
-                {status}
-              </div> : ''}
+          <div className={styles["game-row1"]}>
+            <div className={`${styles["player" + (playerTurn + 1)]} ${styles['player-turn']}`}>
+              {!isMultiplayer ? `Turn of Player-${playerTurn + 1}` : `Turn of ${getPlayerName(gameData, playerTurn).name}`}
             </div>
-            <div className={styles["game-row1"]}>
-              <div className={`${styles["player" + (playerTurn + 1)]} ${styles['player-turn']}`}>
-                {!isMultiplayer ? `Turn of Player-${playerTurn + 1}` : `Turn of ${getPlayerName(gameData, playerTurn).name}`}
-              </div>
-              {checkCurrentTurn() ?
-                <Dice onRoll={(value) => rollDice(value)} size={33}
-                  faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
-                /> :
-                ''
-              }
-            </div>
-            {lastArrow(lastTwoTurn, playerPosition)}
-            {
-              ranking.length > 0
-                ? (<div className={styles["game-row"]}>
-                  <Table data={ranking} />
-                </div>)
-                : ''
+            {checkCurrentTurn() ?
+              <Dice onRoll={(value) => rollDice(value)} size={33}
+                faces={['/dice1.png', '/dice2.png', '/dice3.png', '/dice4.png', '/dice5.png', '/dice6.png']}
+              /> :
+              ''
             }
           </div>
+          {lastArrow(lastTwoTurn, playerPosition)}
+          {
+            ranking.length > 0
+              ? (<div className={styles["game-row"]}>
+                <Table data={ranking} />
+              </div>)
+              : ''
+          }
         </div>
-      </ProtectedRoute>
+      </div>
 
     </>
   );

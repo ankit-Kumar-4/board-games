@@ -436,50 +436,50 @@ export default function Game() {
 
             </Head>
 
-            <ProtectedRoute>
-                {(!isMultiplayer || (currentUid === gameData.player1)) ?
+            {(!isMultiplayer || (currentUid === gameData.player1)) ?
 
-                    <div className="flex content-center justify-center gap-2">
-                        <div className=" text-wrap pt-2">Board:</div>
-                        <Dropdown options={options} value={row} setValue={async (value) => {
-                            const newDashes = Array((value + 1) * column).fill(null);
-                            const newStrokes = Array(value * (column + 1)).fill(null);
-                            const newBoxes = Array(value * column).fill(null);
+                <div className="flex content-center justify-center gap-2">
+                    <div className=" text-wrap pt-2">Board:</div>
+                    <Dropdown options={options} value={row} setValue={async (value) => {
+                        const newDashes = Array((value + 1) * column).fill(null);
+                        const newStrokes = Array(value * (column + 1)).fill(null);
+                        const newBoxes = Array(value * column).fill(null);
 
-                            setRow(value);
-                            setDashes(newDashes);
-                            setStrokes(newStrokes);
-                            setBoxes(newBoxes);
+                        setRow(value);
+                        setDashes(newDashes);
+                        setStrokes(newStrokes);
+                        setBoxes(newBoxes);
 
-                            if (isMultiplayer) {
-                                await restartGame(roomId, value, column);
-                            }
-                        }} />
-                        <p className="mt-2">x</p>
-                        <Dropdown options={options} value={column} setValue={async (value) => {
-                            const newDashes = Array((row + 1) * value).fill(null);
-                            const newStrokes = Array(row * (value + 1)).fill(null);
-                            const newBoxes = Array(row * value).fill(null);
+                        if (isMultiplayer) {
+                            await restartGame(roomId, value, column);
+                        }
+                    }} />
+                    <p className="mt-2">x</p>
+                    <Dropdown options={options} value={column} setValue={async (value) => {
+                        const newDashes = Array((row + 1) * value).fill(null);
+                        const newStrokes = Array(row * (value + 1)).fill(null);
+                        const newBoxes = Array(row * value).fill(null);
 
-                            setColumn(value);
-                            setDashes(newDashes);
-                            setStrokes(newStrokes);
-                            setBoxes(newBoxes);
+                        setColumn(value);
+                        setDashes(newDashes);
+                        setStrokes(newStrokes);
+                        setBoxes(newBoxes);
 
-                            if (isMultiplayer) {
-                                await restartGame(roomId, row, value);
-                            }
-                        }} />
-                        <button onClick={handleNewGame} className="">New Game</button>
-                    </div>
-                    : ''}
-
-                <div className="flex justify-center gap-2 mt-5">
-                    {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
+                        if (isMultiplayer) {
+                            await restartGame(roomId, row, value);
+                        }
+                    }} />
+                    <button onClick={handleNewGame} className="">New Game</button>
                 </div>
-                <div className="flex justify-around gap-2">
-                    {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
-                    {playOnline ?
+                : ''}
+
+            <div className="flex justify-center gap-2 mt-5">
+                {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
+            </div>
+            <div className="flex justify-around gap-2">
+                {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
+                {playOnline ?
+                    <ProtectedRoute>
                         <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
                             <div className="flex-col justify-around mb-4">
                                 <button
@@ -510,24 +510,24 @@ export default function Game() {
                                 </button>
                             </div>
                         </Modal>
-                        : ''
-                    }
-                    {isMultiplayer ? (<div>
-                        {currentUid === gameData.player1 ? 'You play as Blue' : 'You play as Red'}
-                    </div>) : ''}
-                </div>
-                <div className="flex items-center justify-around">
-                    <div className="bg-blue-500 text-white w-12 h-12 text-center content-center text-2xl border-4 border-blue-900 ">{boxCount[0]}</div>
-                    {status}
-                    <div className="bg-red-600 text-white w-12 h-12 text-center content-center text-2xl border-red-900 border-4">{boxCount[1]}</div>
-                </div>
-                <div className="flex flex-col items-center justify-center h-full w-full overflow-scroll ">
-                    <div className="m-2"></div>
-                    <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
-                        boxes={boxes} lastMove={lastMove} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
-                </div>
+                    </ProtectedRoute>
+                    : ''
+                }
+                {isMultiplayer ? (<div>
+                    {currentUid === gameData.player1 ? 'You play as Blue' : 'You play as Red'}
+                </div>) : ''}
+            </div>
+            <div className="flex items-center justify-around">
+                <div className="bg-blue-500 text-white w-12 h-12 text-center content-center text-2xl border-4 border-blue-900 ">{boxCount[0]}</div>
+                {status}
+                <div className="bg-red-600 text-white w-12 h-12 text-center content-center text-2xl border-red-900 border-4">{boxCount[1]}</div>
+            </div>
+            <div className="flex flex-col items-center justify-center h-full w-full overflow-scroll ">
+                <div className="m-2"></div>
+                <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
+                    boxes={boxes} lastMove={lastMove} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
+            </div>
 
-            </ProtectedRoute>
         </>
     )
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { signOut, updateProfile } from 'firebase/auth';
-// import { auth } from '@/lib/firebaseConfig';
+import ProtectedRoute from './ProtectedRoute';
 
 interface ModalProps {
     isOpen: boolean;
@@ -53,15 +53,16 @@ export default function ProfileMenu({ auth }: { auth: any }) {
         try {
             await updateProfile(auth.currentUser, {
                 displayName: username,
-              });
-              setUpdateOpen(false);
+            });
+            setUpdateOpen(false);
         } catch (error: any) {
-            alert("Error in updating name:" +  error.code);
-            
+            alert("Error in updating name:" + error.code);
+
         }
     }
 
     return (
+
         <div className="relative">
             {/* Profile Icon */}
             <div className="cursor-pointer" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -74,45 +75,41 @@ export default function ProfileMenu({ auth }: { auth: any }) {
 
             {/* Dropdown Menu */}
             {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg">
-                    <div className='text-3sm pl-4 pt-2 bg-amber-100'>Welcome, {auth.currentUser.displayName}</div>
-                    <ul className="text-gray-700">
-                        {/* <li
-                            className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                            onClick={() => router.push("/view-profile")}
-                        >
-                            View Profile
-                        </li> */}
-                        <li
-                            className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                            onClick={() => setUpdateOpen(true)}
-                        >
-                            Update Profile
-                        </li>
-                        <li
-                            className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </li>
-                    </ul>
-                </div>
+                <ProtectedRoute>
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg">
+                        <div className='text-3sm pl-4 pt-2 bg-amber-100'>Welcome, {auth.currentUser?.displayName}</div>
+                        <ul className="text-gray-700">
+                            <li
+                                className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                                onClick={() => setUpdateOpen(true)}
+                            >
+                                Update Profile
+                            </li>
+                            <li
+                                className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </li>
+                        </ul>
+                    </div>
+                </ProtectedRoute>
             )}
             <Modal isOpen={updateOpen} onClose={() => setUpdateOpen(false)}>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700">Gaming Username</label>
-                        <input
-                            id="username"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUserName(e.target.value)}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required
-                        />
+                <input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUserName(e.target.value)}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                />
                 {/* <form onSubmit={updateUsername} className="space-y-4">
                     <div>
                     </div>
-                </form> */}
-                    <button type='submit' onClick={updateUsername} className="mt-4 p-2 bg-blue-500 text-white rounded">Update</button>
+                    </form> */}
+                <button type='submit' onClick={updateUsername} className="mt-4 p-2 bg-blue-500 text-white rounded">Update</button>
             </Modal>
         </div>
     );

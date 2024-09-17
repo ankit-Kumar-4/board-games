@@ -306,11 +306,11 @@ export default function Game() {
 
             </Head>
 
-            <ProtectedRoute>
-                <div>
-                    {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
-                    {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
-                    {playOnline ?
+            <div>
+                {isMultiplayer ? '' : <button onClick={() => setPlayOnline(!playOnline)}>Play Online</button>}
+                {isMultiplayer && roomId ? <div>Game Id: {roomId}</div> : ''}
+                {playOnline ?
+                    <ProtectedRoute>
                         <Modal isOpen={playOnline} onClose={() => { setPlayOnline(false) }}>
                             <div className="flex-col justify-around mb-4">
                                 <button
@@ -341,26 +341,26 @@ export default function Game() {
                                 </button>
                             </div>
                         </Modal>
-                        : ''
-                    }
-                    {isMultiplayer ? (<div>
-                        {currentUid === gameData.playerX ? 'You play as X' : 'You play as O'}
-                    </div>) : ''}
-                </div>
-                <div className={styles.game}>
-                    <div className={styles["game-row"]}>
-                        <div className={styles["game-board"]}>
-                            <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} data={gameData} />
-                        </div>
-                        <div className={styles["game-info"]}>
-                            {NewGame}
-                        </div>
+                    </ProtectedRoute>
+                    : ''
+                }
+                {isMultiplayer ? (<div>
+                    {currentUid === gameData.playerX ? 'You play as X' : 'You play as O'}
+                </div>) : ''}
+            </div>
+            <div className={styles.game}>
+                <div className={styles["game-row"]}>
+                    <div className={styles["game-board"]}>
+                        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} handleScore={handleScore} data={gameData} />
                     </div>
-                    <div className={styles["game-row"]}>
-                        <Table data={score} gameData={gameData} />
+                    <div className={styles["game-info"]}>
+                        {NewGame}
                     </div>
                 </div>
-            </ProtectedRoute>
+                <div className={styles["game-row"]}>
+                    <Table data={score} gameData={gameData} />
+                </div>
+            </div>
         </>
     );
 }

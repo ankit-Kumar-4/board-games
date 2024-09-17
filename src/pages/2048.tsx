@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Head from 'next/head';
-import ProtectedRoute from '@/components/ProtectedRoute';
 
 
 type SquareValue = number | 0;
@@ -580,59 +579,57 @@ const Board: React.FC = () => {
                 <link rel="canonical" href="https://games-by-ankit.vercel.app/2048" />
 
             </Head>
-            <ProtectedRoute>
-                <div {...handlers}
-                >
-                    <div className="flex justify-center">
-                        <p className='text-center font-extrabold text-xl text-score'>Score: {score}</p>
-                        <button onClick={undo} className={`bg-orange-300 m-auto hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
-                        <label className="text-gray-700 font-semibold content-center justify-center ml-4">Board Size:</label>
-                        {!expanded ? (
-                            // Single button view
-                            <button
-                                className="py-2 px-4 bg-blue-500 text-white rounded"
-                                onClick={() => setExpanded(true)}>
-                                {boardSize + 'x' + boardSize}
-                            </button>
-                        ) : (
-                            // Expanded button view with animation
-                            <div className="flex space-x-2">
-                                {[4, 6, 8].map((level) => (
-                                    <button
-                                        key={level}
-                                        className={`w-full py-2  ${boardSize === level ? "bg-green-400" : "bg-gray-300"
-                                            } text-white rounded`}
-                                        onClick={() => updateBoardSize(level)}
-                                    >
-                                        {level + 'x' + level}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                        <button onClick={() => newGame(boardSize)} className='m-auto'>New Game</button>
-                    </div>
-                    <div className="flex flex-col items-center max-h-screen pt-8">
-                        <div
-                            className="relative select-none"
-                            style={{
-                                width: '80vw',
-                                height: '80vw',
-                                maxWidth: '80vh',
-                                maxHeight: '80vh'
-                            }}
-                        >
-                            {getCells(boardSize, matrix)}
-                            {/* <div className={`grid grid-cols-8 gap-0 h-full w-full bg-black`}>
-                            </div> */}
+            <div {...handlers}
+            >
+                <div className="flex justify-center">
+                    <p className='text-center font-extrabold text-xl text-score'>Score: {score}</p>
+                    <button onClick={undo} className={`bg-orange-300 m-auto hover:bg-slate-500 ${undoCount === 0 ? 'hidden' : ''}`}>Undo Remaining: {undoCount}</button>
+                    <label className="text-gray-700 font-semibold content-center justify-center ml-4">Board Size:</label>
+                    {!expanded ? (
+                        // Single button view
+                        <button
+                            className="py-2 px-4 bg-blue-500 text-white rounded"
+                            onClick={() => setExpanded(true)}>
+                            {boardSize + 'x' + boardSize}
+                        </button>
+                    ) : (
+                        // Expanded button view with animation
+                        <div className="flex space-x-2">
+                            {[4, 6, 8].map((level) => (
+                                <button
+                                    key={level}
+                                    className={`w-full py-2  ${boardSize === level ? "bg-green-400" : "bg-gray-300"
+                                        } text-white rounded`}
+                                    onClick={() => updateBoardSize(level)}
+                                >
+                                    {level + 'x' + level}
+                                </button>
+                            ))}
                         </div>
+                    )}
+                    <button onClick={() => newGame(boardSize)} className='m-auto'>New Game</button>
+                </div>
+                <div className="flex flex-col items-center max-h-screen pt-8">
+                    <div
+                        className="relative select-none"
+                        style={{
+                            width: '80vw',
+                            height: '80vw',
+                            maxWidth: '80vh',
+                            maxHeight: '80vh'
+                        }}
+                    >
+                        {getCells(boardSize, matrix)}
+                        {/* <div className={`grid grid-cols-8 gap-0 h-full w-full bg-black`}>
+                            </div> */}
                     </div>
-                    <Modal isOpen={isGameOver} onClose={() => setIsGameOver(false)}>
-                        <h2>Game Over</h2>
-                        <p>Your final score is: {score}</p>
-                        <button onClick={() => newGame(boardSize)} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
-                    </Modal>
-                </div >
-            </ProtectedRoute>
+                </div>
+                <Modal isOpen={isGameOver} onClose={() => setIsGameOver(false)}>
+                    <h2>Game Over</h2>
+                    <p>Your final score is: {score}</p>
+                    <button onClick={() => newGame(boardSize)} className="mt-4 p-2 bg-blue-500 text-white rounded">New Game</button>
+                </Modal>
+            </div >
         </>
     );
 };
