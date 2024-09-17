@@ -49,6 +49,7 @@ export async function createGame(gameId: string, boxes: number[], strokes: numbe
         column,
         currentTurn: 0,
         winner: null,
+        lastMove: [-1, -1],
         chatroomId: gameId,
         createdAt: new Date(),
     });
@@ -56,7 +57,8 @@ export async function createGame(gameId: string, boxes: number[], strokes: numbe
 }
 
 
-export async function makeMove(gameId: string, boxes: number[], strokes: number[], dashes: number[], currentTurn: number, winner: number | null) {
+export async function makeMove(gameId: string, boxes: number[], strokes: number[], dashes: number[],
+    currentTurn: number, winner: number | null, lastMove: number[]) {
     const gamesRef = collection(db, "dots-n-boxes");
     const q = query(gamesRef, where("chatroomId", "==", gameId));
     const querySnapshot = await getDocs(q);
@@ -68,7 +70,8 @@ export async function makeMove(gameId: string, boxes: number[], strokes: number[
             strokes,
             dashes,
             currentTurn,
-            winner
+            winner,
+            lastMove
         });
         return true;
     } else {
@@ -92,6 +95,7 @@ export async function restartGame(gameId: string, row: number, column: number) {
             row,
             column,
             winner: null,
+            lastMove: [-1, -1]
         });
         return true;
     } else {

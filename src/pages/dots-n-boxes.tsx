@@ -39,25 +39,27 @@ const Dot = () => {
     )
 }
 
-const Dash = ({ index, value, dashClick }: {
-    index: number, value: number,
+const Dash = ({ index, value, highlight, dashClick }: {
+    index: number, value: number, highlight: boolean,
     dashClick: (index: number, value: number) => any
 }) => {
     return (
         <div
-            className={`h-2 w-12  ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
+            className={`h-2 w-12 ${highlight ? 'border-2 border-black' : ''} 
+                ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
             onClick={() => dashClick(index, value)}
         ></div>
     )
 }
 
-const Stroke = ({ index, value, strokeClick }: {
-    index: number, value: number,
+const Stroke = ({ index, value, highlight, strokeClick }: {
+    index: number, value: number, highlight: boolean,
     strokeClick: (index: number, value: number) => any
 }) => {
     return (
         <div
-            className={`w-2 h-12  ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
+            className={`w-2 h-12 ${highlight ? 'border-2 border-black' : ''} 
+                ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
             onClick={() => strokeClick(index, value)}
         ></div>
     )
@@ -153,9 +155,10 @@ function getWinner(boxes: number[], playerCount: number) {
     }
 }
 
-const Board = ({ row, column, dashes, strokes, boxes, dashClick, strokeClick }:
+const Board = ({ row, column, dashes, strokes, boxes, lastMove, dashClick, strokeClick }:
     {
-        row: number; column: number, dashes: number[], strokes: number[], boxes: number[],
+        row: number; column: number, dashes: number[], strokes: number[],
+        boxes: number[], lastMove: number[],
         dashClick: (index: number, value: number) => any,
         strokeClick: (index: number, value: number) => any,
     }) => {
@@ -170,13 +173,13 @@ const Board = ({ row, column, dashes, strokes, boxes, dashClick, strokeClick }:
                 if (j % 2 == 0) {
                     board.push(<Dot key={key} />);
                 } else {
-                    board.push(<Dash key={key} index={d} value={dashes[d]}
+                    board.push(<Dash key={key} index={d} highlight={lastMove[0] === d} value={dashes[d]}
                         dashClick={dashClick} />);
                     d++;
                 }
             } else {
                 if (j % 2 == 0) {
-                    board.push(<Stroke key={key} index={s} value={strokes[s]}
+                    board.push(<Stroke key={key} index={s} highlight={lastMove[1] === s} value={strokes[s]}
                         strokeClick={strokeClick} />);
                     s++;
                 } else {
@@ -208,6 +211,7 @@ export default function Game() {
 
     const [playerTurn, setPlayerTurn] = useState(0);
     const [boxCount, setBoxCount] = useState([0, 0]);
+    const [lastMove, setLastMove] = useState([-1, -1]);
 
     const [playOnline, setPlayOnline] = useState(false);
     const [isMultiplayer, setIsMultiplayer] = useState(false);
@@ -234,6 +238,7 @@ export default function Game() {
                 setStrokes(data.strokes);
                 setRow(data.row);
                 setColumn(data.column);
+                setLastMove(data.lastMove)
                 if (data.currentTurn !== null) {
                     setPlayerTurn(data.currentTurn);
                 }
@@ -313,8 +318,9 @@ export default function Game() {
 
         const { remaining, potentialWinner, cellCount } = getWinner(newBoxes, 2);
         setBoxCount(cellCount);
+        setLastMove([index, -1]);
         if (isMultiplayer) {
-            await makeMove(roomId, newBoxes, strokes, newDashes, newTurn, potentialWinner);
+            await makeMove(roomId, newBoxes, strokes, newDashes, newTurn, potentialWinner, [index, -1]);
         }
         if (!isMultiplayer) {
             updateStatus(newTurn, potentialWinner, gameData);
@@ -364,8 +370,9 @@ export default function Game() {
 
         const { remaining, potentialWinner, cellCount } = getWinner(newBoxes, 2);
         setBoxCount(cellCount);
+        setLastMove([-1, index]);
         if (isMultiplayer) {
-            await makeMove(roomId, newBoxes, newStrokes, dashes, newTurn, potentialWinner);
+            await makeMove(roomId, newBoxes, newStrokes, dashes, newTurn, potentialWinner, [-1, index]);
         }
         if (!isMultiplayer) {
             updateStatus(newTurn, potentialWinner, gameData);
@@ -517,7 +524,7 @@ export default function Game() {
                 <div className="flex flex-col items-center justify-center h-full w-full overflow-visible ">
                     <div className="m-2"></div>
                     <Board row={2 * row + 1} column={2 * column + 1} dashes={dashes} strokes={strokes}
-                        boxes={boxes} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
+                        boxes={boxes} lastMove={lastMove} dashClick={handleDashClick} strokeClick={handleStrokeClick} />
                 </div>
 
             </ProtectedRoute>
