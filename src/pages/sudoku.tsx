@@ -100,7 +100,7 @@ const Board = (
                             ${i === selectedCell.row && j === selectedCell.col ? 'border-2 border-yellow-500 bg-blue-400' : 'border-gray-400'}
                             ${getSelectedCells.includes(i * 9 + j) ? 'bg-blue-300' :
                                 i === selectedCell.row || j === selectedCell.col || checkInBox(boxes3x3[selectedCell.box], i * 9 + j) ?
-                                    'bg-blue-100 ' : 'bg-gray-300 border-gray-400'}
+                                    'bg-blue-100 ' : 'bg-transparent border-gray-400'}
                             ${invalidCells.includes(i * 9 + j) ? 'text-red-700' : originalMatrix[i * 9 + j] ? 'text-2xl' : 'text-green-800'}
                             ${originalMatrix[i * 9 + j] ? 'text-2xl' : ''}
                             `}
@@ -227,7 +227,7 @@ const Game: React.FC = () => {
                             key={index}
                             className={`w-1/12 md:w-1/3 flex flex-col md:flex-row justify-center content-center
                             border  cursor-pointer hover:bg-sky-200
-                            ${pointer === index ? 'bg-blue-300 border-blue-600 border-2' : 'bg-gray-300 border-gray-400'}
+                            ${pointer === index ? 'bg-blue-300 border-blue-600 border-2' : 'bg-transparent border-gray-400'}
                             ${remainingPointers[index] ? '' : 'opacity-0'}
                             `}
                             onClick={() => handlePointerClick(index + 1)}

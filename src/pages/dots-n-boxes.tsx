@@ -46,7 +46,7 @@ const Dash = ({ index, value, highlight, dashClick }: {
     return (
         <div
             className={`h-2 w-12 ${highlight ? 'border-2 border-black' : ''} 
-                ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
+                ${value === null ? 'bg-white' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
             onClick={() => dashClick(index, value)}
         ></div>
     )
@@ -59,7 +59,7 @@ const Stroke = ({ index, value, highlight, strokeClick }: {
     return (
         <div
             className={`w-2 h-12 ${highlight ? 'border-2 border-black' : ''} 
-                ${value === null ? 'bg-gray-300' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
+                ${value === null ? 'bg-white' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
             onClick={() => strokeClick(index, value)}
         ></div>
     )

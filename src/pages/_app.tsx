@@ -5,6 +5,7 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { AuthProvider } from '@/components/AuthContext';
+import Particles from '@/components/Particles';
 
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -33,6 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                     <Component {...pageProps} />
                 ) : (
                     <Layout>
+                        <Particles id="particles"/>
                         <Component {...pageProps} />
                     </Layout>
                 )}

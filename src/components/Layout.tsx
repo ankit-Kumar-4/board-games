@@ -23,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
     }
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-transparent">
             <div className={`fixed inset-y-0 left-0 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-200 ease-in-out bg-sidePanel shadow-md w-64 z-20`}>
                 <div className="p-4 border-b border-green-600">
                     <h2 className="text-lg font-semibold text-white">My Games</h2>
@@ -88,7 +88,7 @@ export default function Layout({ children }: LayoutProps) {
                 </nav>
             </div>
             <div className={`fixed inset-0 bg-black opacity-30 ${isOpen ? 'block' : 'hidden'} z-10`} onClick={toggleSidebar}></div>
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col bg-transparent">
                 <header className="flex justify-between items-center p-4 bg-topHeader shadow-md z-30 relative">
                     <button onClick={toggleSidebar} className="p-2 rounded focus:outline-none focus:bg-navButton text-white">
                         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -100,7 +100,7 @@ export default function Layout({ children }: LayoutProps) {
                     </Link>
                     <ProfileMenu auth={auth} />
                 </header>
-                <main className="flex-1 p-4 bg-white">
+                <main className="flex-1 p-4 bg-transparent">
                     {children}
                 </main>
             </div>
