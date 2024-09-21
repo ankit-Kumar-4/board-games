@@ -232,20 +232,6 @@ function Board({
   for (let i = 9; i >= 0; i--) {
     for (let j = 9; j >= 0; j--) {
       const cellNumber = getCellNumber(i, j) + 1;
-      // if ([1, 100].includes(cellNumber) && boardStyle === 0) {
-      //   board.push((
-      //     <div
-      //       key={cellNumber}
-      //       id={`${cellNumber}`}
-      //       className={'text-black w-full pt-[100%] bg-lightgoldenrodyellow border border-darkgreen flex justify-center items-center relative' +
-      //         ' ' + (cellNumber === 1 ? 'bg-yellow-400' : 'bg-green-400')}
-      //     >
-      //       {homeStart(cellNumber, chaal)}
-      //     </div>
-      //   ));
-      // } else {
-      //   board.push(<Cell step={cellNumber} playerId={chaal} boardStyle={boardStyle}></Cell>);
-      // }
       board.push(<Cell step={cellNumber} playerId={chaal} boardStyle={boardStyle}></Cell>);
     }
   }
@@ -571,10 +557,10 @@ export default function Game() {
         <meta name="description" content="Play the classic Snake and Ladders game online. Roll the dice, climb the ladders, and avoid the snakes in this fun and challenging board game. Enjoy Snake and Ladders for free now!" />
         <meta name="keywords" content="snake and ladders, online snake and ladders, free snake and ladders, board games, snake and ladders by ankit, ankit" />
         <meta name="author" content="Ankit Kumar" />
-        <meta property="og:title" content="Snake and Ladders - Classic Board Game Online" />
+        <meta property="og:title" content="Snake and Ladders - Board Games by Ankit" />
         <meta property="og:description" content="Play the classic Snake and Ladders game online. Roll the dice, climb the ladders, and avoid the snakes in this fun and challenging board game. Enjoy Snake and Ladders for free now!" />
         <meta property="og:image" content="https://example.com/og-snake-ladders.jpg" />
-        <meta property="og:url" content="https://example.com/snake-ladders" />
+        <meta property="og:url" content="https://games-by-ankit.vercel.app/snake-n-ladder" />
         <link rel="canonical" href="https://games-by-ankit.vercel.app/snake-n-ladder" />
       </Head>
 

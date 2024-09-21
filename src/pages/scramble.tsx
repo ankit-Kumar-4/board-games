@@ -220,9 +220,9 @@ export default function Scramble() {
   return (
     <>
       <Head>
-        <title>Scramble - Word Games by Ankit</title>
+        <title>Scramble - Board Games by Ankit</title>
         <meta name="description" content="Test your vocabulary skills with Scramble. Unscramble the jumbled letters to find the correct word. Challenge yourself with different levels of difficulty!" />
-        <meta name="keywords" content="scramble, word scramble, anagram game, word games, unscramble, ankit" />
+        <meta name="keywords" content="scramble, word scramble, scramble game by ankit, word games, scramble by ankit, ankit" />
         <meta name="author" content="Ankit Kumar" />
         <meta property="og:title" content="Scramble - Word Games by Ankit" />
         <meta property="og:description" content="Test your vocabulary skills with Scramble. Unscramble the jumbled letters to find the correct word. Challenge yourself with different levels of difficulty!" />

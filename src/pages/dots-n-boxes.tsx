@@ -425,15 +425,16 @@ export default function Game() {
         <>
             <Head>
                 <title>Dots and Boxes - Board Games by Ankit</title>
-                <meta name="description" content="Play the classic Tic Tac Toe game online. Enjoy this timeless game of Xs and Os, perfect for quick fun or challenging your friends. Play Tic Tac Toe for free now!" />
-                <meta name="keywords" content="tic tac toe, online tic tac toe, free tic tac toe, classic games, tic tac toe by ankit, ankit" />
+                <meta name="description" content="Re-live this Dots and Boxes game from your school days. Play online or offline with friends." />
+                <meta name="keywords" content="dots and boxes, online dots and boxes, dots and boxes by ankit, multiplayer dots and boxes, classic board games, ankit" />
                 <meta name="author" content="Ankit Kumar" />
-                <meta property="og:title" content="Tic Tac Toe - Classic Game" />
-                <meta property="og:description" content="Play the classic Tic Tac Toe game online. Enjoy this timeless game of Xs and Os, perfect for quick fun or challenging your friends. Play Tic Tac Toe for free now!" />
-                <meta property="og:image" content="https://example.com/og-tictactoe.jpg" />
-                <meta property="og:url" content="https://example.com/tic-tac-toe" />
-                <link rel="canonical" href="https://games-by-ankit.vercel.app/tic-tac-toe" />
 
+                <meta property="og:title" content="Dots and Boxes - Online Multiplayer Game" />
+                <meta property="og:description" content="Play Dots and Boxes online in multiplayer mode or challenge your friends. A classic board game experience with new online features." />
+                <meta property="og:image" content="https://example.com/og-dots-and-boxes.jpg" />
+                <meta property="og:url" content="https://games-by-ankit.vercel.app/dots-n-boxes" />
+
+                <link rel="canonical" href="https://games-by-ankit.vercel.app/dots-n-boxes" />
             </Head>
 
             {(!isMultiplayer || (currentUid === gameData.player1)) ?

@@ -570,12 +570,12 @@ const Board: React.FC = () => {
             <Head>
                 <title>2048 - Board Games by Ankit</title>
                 <meta name="description" content="Play the addictive 2048 puzzle game online. Swipe and merge tiles to reach the 2048 tile. Test your strategy and skill in this fun and challenging game. Play 2048 for free now!" />
-                <meta name="keywords" content="2048, online 2048, free 2048, puzzle games, 2048 by ankit, ankit" />
+                <meta name="keywords" content="2048, online 2048, free 2048, puzzle games, 2048 by ankit, ankit, 2048 game by ankit, board games by ankit" />
                 <meta name="author" content="Ankit Kumar" />
                 <meta property="og:title" content="2048 - Addictive Puzzle Game" />
                 <meta property="og:description" content="Play the addictive 2048 puzzle game online. Swipe and merge tiles to reach the 2048 tile. Test your strategy and skill in this fun and challenging game. Play 2048 for free now!" />
                 <meta property="og:image" content="https://example.com/og-2048.jpg" />
-                <meta property="og:url" content="https://example.com/2048" />
+                <meta property="og:url" content="https://games-by-ankit.vercel.app/2048" />
                 <link rel="canonical" href="https://games-by-ankit.vercel.app/2048" />
 
             </Head>

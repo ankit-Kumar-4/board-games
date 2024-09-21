@@ -298,10 +298,10 @@ export default function Game() {
                 <meta name="description" content="Play the classic Tic Tac Toe game online. Enjoy this timeless game of Xs and Os, perfect for quick fun or challenging your friends. Play Tic Tac Toe for free now!" />
                 <meta name="keywords" content="tic tac toe, online tic tac toe, free tic tac toe, classic games, tic tac toe by ankit, ankit" />
                 <meta name="author" content="Ankit Kumar" />
-                <meta property="og:title" content="Tic Tac Toe - Classic Game" />
+                <meta property="og:title" content="Tic Tac Toe - Board Games by Ankit" />
                 <meta property="og:description" content="Play the classic Tic Tac Toe game online. Enjoy this timeless game of Xs and Os, perfect for quick fun or challenging your friends. Play Tic Tac Toe for free now!" />
                 <meta property="og:image" content="https://example.com/og-tictactoe.jpg" />
-                <meta property="og:url" content="https://example.com/tic-tac-toe" />
+                <meta property="og:url" content="https://games-by-ankit.vercel.app/tic-tac-toe" />
                 <link rel="canonical" href="https://games-by-ankit.vercel.app/tic-tac-toe" />
 
             </Head>
