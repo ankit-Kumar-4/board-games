@@ -59,16 +59,16 @@ const Table = ({ data, gameData }: { data: TableRow[]; gameData: any }) => {
                 </tr>
             </thead>
             <tbody>
+                <tr className={`${styles['sum-row']}`}>
+                    <td >{sumColumn1}</td>
+                    <td >{sumColumn2}</td>
+                </tr>
                 {data.map((row, index) => (
                     <tr key={index}>
                         <td>{row.playerX}</td>
                         <td>{row.playerO}</td>
                     </tr>
                 ))}
-                <tr className={`${styles['sum-row']}`}>
-                    <td >{sumColumn1}</td>
-                    <td >{sumColumn2}</td>
-                </tr>
             </tbody>
         </table >
     );

@@ -25,7 +25,7 @@ const ParticlesComponent = (props) => {
                     value: "#e0e0d1",
                 },
             },
-            fpsLimit: 120,
+            fpsLimit: 60,
             interactivity: {
                 events: {
                     onClick: {
@@ -41,6 +41,7 @@ const ParticlesComponent = (props) => {
                     push: {
                         distance: 200,
                         duration: 15,
+                        quantity: 4,
                     },
                     grab: {
                         distance: 150,
@@ -48,6 +49,13 @@ const ParticlesComponent = (props) => {
                 },
             },
             particles: {
+                number: {
+                    value: 150, // Base number of particles on screen
+                    density: {
+                        enable: true,
+                        value_area: 800, // Adjusts density relative to area
+                    },
+                },
                 color: {
                     value: "#006600",
                 },
@@ -68,14 +76,15 @@ const ParticlesComponent = (props) => {
                     speed: 2,
                     straight: false,
                 },
-                number: {
-                    density: {
-                        enable: true,
+                life: {
+                    duration: {
+                        sync: false,
+                        value: 30, // Particle lifespan in seconds
                     },
-                    value: 150,
+                    count: 0, // Infinite regeneration
                 },
                 opacity: {
-                    value: 1.0,
+                    value: 0.6,
                 },
                 shape: {
                     type: "circle",
@@ -86,8 +95,9 @@ const ParticlesComponent = (props) => {
             },
             detectRetina: true,
         }),
-        [],
+        []
     );
+
 
 
     return <Particles id={props.id} init={particlesLoaded} options={options} />;
