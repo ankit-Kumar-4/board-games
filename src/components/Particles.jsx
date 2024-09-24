@@ -41,7 +41,7 @@ const ParticlesComponent = (props) => {
                     push: {
                         distance: 200,
                         duration: 15,
-                        quantity: 4,
+                        quantity: 1,
                     },
                     grab: {
                         distance: 150,
@@ -50,10 +50,10 @@ const ParticlesComponent = (props) => {
             },
             particles: {
                 number: {
-                    value: 150, // Base number of particles on screen
+                    value: 50, // Base number of particles on screen
                     density: {
                         enable: true,
-                        value_area: 800, // Adjusts density relative to area
+                        value_area: 50, // Adjusts density relative to area
                     },
                 },
                 color: {

@@ -224,7 +224,7 @@ export default function Scramble() {
         <meta name="description" content="Test your vocabulary skills with Scramble. Unscramble the jumbled letters to find the correct word. Challenge yourself with different levels of difficulty!" />
         <meta name="keywords" content="scramble, word scramble, scramble game by ankit, word games, scramble by ankit, ankit" />
         <meta name="author" content="Ankit Kumar" />
-        <meta property="og:title" content="Scramble - Word Games by Ankit" />
+        <meta property="og:title" content="Scramble - Board Games by Ankit" />
         <meta property="og:description" content="Test your vocabulary skills with Scramble. Unscramble the jumbled letters to find the correct word. Challenge yourself with different levels of difficulty!" />
         <meta property="og:image" content="https://example.com/og-image.jpg" />
         <meta property="og:url" content="https://example.com" />
