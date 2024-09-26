@@ -227,8 +227,8 @@ export default function Scramble() {
         <meta property="og:title" content="Scramble - Board Games by Ankit" />
         <meta property="og:description" content="Test your vocabulary skills with Scramble. Unscramble the jumbled letters to find the correct word. Challenge yourself with different levels of difficulty!" />
         <meta property="og:image" content="https://example.com/og-image.jpg" />
-        <meta property="og:url" content="https://example.com" />
-        <link rel="canonical" href="https://games-by-ankit.vercel.app/" />
+        <meta property="og:url" content="https://games-by-ankit.vercel.app/scramble" />
+        <link rel="canonical" href="https://games-by-ankit.vercel.app/scramble" />
       </Head>
 
       <div className="flex items-center mb-4 space-x-4">
