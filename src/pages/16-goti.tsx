@@ -3,14 +3,15 @@ import { useState, useEffect } from "react";
 const row = 4;
 const column = 8;
 
-const unused_dashes = [0, 1, 6, 7, 9, 14, 25, 30, 32, 33, 38, 39];
+const unused_dashes = [0, 1, 6, 7, 8, 9, 14, 15, 24, 25, 30, 31, 32, 33, 38, 39];
 const unused_strokes = [1, 7, 28, 34];
-const unused_dots = [1, 7, 37, 43];
+const unused_dots = [1, 7, 9, 17, 27, 35, 37, 43];
 
 const Dot = ({ index }: { index: number }) => {
     return (
         <div
-            className="bg-black w-8 h-8 rounded-full"
+            className={`w-8 h-8 rounded-full
+                ${unused_dots.includes(index) ? '' : 'bg-black'}`}
         />
     )
 }
@@ -21,7 +22,9 @@ const Dash = ({ index, value, highlight }: {
     return (
         <div
             className={`h-8 w-36 ${highlight ? 'border-2 border-black' : ''} 
-                ${value === null ? 'bg-white' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
+                ${unused_dashes.includes(index) ? '' :
+                    (value === null ? 'bg-white' : (value === 0 ? 'bg-blue-500' : 'bg-red-600'))}
+            `}
         ></div>
     )
 }
@@ -32,7 +35,8 @@ const Stroke = ({ index, value, highlight }: {
     return (
         <div
             className={`w-8 h-36 ${highlight ? 'border-2 border-black' : ''} 
-                ${value === null ? 'bg-white' : (value === 0 ? 'bg-blue-500' : 'bg-red-600')}`}
+                ${unused_strokes.includes(index) ? '' : (value === null ? 'bg-white' : (value === 0 ? 'bg-blue-500' : 'bg-red-600'))}
+            `}
         ></div>
     )
 }
@@ -61,6 +65,7 @@ const Board = ({ row, column, dashes, strokes }:
             if (i % 2 == 0) {
                 if (j % 2 == 0) {
                     board.push(<Dot key={key} index={dt} />);
+                    dt++;
                 } else {
                     board.push(<Dash key={key} index={d} highlight={false} value={dashes[d]} />);
                     d++;
