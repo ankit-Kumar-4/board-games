@@ -130,11 +130,9 @@ function Arrows(startId: string, endId: string, type: "snake" | "ladder") {
 }
 
 function lastArrow(lastTwoTurn: playerTurn[], currentPostition: number[]) {
-  console.log(lastTwoTurn[1].last_position + ' : start')
-  console.log(currentPostition[lastTwoTurn[1].player_id] + ' : end')
 
   return (
-    <div >
+    <div className="bg-black">
       <Xarrow
         color="#0000e0"
         curveness={0}
