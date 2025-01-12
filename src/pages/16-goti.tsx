@@ -51,35 +51,13 @@ const Box = () => {
 }
 
 
-function Arrow(start: string, end: string) {
-    const [arrowParams, setArrowParams] = useState({
-        strokeWidth: 28,
-    });
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth <= 600) {
-                setArrowParams({
-                    strokeWidth: 7,
-                });
-            } else {
-                setArrowParams({
-                    strokeWidth: 28,
-                });
-            }
-        };
-
-        handleResize(); // Set initial values based on the current window size
-        window.addEventListener("resize", handleResize);
-
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+function Arrow(start: string, end: string, isPortrait: boolean) {
     return (
         <div className="z-10">
             <Xarrow
                 color="#ffffff"
                 curveness={0}
-                strokeWidth={arrowParams.strokeWidth}
+                strokeWidth={isPortrait ? 7 : 28}
                 headSize={0}
                 start={start}
                 end={end}
@@ -90,42 +68,43 @@ function Arrow(start: string, end: string) {
     );
 }
 
-function fillArrow() {
+function fillArrow(isPortrait: boolean) {
     const arrows = [];
-    arrows.push(Arrow(`0`, `10`));
-    arrows.push(Arrow(`0`, `18`));
-    arrows.push(Arrow(`10`, `20`));
-    arrows.push(Arrow(`18`, `36`));
-    arrows.push(Arrow(`20`, `28`));
-    arrows.push(Arrow(`28`, `36`));
-    arrows.push(Arrow(`8`, `16`));
-    arrows.push(Arrow(`8`, `26`));
-    arrows.push(Arrow(`16`, `24`));
-    arrows.push(Arrow(`26`, `44`));
-    arrows.push(Arrow(`34`, `44`));
-    arrows.push(Arrow(`24`, `34`));
-    arrows.push(Arrow(`24`, `32`));
-    arrows.push(Arrow(`2`, `12`));
-    arrows.push(Arrow(`12`, `22`));
-    arrows.push(Arrow(`22`, `32`));
-    arrows.push(Arrow(`32`, `42`));
-    arrows.push(Arrow(`32`, `40`));
-    arrows.push(Arrow(`6`, `14`));
-    arrows.push(Arrow(`14`, `22`));
-    arrows.push(Arrow(`14`, `24`));
-    arrows.push(Arrow(`22`, `30`));
-    arrows.push(Arrow(`30`, `38`));
-    arrows.push(Arrow(`4`, `12`));
-    arrows.push(Arrow(`4`, `14`));
-    arrows.push(Arrow(`12`, `20`));
-    arrows.push(Arrow(`20`, `30`));
-    arrows.push(Arrow(`30`, `40`));
+    arrows.push(Arrow(`0`, `10`, isPortrait));
+    arrows.push(Arrow(`0`, `18`, isPortrait));
+    arrows.push(Arrow(`10`, `20`, isPortrait));
+    arrows.push(Arrow(`18`, `36`, isPortrait));
+    arrows.push(Arrow(`20`, `28`, isPortrait));
+    arrows.push(Arrow(`28`, `36`, isPortrait));
+    arrows.push(Arrow(`8`, `16`, isPortrait));
+    arrows.push(Arrow(`8`, `26`, isPortrait));
+    arrows.push(Arrow(`16`, `24`, isPortrait));
+    arrows.push(Arrow(`26`, `44`, isPortrait));
+    arrows.push(Arrow(`34`, `44`, isPortrait));
+    arrows.push(Arrow(`24`, `34`, isPortrait));
+    arrows.push(Arrow(`24`, `32`, isPortrait));
+    arrows.push(Arrow(`2`, `12`, isPortrait));
+    arrows.push(Arrow(`12`, `22`, isPortrait));
+    arrows.push(Arrow(`22`, `32`, isPortrait));
+    arrows.push(Arrow(`32`, `42`, isPortrait));
+    arrows.push(Arrow(`32`, `40`, isPortrait));
+    arrows.push(Arrow(`6`, `14`, isPortrait));
+    arrows.push(Arrow(`14`, `22`, isPortrait));
+    arrows.push(Arrow(`14`, `24`, isPortrait));
+    arrows.push(Arrow(`22`, `30`, isPortrait));
+    arrows.push(Arrow(`30`, `38`, isPortrait));
+    arrows.push(Arrow(`4`, `12`, isPortrait));
+    arrows.push(Arrow(`4`, `14`, isPortrait));
+    arrows.push(Arrow(`12`, `20`, isPortrait));
+    arrows.push(Arrow(`20`, `30`, isPortrait));
+    arrows.push(Arrow(`30`, `40`, isPortrait));
     return arrows;
 }
 
-const Board = ({ row, column, dashes, strokes }:
+const Board = ({ row, column, dashes, strokes, isPortrait }:
     {
         row: number; column: number, dashes: number[], strokes: number[],
+        isPortrait: boolean
     }) => {
     const board = [];
     let d = 0;
@@ -169,15 +148,31 @@ const Board = ({ row, column, dashes, strokes }:
 
 export default function Game() {
     const [dashes, setDashes] = useState(Array(40).fill(null));
-    const [strokes, setStrokes] = useState(Array(36).fill(null));
+    const [strokes, setStrokes] = useState(Array(40).fill(null));
+    const [isPortrait, setIsPortrait] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth <= 600) {
+                setIsPortrait(true);
+            } else {
+                setIsPortrait(false);
+            }
+        };
+
+        handleResize(); // Set initial values based on the current window size
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
 
     return (
         <>
             <>Work in progress...</>
             <div className="flex flex-col items-center justify-center h-full w-full overflow-scroll">
-                <Board row={9} column={17} dashes={dashes} strokes={strokes} />
-                {fillArrow()}
+                <Board row={9} column={17} dashes={dashes} strokes={strokes} isPortrait={isPortrait} />
+                {fillArrow(isPortrait)}
             </div>
         </>
     )
