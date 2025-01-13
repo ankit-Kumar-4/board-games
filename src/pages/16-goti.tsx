@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import Xarrow from "react-xarrows";
-
-const row = 4;
-const column = 8;
+import { getConvertedIndex } from "@/utils/16-goti";
 
 const unused_dashes = [0, 1, 6, 7, 8, 9, 14, 15, 24, 25, 30, 31, 32, 33, 38, 39];
 const unused_strokes = [1, 7, 28, 34];
 const unused_dots = [1, 7, 9, 17, 27, 35, 37, 43];
+
 
 const Dot = ({ index }: { index: number }) => {
     return (
@@ -50,6 +49,67 @@ const Box = () => {
     )
 }
 
+
+const Board = ({ row, column, dashes, strokes, isPortrait }:
+    {
+        row: number; column: number, dashes: number[], strokes: number[],
+        isPortrait: boolean
+    }) => {
+
+    const board = [];
+    let d = 0;
+    let s = 0;
+    let dt = 0;
+
+    if (isPortrait) {
+        row = 17;
+        column = 9;
+    } else {
+        row = 9;
+        column = 17;
+    }
+
+    for (let i = 0; i < row; i++) {
+        for (let j = 0; j < column; j++) {
+            let key = i * column + j;
+            if (isPortrait) {
+                key = getConvertedIndex(i, j, row);
+            }
+            if (i % 2 == 0) {
+                if (j % 2 == 0) {
+                    let temp = dt;
+                    if (isPortrait) {
+                        let idx = Math.floor(dt / 5);
+                        let col = dt % 5;
+                        temp = getConvertedIndex(idx, col, 9);
+                    }
+                    board.push(<Dot key={key} index={temp} />);
+                    dt++;
+                } else {
+                    board.push(<Dash key={key} index={d} highlight={false} value={dashes[d]} />);
+                    d++;
+                }
+            } else {
+                if (j % 2 == 0) {
+                    board.push(<Stroke key={key} index={s} highlight={false} value={strokes[s]} />);
+                    s++;
+                } else {
+                    board.push(<Box key={key} />);
+                }
+            }
+        }
+    }
+
+    return (
+        <div className={`grid gap-0 content-center justify-center m-3`}
+            style={{
+                gridTemplateColumns: `repeat(${column}, auto)`,
+                gridTemplateRows: `repeat(${row}, auto)`,
+            }}>
+            {board}
+        </div>
+    );
+}
 
 function Arrow(start: string, end: string, isPortrait: boolean) {
     return (
@@ -101,50 +161,6 @@ function fillArrow(isPortrait: boolean) {
     return arrows;
 }
 
-const Board = ({ row, column, dashes, strokes, isPortrait }:
-    {
-        row: number; column: number, dashes: number[], strokes: number[],
-        isPortrait: boolean
-    }) => {
-    const board = [];
-    let d = 0;
-    let s = 0;
-    let b = 0;
-    let dt = 0;
-    for (let i = 0; i < row; i++) {
-        for (let j = 0; j < column; j++) {
-            const key = i * column + j;
-            if (i % 2 == 0) {
-                if (j % 2 == 0) {
-                    board.push(<Dot key={key} index={dt} />);
-                    console.log(key);
-                    dt++;
-                } else {
-                    board.push(<Dash key={key} index={d} highlight={false} value={dashes[d]} />);
-                    d++;
-                }
-            } else {
-                if (j % 2 == 0) {
-                    board.push(<Stroke key={key} index={s} highlight={false} value={strokes[s]} />);
-                    s++;
-                } else {
-                    board.push(<Box key={key} />);
-                    b++;
-                }
-            }
-        }
-    }
-
-    return (
-        <div className={`grid gap-0 content-center justify-center m-3`}
-            style={{
-                gridTemplateColumns: `repeat(${column}, auto)`,
-                gridTemplateRows: `repeat(${row}, auto)`,
-            }}>
-            {board}
-        </div>
-    );
-}
 
 export default function Game() {
     const [dashes, setDashes] = useState(Array(40).fill(null));
@@ -155,8 +171,16 @@ export default function Game() {
         const handleResize = () => {
             if (window.innerWidth <= 600) {
                 setIsPortrait(true);
+                let s = strokes;
+                let d = dashes;
+                setStrokes(d);
+                setDashes(s);
             } else {
                 setIsPortrait(false);
+                let s = strokes;
+                let d = dashes;
+                setStrokes(d);
+                setDashes(s);
             }
         };
 
@@ -165,6 +189,8 @@ export default function Game() {
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
+
 
 
     return (
