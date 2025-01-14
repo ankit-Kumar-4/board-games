@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import Xarrow from "react-xarrows";
-import { getConvertedIndex } from "@/utils/16-goti";
+import { getConvertedIndex, getInitialDotArray } from "@/utils/16-goti";
 
 const unused_dashes = [0, 1, 6, 7, 8, 9, 14, 15, 24, 25, 30, 31, 32, 33, 38, 39];
 const unused_strokes = [1, 7, 28, 34];
 const unused_dots = [1, 7, 9, 17, 27, 35, 37, 43];
 
 
-const Dot = ({ index }: { index: number }) => {
+const Dot = ({ index, value }: { index: number, value: number }) => {
     return (
         <div id={`${index}`}
             className={`w-3 h-3 md:w-8 md:h-8 rounded-full z-20
-                ${unused_dots.includes(index) ? '' : 'bg-black'}`}
+                ${unused_dots.includes(index) ? '' :
+                    (value === 0 ? 'bg-blue-500' :
+                        (value === 1 ? 'bg-red-600' : 'bg-black'))}`}
         ></div>
     )
 }
@@ -58,10 +60,10 @@ const Box = () => {
 }
 
 
-const Board = ({ row, column, dashes, strokes, isPortrait }:
+const Board = ({ row, column, dashes, strokes, dots, isPortrait }:
     {
         row: number; column: number, dashes: number[], strokes: number[],
-        isPortrait: boolean
+        isPortrait: boolean, dots: number[]
     }) => {
 
     const board = [];
@@ -91,27 +93,31 @@ const Board = ({ row, column, dashes, strokes, isPortrait }:
                         let col = dt % 5;
                         temp = getConvertedIndex(idx, col, 9);
                     }
-                    board.push(<Dot key={key} index={temp} />);
+                    board.push(<Dot key={key} index={temp} value={dots[temp]} />);
                     dt++;
                 } else {
                     let temp = d;
+                    let edge = dashes[d];
                     if (isPortrait) {
                         let idx = Math.floor(d / 4);
                         let col = d % 4;
                         temp = getConvertedIndex(idx, col, 9);
+                        edge = strokes[temp];
                     }
-                    board.push(<Dash key={key} index={temp} highlight={false} value={dashes[d]} isPortrait={isPortrait} />);
+                    board.push(<Dash key={key} index={temp} highlight={false} value={edge} isPortrait={isPortrait} />);
                     d++;
                 }
             } else {
                 if (j % 2 == 0) {
                     let temp = s;
+                    let edge = strokes[s];
                     if (isPortrait) {
                         let idx = Math.floor(s / 5);
                         let col = s % 5;
                         temp = getConvertedIndex(idx, col, 8);
+                        edge = dashes[temp];
                     }
-                    board.push(<Stroke key={key} index={temp} highlight={false} value={strokes[s]} isPortrait={isPortrait} />);
+                    board.push(<Stroke key={key} index={temp} highlight={false} value={edge} isPortrait={isPortrait} />);
                     s++;
                 } else {
                     board.push(<Box key={key} />);
@@ -183,8 +189,9 @@ function fillArrow(isPortrait: boolean) {
 
 
 export default function Game() {
-    const [dashes, setDashes] = useState(Array(40).fill(null));
+    const [dashes, setDashes] = useState(Array(36).fill(null));
     const [strokes, setStrokes] = useState(Array(40).fill(null));
+    const [dots, setDots] = useState(getInitialDotArray());
     const [isPortrait, setIsPortrait] = useState(false);
 
     useEffect(() => {
@@ -204,7 +211,7 @@ export default function Game() {
             }
         };
 
-        handleResize(); // Set initial values based on the current window size
+        handleResize();
         window.addEventListener("resize", handleResize);
 
         return () => window.removeEventListener("resize", handleResize);
@@ -217,7 +224,7 @@ export default function Game() {
         <>
             <>Work in progress...</>
             <div className="flex flex-col items-center justify-center h-full w-full overflow-scroll">
-                <Board row={9} column={17} dashes={dashes} strokes={strokes} isPortrait={isPortrait} />
+                <Board row={9} column={17} dashes={dashes} strokes={strokes} dots={dots} isPortrait={isPortrait} />
                 {fillArrow(isPortrait)}
             </div>
         </>
